@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v node >/dev/null && [ -f package.json ] && [ ! -d node_modules ] && (command -v pnpm >/dev/null && pnpm install --frozen-lockfile=false --silent || npm install --silent --no-audit --no-fund) >/dev/null 2>&1 || true"
+          }
+        ]
+      }
+    ]
+  }
+}
