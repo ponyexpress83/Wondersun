@@ -134,6 +134,10 @@ create table if not exists public.experiences (
   cover_image_url text,
   gallery_urls text[] default '{}',
 
+  -- Prenotazione: true = esperienza premium "a richiesta" (il fornitore conferma
+  -- o propone una data alternativa); false = prenotazione diretta.
+  requires_request boolean not null default false,
+
   -- Stato + metriche
   status experience_status not null default 'bozza',
   rating numeric default 0,

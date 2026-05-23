@@ -16,6 +16,7 @@ const ExperienceInput = z.object({
   max_participants: z.number().int().min(1),
   price_cents: z.number().int().min(0),
   price_type: z.enum(["pro_capite", "gruppo"]),
+  requires_request: z.boolean().optional().default(false),
   location_name: z.string().min(1),
   location_area: z.string().min(1),
   latitude: z.number().nullable().optional(),

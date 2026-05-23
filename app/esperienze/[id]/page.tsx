@@ -136,7 +136,9 @@ export default async function ExperienceDetailPage({
                   </span>
                 </div>
                 <p className="text-xs text-ws-text-light mb-6">
-                  Prenotazione a richiesta: nessun addebito fino alla conferma del fornitore.
+                  {exp.requires_request
+                    ? "Esperienza a richiesta: nessun addebito fino alla conferma del fornitore."
+                    : "Prenotazione diretta: paghi online solo la quota Wondersun."}
                 </p>
 
                 <BookingRequestForm
@@ -146,6 +148,7 @@ export default async function ExperienceDetailPage({
                   minParticipants={exp.min_participants}
                   maxParticipants={exp.max_participants}
                   isAuthenticated={!!profile}
+                  requiresRequest={exp.requires_request}
                 />
 
                 <details className="mt-6 border-t border-gray-100 pt-4">
@@ -156,24 +159,28 @@ export default async function ExperienceDetailPage({
                     <p>Esempio per {exp.min_participants} partecipanti:</p>
                     <div className="bg-ws-ivory rounded-lg p-3 space-y-1.5">
                       <div className="flex justify-between">
-                        <span>Esperienza</span>
+                        <span>Prezzo esperienza</span>
                         <strong className="text-ws-text">{formatEur(totalSample)}</strong>
                       </div>
                       <div className="flex justify-between text-ws-text-light">
-                        <span>di cui quota Wondersun ({breakdown.commission_pct}%)</span>
-                        <span>{formatEur(breakdown.commission_cents)}</span>
+                        <span>
+                          Paghi ora online{" "}
+                          {breakdown.is_high_value
+                            ? "(quota fissa)"
+                            : `(${breakdown.commission_pct}%)`}
+                        </span>
+                        <span>{formatEur(breakdown.pay_now_cents)}</span>
                       </div>
                       <div className="flex justify-between text-ws-text-light">
-                        <span>di cui quota Fornitore</span>
-                        <span>{formatEur(breakdown.supplier_payout_cents)}</span>
+                        <span>Saldo al fornitore in loco</span>
+                        <span>{formatEur(breakdown.pay_onsite_cents)}</span>
                       </div>
-                      {breakdown.high_value_fee_cents > 0 && (
-                        <div className="flex justify-between text-ws-text-light">
-                          <span>Fee esperienza premium</span>
-                          <span>{formatEur(breakdown.high_value_fee_cents)}</span>
-                        </div>
-                      )}
                     </div>
+                    {breakdown.is_high_value && (
+                      <p className="text-[0.7rem]">
+                        Esperienza premium: la quota Wondersun è fissa, non in percentuale.
+                      </p>
+                    )}
                   </div>
                 </details>
               </div>
@@ -182,10 +189,16 @@ export default async function ExperienceDetailPage({
                 <div className="flex items-start gap-3">
                   <Calendar size={18} className="text-ws-blue flex-shrink-0 mt-0.5" />
                   <div className="text-xs text-ws-blue-dark">
-                    <p className="font-bold mb-1">Prenotazione a richiesta</p>
+                    <p className="font-bold mb-1">
+                      {exp.requires_request ? "Prenotazione a richiesta" : "Prenotazione diretta"}
+                    </p>
                     <p className="leading-relaxed">
-                      Per le esperienze premium il fornitore conferma manualmente data e
-                      disponibilità. Il pagamento Stripe parte solo dopo la conferma.
+                      {exp.requires_request
+                        ? "Il fornitore conferma data e disponibilità o propone un'alternativa. Paghi la quota Wondersun solo dopo la conferma."
+                        : "Confermi subito la data. Paghi online la quota Wondersun e saldi il resto al fornitore sul posto."}
+                    </p>
+                    <p className="leading-relaxed mt-2">
+                      Annullamento gratuito fino a 48 ore prima dell&apos;esperienza.
                     </p>
                   </div>
                 </div>

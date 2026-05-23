@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Heart, Calendar, User, Package, Compass } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import ClientBookingActions from "@/components/dashboard/ClientBookingActions";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
@@ -88,6 +89,12 @@ export default async function ClientDashboardPage() {
                 <div className="text-right">
                   <BookingStatusBadge status={b.status} />
                   <p className="text-sm font-bold text-ws-text mt-1">{formatEur(b.total_cents)}</p>
+                  <ClientBookingActions
+                    bookingId={b.id}
+                    status={b.status}
+                    alternativeDate={b.alternative_date}
+                    payNowCents={b.commission_cents ?? 0}
+                  />
                 </div>
               </li>
             ))}

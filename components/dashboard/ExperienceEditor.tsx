@@ -40,6 +40,7 @@ export default function ExperienceEditor({ supplierId, experience }: Props) {
       max_participants: Number(fd.get("max_participants") || 10),
       price_cents: Math.round(Number(fd.get("price_euro") || 0) * 100),
       price_type: fd.get("price_type"),
+      requires_request: fd.get("requires_request") === "on",
       location_name: fd.get("location_name"),
       location_area: fd.get("location_area"),
       latitude: fd.get("latitude") ? Number(fd.get("latitude")) : null,
@@ -328,6 +329,28 @@ export default function ExperienceEditor({ supplierId, experience }: Props) {
             className="ws-input"
           />
         </div>
+      </div>
+
+      <div className="rounded-xl border border-gray-200 p-4 bg-ws-ivory">
+        <label htmlFor="requires_request" className="flex items-start gap-3 cursor-pointer">
+          <input
+            id="requires_request"
+            name="requires_request"
+            type="checkbox"
+            defaultChecked={experience?.requires_request ?? false}
+            className="mt-1 h-4 w-4 accent-ws-blue"
+          />
+          <span>
+            <span className="font-semibold text-sm text-ws-text">
+              Esperienza premium “a richiesta”
+            </span>
+            <span className="block text-xs text-ws-text-light mt-0.5">
+              Attiva se la prenotazione richiede la tua conferma (es. uscite in barca,
+              immersioni, charter). Il cliente invia una richiesta e tu confermi o proponi una
+              data alternativa. Se disattivato la prenotazione è diretta.
+            </span>
+          </span>
+        </label>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
