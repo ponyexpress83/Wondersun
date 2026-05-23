@@ -237,6 +237,12 @@ create table if not exists public.package_items (
   created_at timestamptz not null default now()
 );
 
+-- Collega ogni prenotazione al pacchetto di origine (carrello multi-esperienza).
+-- Idempotente: applicabile anche su DB già esistenti rieseguendo schema.sql.
+alter table public.bookings
+  add column if not exists package_id uuid references public.packages(id) on delete set null;
+create index if not exists bookings_package_idx on public.bookings(package_id);
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- PREFERITI
 -- ─────────────────────────────────────────────────────────────────────────

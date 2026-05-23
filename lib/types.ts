@@ -118,8 +118,30 @@ export interface Booking {
   stripe_payment_intent_id: string | null;
   stripe_checkout_session_id: string | null;
   paid_at: string | null;
+  package_id: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export type PackageStatus = "bozza" | "inviato" | "completato";
+
+export interface Package {
+  id: string;
+  client_id: string;
+  name: string;
+  notes: string | null;
+  status: PackageStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PackageItem {
+  id: string;
+  package_id: string;
+  experience_id: string;
+  requested_date: string | null;
+  participants: number;
+  created_at: string;
 }
 
 export interface ExperienceWithSupplier extends Experience {

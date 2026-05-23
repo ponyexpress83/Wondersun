@@ -4,6 +4,7 @@ import { Clock, Users, Star, MapPin, ArrowLeft, Calendar, ShieldCheck } from "lu
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingRequestForm from "@/components/BookingRequestForm";
+import AddToPackageButton from "@/components/AddToPackageButton";
 import { getExperienceBySlug } from "@/lib/data/experiences";
 import { getCurrentProfile } from "@/lib/supabase/auth-helpers";
 import { formatEur, computeCommission } from "@/lib/types";
@@ -150,6 +151,8 @@ export default async function ExperienceDetailPage({
                   isAuthenticated={!!profile}
                   requiresRequest={exp.requires_request}
                 />
+
+                <AddToPackageButton experienceId={exp.id} isAuthenticated={!!profile} />
 
                 <details className="mt-6 border-t border-gray-100 pt-4">
                   <summary className="text-xs font-semibold text-ws-text-light cursor-pointer flex items-center gap-2">

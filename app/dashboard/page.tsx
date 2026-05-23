@@ -30,7 +30,7 @@ export default async function ClientDashboardPage() {
     { href: "/esperienze", label: "Scopri esperienze", icon: Compass },
     { href: "/dashboard?tab=bookings", label: "Le mie prenotazioni", icon: Calendar },
     { href: "/dashboard?tab=favorites", label: "I miei preferiti", icon: Heart },
-    { href: "/dashboard?tab=packages", label: "I miei pacchetti", icon: Package },
+    { href: "/dashboard/pacchetti", label: "I miei pacchetti", icon: Package },
   ];
 
   const upcomingBookings = (bookings as any[]).filter((b) =>
