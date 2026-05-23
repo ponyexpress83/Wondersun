@@ -1,10 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { notifySupplierStatusChange } from "@/lib/notify";
 
 interface RouteContext {
   params: { id: string };
 }
+
+const NOTIFY_STATUS: Record<string, "approvato" | "rifiutato" | "sospeso" | "riattivato"> = {
+  approva: "approvato",
+  rifiuta: "rifiutato",
+  sospendi: "sospeso",
+  riattiva: "riattivato",
+};
 
 const ActionInput = z.object({
   action: z.enum(["approva", "rifiuta", "sospendi", "riattiva"]),
@@ -67,6 +75,15 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       .select()
       .single();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+    await notifySupplierStatusChange(
+      { email: supplier.contact_email, whatsapp: supplier.contact_phone },
+      {
+        businessName: supplier.business_name,
+        status: NOTIFY_STATUS[input.action],
+        reason: input.reason,
+      },
+    );
 
     return NextResponse.json({ supplier });
   } catch (e) {

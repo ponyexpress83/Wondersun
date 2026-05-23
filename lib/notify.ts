@@ -114,6 +114,58 @@ export async function notifySupplierNewBooking(
   ]);
 }
 
+/** Esito moderazione fornitore → avvisa l'operatore (email + WhatsApp). */
+export async function notifySupplierStatusChange(
+  channels: NotifyChannels,
+  data: {
+    businessName: string;
+    status: "approvato" | "rifiutato" | "sospeso" | "riattivato";
+    reason?: string | null;
+  },
+): Promise<void> {
+  const messages: Record<string, { title: string; body: string }> = {
+    approvato: {
+      title: "Profilo approvato",
+      body: "Il tuo profilo è stato approvato: ora puoi pubblicare le tue esperienze e ricevere prenotazioni su Wondersun.",
+    },
+    riattivato: {
+      title: "Profilo riattivato",
+      body: "Il tuo profilo è di nuovo attivo: le tue esperienze tornano visibili nel catalogo.",
+    },
+    rifiutato: {
+      title: "Candidatura non approvata",
+      body: "Al momento la tua candidatura non è stata approvata.",
+    },
+    sospeso: {
+      title: "Profilo sospeso",
+      body: "Il tuo profilo è stato temporaneamente sospeso e le tue esperienze non sono più visibili.",
+    },
+  };
+
+  const m = messages[data.status];
+  if (!m) return;
+
+  const reasonLine = data.reason?.trim() ? `\nMotivo: ${data.reason.trim()}` : "";
+  const reasonHtml = data.reason?.trim()
+    ? `<p><strong>Motivo:</strong> ${data.reason.trim()}</p>`
+    : "";
+
+  const text =
+    `${m.title} · Wondersun\n\n${data.businessName}\n${m.body}${reasonLine}\n\n` +
+    `${SITE}/fornitore/dashboard`;
+  const html =
+    `<h2>${m.title}</h2>` +
+    `<p><strong>${data.businessName}</strong></p>` +
+    `<p>${m.body}</p>` +
+    reasonHtml +
+    `<p><a href="${SITE}/fornitore/dashboard">Apri la dashboard</a></p>`;
+
+  await Promise.allSettled([
+    channels.email ? sendEmail(channels.email, `${m.title} · Wondersun`, html) : null,
+    channels.whatsapp ? sendWhatsApp(channels.whatsapp, text) : null,
+  ]);
+}
+
 /** Cambio stato prenotazione → avvisa il cliente (email + WhatsApp). */
 export async function notifyClientBookingUpdate(
   channels: NotifyChannels,
