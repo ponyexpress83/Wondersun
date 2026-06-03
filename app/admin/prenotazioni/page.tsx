@@ -10,6 +10,7 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
+import { ADMIN_NAV } from "@/lib/admin-nav";
 
 export const metadata = { title: "Prenotazioni · Admin" };
 
@@ -62,13 +63,7 @@ export default async function AdminBookingsPage({
     .filter((b) => ["pagata", "completata"].includes(b.status))
     .reduce((sum, b) => sum + (b.commission_cents ?? 0), 0);
 
-  const nav = [
-    { href: "/admin", label: "Panoramica", icon: LayoutDashboard },
-    { href: "/admin/fornitori", label: "Fornitori", icon: Store },
-    { href: "/admin/esperienze", label: "Esperienze", icon: BarChart3 },
-    { href: "/admin/prenotazioni", label: "Prenotazioni", icon: Calendar },
-    { href: "/admin/utenti", label: "Utenti", icon: Users },
-  ];
+  const nav = ADMIN_NAV;
 
   return (
     <DashboardLayout

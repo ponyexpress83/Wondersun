@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { listExperiences } from "@/lib/data/experiences";
 import type { ExperienceWithSupplier } from "@/lib/types";
+import { checkRateLimit, rateLimitKeyFromRequest, RATE_LIMITS } from "@/lib/rate-limit";
 
 const Input = z.object({
   message: z.string().min(1).max(1500),
@@ -156,6 +157,17 @@ async function enhanceReply(
 
 export async function POST(request: NextRequest) {
   try {
+    const rl = checkRateLimit(rateLimitKeyFromRequest(request, "sole"), RATE_LIMITS.chatbot);
+    if (!rl.ok) {
+      return NextResponse.json(
+        {
+          error: "Troppe richieste al chatbot. Riprova tra qualche minuto.",
+          retryAfterMs: rl.retryAfterMs,
+        },
+        { status: 429, headers: { "retry-after": String(Math.ceil(rl.retryAfterMs / 1000)) } },
+      );
+    }
+
     const { message } = Input.parse(await request.json());
     const t = normalize(message);
 

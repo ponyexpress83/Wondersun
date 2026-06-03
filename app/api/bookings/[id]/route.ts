@@ -48,7 +48,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     const { data: booking, error: bErr } = await supabase
       .from("bookings")
       .select(
-        "*, experience:experiences(title), supplier:suppliers(profile_id), client:profiles!bookings_client_id_fkey(email, phone)",
+        "*, experience:experiences(title, cancellation_hours), supplier:suppliers(profile_id), client:profiles!bookings_client_id_fkey(email, phone)",
       )
       .eq("id", params.id)
       .single();
@@ -123,14 +123,17 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
             { status: 400 },
           );
         }
-        // Regola disdetta: oltre la conferma/pagamento serve preavviso di 48h.
+        // Policy di cancellazione configurabile per esperienza (Allegato A § 4.3).
+        // Default 48h dalla call 23/05; il fornitore può stringere per esperienze
+        // food/premium con materie prime preparate (cooking class, ristoranti).
         if (["confermata", "pagata"].includes(booking.status)) {
+          const hours = (booking as any).experience?.cancellation_hours ?? CANCELLATION_HOURS;
           const start = new Date(booking.requested_date).getTime();
           const hoursToStart = (start - Date.now()) / (1000 * 60 * 60);
-          if (hoursToStart < CANCELLATION_HOURS) {
+          if (hoursToStart < hours) {
             return NextResponse.json(
               {
-                error: `Annullamento non consentito: meno di ${CANCELLATION_HOURS} ore all'esperienza.`,
+                error: `Annullamento non consentito: meno di ${hours} ore all'esperienza.`,
               },
               { status: 400 },
             );

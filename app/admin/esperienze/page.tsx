@@ -11,6 +11,7 @@ import AdminExperienceActions from "@/components/dashboard/AdminExperienceAction
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
+import { ADMIN_NAV } from "@/lib/admin-nav";
 
 export const metadata = { title: "Esperienze · Admin" };
 
@@ -51,13 +52,7 @@ export default async function AdminExperiencesPage({
   const filtered =
     active === "tutti" ? experiences : experiences.filter((e) => e.status === active);
 
-  const nav = [
-    { href: "/admin", label: "Panoramica", icon: LayoutDashboard },
-    { href: "/admin/fornitori", label: "Fornitori", icon: Store },
-    { href: "/admin/esperienze", label: "Esperienze", icon: BarChart3 },
-    { href: "/admin/prenotazioni", label: "Prenotazioni", icon: Calendar },
-    { href: "/admin/utenti", label: "Utenti", icon: Users },
-  ];
+  const nav = ADMIN_NAV;
 
   return (
     <DashboardLayout

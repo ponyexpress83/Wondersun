@@ -15,6 +15,7 @@ import AdminSupplierActions from "@/components/dashboard/AdminSupplierActions";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Supplier } from "@/lib/types";
+import { ADMIN_NAV } from "@/lib/admin-nav";
 
 export const metadata = { title: "Fornitori · Admin" };
 
@@ -57,13 +58,7 @@ export default async function AdminSuppliersPage({
   const filtered =
     active === "tutti" ? suppliers : suppliers.filter((s) => s.status === active);
 
-  const nav = [
-    { href: "/admin", label: "Panoramica", icon: LayoutDashboard },
-    { href: "/admin/fornitori", label: "Fornitori", icon: Store },
-    { href: "/admin/esperienze", label: "Esperienze", icon: BarChart3 },
-    { href: "/admin/prenotazioni", label: "Prenotazioni", icon: Calendar },
-    { href: "/admin/utenti", label: "Utenti", icon: Users },
-  ];
+  const nav = ADMIN_NAV;
 
   return (
     <DashboardLayout
