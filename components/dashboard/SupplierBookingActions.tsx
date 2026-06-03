@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, X, CalendarClock } from "lucide-react";
+import { Check, X, CalendarClock, CheckCircle2, UserX } from "lucide-react";
 
 interface Props {
   bookingId: string;
@@ -26,8 +26,9 @@ export default function SupplierBookingActions({ bookingId, status }: Props) {
   const [reason, setReason] = useState<string>("non_disponibile");
   const [busy, setBusy] = useState(false);
 
-  const actionable = status === "richiesta" || status === "data_alternativa";
-  if (!actionable) {
+  const isPreFruizione = status === "richiesta" || status === "data_alternativa";
+  const isPostConferma = status === "confermata" || status === "pagata";
+  if (!isPreFruizione && !isPostConferma) {
     return <span className="text-xs text-ws-text-light">—</span>;
   }
 
@@ -54,6 +55,27 @@ export default function SupplierBookingActions({ bookingId, status }: Props) {
   };
 
   const today = new Date().toISOString().split("T")[0];
+
+  if (isPostConferma) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <button
+          disabled={busy}
+          onClick={() => submit({ action: "completata" }, "Esperienza marcata come completata")}
+          className="inline-flex items-center gap-1 bg-green-600 text-white rounded-md text-[0.65rem] font-bold py-1.5 px-2.5 uppercase tracking-wide hover:bg-green-700"
+        >
+          <CheckCircle2 size={12} /> Completata
+        </button>
+        <button
+          disabled={busy}
+          onClick={() => submit({ action: "no_show" }, "Cliente segnato come no-show")}
+          className="inline-flex items-center gap-1 border border-gray-200 text-ws-red rounded-md text-[0.65rem] font-bold py-1.5 px-2.5 uppercase tracking-wide hover:bg-red-50"
+        >
+          <UserX size={12} /> No-show
+        </button>
+      </div>
+    );
+  }
 
   if (mode === "alternativa") {
     return (

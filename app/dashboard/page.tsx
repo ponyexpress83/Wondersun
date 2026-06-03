@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Heart, Calendar, User, Package, Compass } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ClientBookingActions from "@/components/dashboard/ClientBookingActions";
+import PrivacyActions from "@/components/dashboard/PrivacyActions";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
@@ -137,6 +138,8 @@ export default async function ClientDashboardPage() {
           </ul>
         )}
       </section>
+
+      <PrivacyActions />
     </DashboardLayout>
   );
 }

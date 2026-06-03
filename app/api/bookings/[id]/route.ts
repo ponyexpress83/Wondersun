@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { CANCELLATION_HOURS } from "@/lib/types";
 import { notifyClientBookingUpdate } from "@/lib/notify";
+import { logAudit } from "@/lib/audit";
 
 interface RouteContext {
   params: { id: string };
@@ -15,6 +16,8 @@ const ActionInput = z.object({
     "proponi_alternativa",
     "accetta_alternativa",
     "annulla",
+    "completata",
+    "no_show",
   ]),
   alternativeDate: z.string().optional().nullable(),
   // Motivo predefinito del rifiuto — niente testo libero per evitare scambio
@@ -136,6 +139,23 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         update.status = "annullata";
         break;
       }
+
+      // Chiusura dell'esperienza dopo la fruizione (Allegato A § 3.3).
+      // Il fornitore segna l'esito una volta passata la data.
+      case "completata":
+      case "no_show": {
+        if (!isSupplier) {
+          return NextResponse.json({ error: "Azione riservata al fornitore" }, { status: 403 });
+        }
+        if (!["confermata", "pagata"].includes(booking.status)) {
+          return NextResponse.json(
+            { error: "Si può chiudere solo una prenotazione confermata o pagata" },
+            { status: 400 },
+          );
+        }
+        update.status = input.action;
+        break;
+      }
     }
 
     const { data: updated, error: uErr } = await supabase
@@ -161,6 +181,14 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         },
       );
     }
+
+    await logAudit({
+      actorId: user.id,
+      action: `booking.${input.action}`,
+      entityType: "booking",
+      entityId: params.id,
+      metadata: { previous_status: booking.status, new_status: update.status },
+    });
 
     return NextResponse.json({ booking: updated });
   } catch (e) {

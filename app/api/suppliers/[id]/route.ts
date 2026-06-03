@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { notifySupplierStatusChange } from "@/lib/notify";
+import { logAudit } from "@/lib/audit";
 
 interface RouteContext {
   params: { id: string };
@@ -84,6 +85,14 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         reason: input.reason,
       },
     );
+
+    await logAudit({
+      actorId: user.id,
+      action: `supplier.${input.action}`,
+      entityType: "supplier",
+      entityId: params.id,
+      metadata: { new_status: update.status, reason: input.reason ?? null },
+    });
 
     return NextResponse.json({ supplier });
   } catch (e) {
