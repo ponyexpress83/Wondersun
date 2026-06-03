@@ -3,6 +3,7 @@ import { Heart, Calendar, User, Package, Compass } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ClientBookingActions from "@/components/dashboard/ClientBookingActions";
 import PrivacyActions from "@/components/dashboard/PrivacyActions";
+import BookingsFilters from "@/components/dashboard/BookingsFilters";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
@@ -69,8 +70,9 @@ export default async function ClientDashboardPage() {
             </Link>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-100">
-            {(bookings as any[]).map((b) => (
+          <BookingsFilters
+            bookings={bookings as any[]}
+            renderRow={(b) => (
               <li key={b.id} className="px-6 py-4 flex items-center gap-4">
                 {b.experience?.cover_image_url && (
                   /* eslint-disable-next-line @next/next/no-img-element */
@@ -91,15 +93,15 @@ export default async function ClientDashboardPage() {
                   <BookingStatusBadge status={b.status} />
                   <p className="text-sm font-bold text-ws-text mt-1">{formatEur(b.total_cents)}</p>
                   <ClientBookingActions
-                    bookingId={b.id}
-                    status={b.status}
-                    alternativeDate={b.alternative_date}
-                    payNowCents={b.commission_cents ?? 0}
+                    bookingId={(b as any).id}
+                    status={(b as any).status}
+                    alternativeDate={(b as any).alternative_date}
+                    payNowCents={(b as any).commission_cents ?? 0}
                   />
                 </div>
               </li>
-            ))}
-          </ul>
+            )}
+          />
         )}
       </section>
 
