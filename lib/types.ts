@@ -182,49 +182,43 @@ export interface PriceBreakdown {
 }
 
 /**
- * Calcola la quota Wondersun secondo il modello marketplace concordato con la
- * committente (call 14/05/2026 + 23/05/2026):
+ * Calcola la quota Wondersun "servizio digitale" sul totale della prenotazione.
  *
- * - Esperienze standard: 25% del totale.
- * - Esperienze premium oltre soglia (default €1.000): quota FISSA *al posto*
- *   della percentuale — non in aggiunta — per non arrivare a cifre assurde
- *   (es. uno yacht da €28.000 al 25% farebbe €7.000).
+ * Modello concordato con la committente nelle call 14/05 + 23/05 + 04/06/2026:
+ * - **15% del totale** (call 04/06), abbassato dal 25% iniziale per puntare al
+ *   volume di conversioni invece che al margine per prenotazione.
+ * - **Niente quota fissa premium**: le esperienze sopra €1.000 e le strutture
+ *   ricettive (hotel, camping, glamping) NON usano percentuale; per loro è
+ *   previsto un canone mensile separato e nessuna prenotazione diretta in
+ *   piattaforma — pagina solo "vetrina" con link esterno al fornitore.
  *
  * Il prezzo mostrato in vetrina è già comprensivo della quota. In fase di
  * pagamento l'importo viene scorporato: il cliente paga ONLINE solo la quota
  * Wondersun ("paghi solo quello che vivi" — il concierge digitale) e salda la
  * parte restante DIRETTAMENTE al fornitore al momento dell'esperienza.
  *
- * Valori configurabili via env: WONDERSUN_COMMISSION_PCT,
- * WONDERSUN_HIGH_VALUE_THRESHOLD, WONDERSUN_HIGH_VALUE_FIXED_FEE.
- * NB: la quota fissa premium è un placeholder — la committente la sta ancora
- * definendo (vedi call).
+ * ⚠ Avvertenza fiscale: una percentuale sul totale assomiglia strutturalmente
+ * a una commissione da intermediario. Va validato col commercialista del
+ * Committente che il modello "servizio digitale di prenotazione" Art. 2-bis
+ * regga ugualmente con questa parametrizzazione. Vedi docs/SEPARAZIONE-DOCUMENTALE.md.
+ *
+ * Valore configurabile via env: WONDERSUN_COMMISSION_PCT (default 15).
  */
 export function computeCommission(totalCents: number): PriceBreakdown {
-  const pct = Number(process.env.WONDERSUN_COMMISSION_PCT ?? 25);
-  const thresholdEur = Number(process.env.WONDERSUN_HIGH_VALUE_THRESHOLD ?? 1000);
-  const highValueFeeEur = Number(process.env.WONDERSUN_HIGH_VALUE_FIXED_FEE ?? 149);
-
-  const isHighValue = totalCents > thresholdEur * 100;
-
-  const commissionCents = isHighValue
-    ? Math.round(highValueFeeEur * 100)
-    : Math.round((totalCents * pct) / 100);
-
+  const pct = Number(process.env.WONDERSUN_COMMISSION_PCT ?? 15);
+  const commissionCents = Math.round((totalCents * pct) / 100);
   const payOnsiteCents = Math.max(0, totalCents - commissionCents);
-  const effectivePct =
-    totalCents > 0 ? Math.round((commissionCents / totalCents) * 1000) / 10 : 0;
 
   return {
     total_cents: totalCents,
-    is_high_value: isHighValue,
-    model: isHighValue ? "fissa" : "percentuale",
-    commission_pct: isHighValue ? effectivePct : pct,
+    is_high_value: false,
+    model: "percentuale",
+    commission_pct: pct,
     commission_cents: commissionCents,
     pay_now_cents: commissionCents,
     pay_onsite_cents: payOnsiteCents,
     supplier_payout_cents: payOnsiteCents,
-    high_value_fee_cents: isHighValue ? commissionCents : 0,
+    high_value_fee_cents: 0,
   };
 }
 

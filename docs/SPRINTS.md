@@ -3,6 +3,32 @@
 Riferimento contratto: Allegato B — Piano di Progetto (6 sprint settimanali).
 Stato aggiornato: maggio 2026.
 
+## Aggiornamento call committente (04/06/2026) 🆕
+
+Sintesi delle decisioni operative emerse stamattina (04/06):
+
+- **Commissione cliente finale 15% sul TOTALE** (era 25%) — per puntare al
+  volume di conversioni invece che al margine per prenotazione. Eliminata la
+  "quota fissa premium" sopra €1.000.
+- **Strutture ricettive (hotel/camping/glamping) come "schede vetrina"**: solo
+  visibilità + link esterno ai contatti, NIENTE prenotazione diretta in
+  piattaforma. Pagano solo il canone mensile. Da formalizzare come modifica
+  Art. 8 (quotata €450 separati).
+- **Canone fornitori €29/mese gratuito il primo anno**, poi a pagamento dopo
+  il lancio. Tre mesi di trial iniziali confermati per i primi onboarding.
+- **Provider pagamento Stripe** confermato (PayPal escluso).
+- **Combina esperienze nella stessa giornata via Sole** come nice-to-have, non
+  bloccante.
+- **Affiliazione/referral**: la committente "ci ragiona", modulo separato da
+  quotare a parte se la introduce.
+- **Multilingua**: rinviato a fase successiva (basta Google Translate browser).
+- **Dominio**: `wondersun.it` da trasferire da WebAdor a Register/Aruba; il
+  `.com` non è disponibile.
+
+⚠ Avvertenza fiscale: il 15% sul totale assomiglia strutturalmente a una
+commissione da intermediario. Sottoporre al commercialista del Committente
+prima del go-live (vedi `docs/SEPARAZIONE-DOCUMENTALE.md`).
+
 ## Aggiornamento call committente (23/05/2026) ✅
 
 Funzionalità richieste nell'ultima call e implementate (anticipano parte degli

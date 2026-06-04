@@ -25,6 +25,24 @@ Questa separazione è il **cuore della scelta fiscale** del Committente:
 evita la qualificazione come marketplace o agenzia di viaggi (con i relativi
 obblighi: ROC, IVA art. 74-ter, ecc.).
 
+## Aggiornamento call 04/06/2026
+
+La Committente ha **abbassato la commissione dal 25% al 15% sul totale** e ha
+eliminato la "quota fissa premium" sopra €1.000 (le esperienze grosse diventano
+schede vetrina con canone mensile e senza prenotazione diretta).
+
+**Attenzione**: una percentuale sul totale somiglia strutturalmente a una
+commissione da intermediario, **più della quota fissa**. Va validato col
+commercialista che il modello "servizio digitale Art. 2-bis" regga ugualmente
+con questa parametrizzazione, perché il rischio di riqualificazione come
+marketplace (con i relativi obblighi: ROC, IVA art. 74-ter, ecc.) aumenta.
+
+Suggerimenti per consolidare il modello:
+- Mantenere la causale ricevuta fissa "Servizio di prenotazione digitale personalizzata"
+- Mantenere la separazione documentale rigorosa (vedi sotto)
+- Documentare il valore aggiunto del concierge digitale (chatbot, filtri, suggerimenti, pacchetti) come ciò che giustifica il 15%
+- Considerare un cap massimo per prenotazione (es. €200) se Ginevra accetterà il suggerimento del commercialista
+
 ## Come la piattaforma rispetta la separazione
 
 ### Schema dati
