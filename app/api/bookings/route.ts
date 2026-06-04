@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { computeCommission } from "@/lib/types";
 import { generateBookingCode } from "@/lib/utils";
+import { notifySupplierNewBooking } from "@/lib/notify";
 
 const BookingInput = z.object({
   experienceId: z.string().uuid(),
@@ -24,7 +25,9 @@ export async function POST(request: NextRequest) {
 
     const { data: experience, error: expError } = await supabase
       .from("experiences")
-      .select("id, supplier_id, price_cents, status, min_participants, max_participants")
+      .select(
+        "id, title, supplier_id, price_cents, status, min_participants, max_participants, requires_request",
+      )
       .eq("id", data.experienceId)
       .single();
     if (expError || !experience) {
@@ -49,6 +52,11 @@ export async function POST(request: NextRequest) {
     const total = unit * data.participants;
     const breakdown = computeCommission(total);
 
+    // Esperienze "a richiesta": il fornitore deve confermare → stato "richiesta".
+    // Esperienze a prenotazione diretta: confermate subito, pronte al pagamento.
+    const requiresRequest = Boolean(experience.requires_request);
+    const initialStatus = requiresRequest ? "richiesta" : "confermata";
+
     const { data: booking, error } = await supabase
       .from("bookings")
       .insert({
@@ -59,7 +67,8 @@ export async function POST(request: NextRequest) {
         requested_date: data.requestedDate,
         participants: data.participants,
         notes: data.notes ?? null,
-        status: "richiesta",
+        status: initialStatus,
+        responded_at: requiresRequest ? null : new Date().toISOString(),
         unit_price_cents: unit,
         total_cents: total,
         commission_pct: breakdown.commission_pct,
@@ -71,7 +80,27 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-    return NextResponse.json({ booking });
+
+    // Notifica al fornitore (email + WhatsApp, best-effort)
+    const { data: supplierContact } = await supabase
+      .from("suppliers")
+      .select("contact_email, contact_phone")
+      .eq("id", experience.supplier_id)
+      .maybeSingle();
+    if (supplierContact) {
+      await notifySupplierNewBooking(
+        { email: supplierContact.contact_email, whatsapp: supplierContact.contact_phone },
+        {
+          bookingCode: booking.booking_code,
+          experienceTitle: experience.title,
+          requestedDate: data.requestedDate,
+          participants: data.participants,
+          requiresRequest,
+        },
+      );
+    }
+
+    return NextResponse.json({ booking, requiresRequest });
   } catch (e) {
     if (e instanceof z.ZodError) {
       return NextResponse.json({ error: e.issues[0]?.message ?? "Validazione" }, { status: 400 });

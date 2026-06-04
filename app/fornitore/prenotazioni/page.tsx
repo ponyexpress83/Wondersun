@@ -1,8 +1,20 @@
 import { LayoutDashboard, Compass, Calendar, CreditCard } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import SupplierBookingActions from "@/components/dashboard/SupplierBookingActions";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
+
+const STATUS_LABELS: Record<string, string> = {
+  richiesta: "Da confermare",
+  confermata: "Confermata",
+  data_alternativa: "Alternativa proposta",
+  rifiutata: "Rifiutata",
+  pagata: "Pagata",
+  completata: "Completata",
+  annullata: "Annullata",
+  no_show: "No show",
+};
 
 export const metadata = { title: "Prenotazioni ricevute" };
 
@@ -67,10 +79,13 @@ export default async function SupplierBookingsPage() {
                   Pax
                 </th>
                 <th className="text-left px-4 py-3 font-bold text-xs uppercase tracking-widest text-ws-text-light">
-                  Netto
+                  Saldo in loco
                 </th>
                 <th className="text-left px-4 py-3 font-bold text-xs uppercase tracking-widest text-ws-text-light">
                   Stato
+                </th>
+                <th className="text-left px-4 py-3 font-bold text-xs uppercase tracking-widest text-ws-text-light">
+                  Azioni
                 </th>
               </tr>
             </thead>
@@ -84,13 +99,23 @@ export default async function SupplierBookingsPage() {
                   <td className="px-4 py-3 text-ws-text">{b.experience?.title}</td>
                   <td className="px-4 py-3 text-ws-text">
                     {new Date(b.requested_date).toLocaleDateString("it-IT")}
+                    {b.status === "data_alternativa" && b.alternative_date && (
+                      <span className="block text-[0.7rem] text-ws-blue">
+                        proposta: {new Date(b.alternative_date).toLocaleDateString("it-IT")}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-ws-text">{b.participants}</td>
                   <td className="px-4 py-3 font-semibold text-ws-text">
                     {formatEur(b.supplier_payout_cents)}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="ws-badge ws-badge-blue text-[0.65rem]">{b.status}</span>
+                    <span className="ws-badge ws-badge-blue text-[0.65rem]">
+                      {STATUS_LABELS[b.status] ?? b.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <SupplierBookingActions bookingId={b.id} status={b.status} />
                   </td>
                 </tr>
               ))}
@@ -100,7 +125,8 @@ export default async function SupplierBookingsPage() {
       )}
 
       <p className="text-xs text-ws-text-light mt-6">
-        Conferma/rifiuto richieste e webhook Stripe arrivano nello Sprint 4 (vedi roadmap).
+        Il saldo indicato è quello che incassi direttamente dal cliente sul posto. Conferma o
+        proponi una data alternativa: tutto resta in piattaforma.
       </p>
     </DashboardLayout>
   );

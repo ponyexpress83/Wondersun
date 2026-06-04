@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Heart, Calendar, User, Package, Compass } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import ClientBookingActions from "@/components/dashboard/ClientBookingActions";
+import PrivacyActions from "@/components/dashboard/PrivacyActions";
+import BookingsFilters from "@/components/dashboard/BookingsFilters";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
@@ -29,7 +32,7 @@ export default async function ClientDashboardPage() {
     { href: "/esperienze", label: "Scopri esperienze", icon: Compass },
     { href: "/dashboard?tab=bookings", label: "Le mie prenotazioni", icon: Calendar },
     { href: "/dashboard?tab=favorites", label: "I miei preferiti", icon: Heart },
-    { href: "/dashboard?tab=packages", label: "I miei pacchetti", icon: Package },
+    { href: "/dashboard/pacchetti", label: "I miei pacchetti", icon: Package },
   ];
 
   const upcomingBookings = (bookings as any[]).filter((b) =>
@@ -67,8 +70,9 @@ export default async function ClientDashboardPage() {
             </Link>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-100">
-            {(bookings as any[]).map((b) => (
+          <BookingsFilters
+            bookings={bookings as any[]}
+            renderRow={(b) => (
               <li key={b.id} className="px-6 py-4 flex items-center gap-4">
                 {b.experience?.cover_image_url && (
                   /* eslint-disable-next-line @next/next/no-img-element */
@@ -88,10 +92,16 @@ export default async function ClientDashboardPage() {
                 <div className="text-right">
                   <BookingStatusBadge status={b.status} />
                   <p className="text-sm font-bold text-ws-text mt-1">{formatEur(b.total_cents)}</p>
+                  <ClientBookingActions
+                    bookingId={(b as any).id}
+                    status={(b as any).status}
+                    alternativeDate={(b as any).alternative_date}
+                    payNowCents={(b as any).commission_cents ?? 0}
+                  />
                 </div>
               </li>
-            ))}
-          </ul>
+            )}
+          />
         )}
       </section>
 
@@ -130,6 +140,8 @@ export default async function ClientDashboardPage() {
           </ul>
         )}
       </section>
+
+      <PrivacyActions />
     </DashboardLayout>
   );
 }

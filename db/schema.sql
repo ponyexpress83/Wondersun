@@ -134,6 +134,10 @@ create table if not exists public.experiences (
   cover_image_url text,
   gallery_urls text[] default '{}',
 
+  -- Prenotazione: true = esperienza premium "a richiesta" (il fornitore conferma
+  -- o propone una data alternativa); false = prenotazione diretta.
+  requires_request boolean not null default false,
+
   -- Stato + metriche
   status experience_status not null default 'bozza',
   rating numeric default 0,
@@ -232,6 +236,62 @@ create table if not exists public.package_items (
   participants integer not null default 1,
   created_at timestamptz not null default now()
 );
+
+-- Collega ogni prenotazione al pacchetto di origine (carrello multi-esperienza).
+-- Idempotente: applicabile anche su DB già esistenti rieseguendo schema.sql.
+alter table public.bookings
+  add column if not exists package_id uuid references public.packages(id) on delete set null;
+create index if not exists bookings_package_idx on public.bookings(package_id);
+
+-- Policy di cancellazione configurabile per esperienza (Allegato A § 4.3).
+-- Default 48h (call 23/05) override per esperienza se il fornitore vuole più stretto.
+alter table public.experiences
+  add column if not exists cancellation_hours integer not null default 48;
+
+-- Codici sconto applicabili sulla quota Wondersun in checkout (Allegato A § 4.3).
+create table if not exists public.discount_codes (
+  id uuid primary key default uuid_generate_v4(),
+  code text unique not null,
+  description text,
+  kind text not null default 'percent',           -- 'percent' | 'fixed_cents'
+  value integer not null,                         -- percent (1-100) o centesimi
+  valid_from timestamptz,
+  valid_until timestamptz,
+  usage_limit integer,                            -- null = illimitato
+  used_count integer not null default 0,
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+create index if not exists discount_codes_active_idx on public.discount_codes(active, code);
+
+-- Contenuti pagine statiche editabili da admin (Allegato A § 4.1).
+create table if not exists public.static_pages (
+  slug text primary key,                          -- 'homepage_hero' | 'chi_siamo' | 'faq' | 'privacy' | 'termini' | 'cookie'
+  title text not null,
+  body_md text not null default '',
+  updated_at timestamptz not null default now(),
+  updated_by uuid references public.profiles(id)
+);
+
+-- Template email transazionali editabili da admin (Allegato A § 4.3).
+create table if not exists public.email_templates (
+  slug text primary key,                          -- 'booking_request' | 'booking_confirmed' | 'reminder_24h' | 'cancellation' | ...
+  subject text not null,
+  body_md text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+-- Documenti aziendali fornitore (visure, certificazioni, polizze) — Allegato A § 3.1.
+create table if not exists public.supplier_documents (
+  id uuid primary key default uuid_generate_v4(),
+  supplier_id uuid not null references public.suppliers(id) on delete cascade,
+  filename text not null,
+  storage_path text not null,
+  size_bytes integer,
+  mime_type text,
+  uploaded_at timestamptz not null default now()
+);
+create index if not exists supplier_docs_supplier_idx on public.supplier_documents(supplier_id);
 
 -- ─────────────────────────────────────────────────────────────────────────
 -- PREFERITI

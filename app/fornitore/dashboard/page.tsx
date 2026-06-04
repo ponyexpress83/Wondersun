@@ -11,6 +11,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import SupplierDocumentsManager from "@/components/dashboard/SupplierDocumentsManager";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
@@ -187,6 +188,8 @@ export default async function SupplierDashboardPage() {
           )}
         </section>
       </div>
+
+      <SupplierDocumentsManager />
     </DashboardLayout>
   );
 }
