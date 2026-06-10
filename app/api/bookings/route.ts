@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const { data: experience, error: expError } = await supabase
       .from("experiences")
       .select(
-        "id, title, supplier_id, price_cents, status, min_participants, max_participants, requires_request",
+        "id, title, supplier_id, price_cents, status, min_participants, max_participants, requires_request, is_bookable",
       )
       .eq("id", data.experienceId)
       .single();
@@ -35,6 +35,12 @@ export async function POST(request: NextRequest) {
     }
     if (experience.status !== "pubblicata") {
       return NextResponse.json({ error: "Esperienza non disponibile" }, { status: 400 });
+    }
+    if (experience.is_bookable === false) {
+      return NextResponse.json(
+        { error: "Questa scheda è in modalità vetrina: contatta direttamente il fornitore." },
+        { status: 400 },
+      );
     }
     if (
       data.participants < experience.min_participants ||

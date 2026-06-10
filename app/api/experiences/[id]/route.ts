@@ -18,6 +18,8 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   delete body.created_at;
   delete body.bookings_count;
   delete body.rating;
+  // is_bookable deriva dalla modalità del fornitore, non è modificabile da client
+  delete body.is_bookable;
 
   const { data, error } = await supabase
     .from("experiences")

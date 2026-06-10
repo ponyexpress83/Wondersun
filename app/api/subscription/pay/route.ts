@@ -1,15 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSubscriptionCheckout, stripeConfigured } from "@/lib/stripe";
+import { computeBilling, getLaunchDate } from "@/lib/subscription";
+import { logAudit } from "@/lib/audit";
 
 /**
- * Pagamento del canone mensile fornitore (€29/mese, primi 3 mesi gratis).
- * La committente (call 23/05/2026) vuole che il fornitore possa pagare il
- * canone direttamente dalla dashboard.
+ * Attivazione del canone fornitore €29/mese via Stripe Subscription
+ * (modifica Art. 8 confermata e saldata il 05/06/2026).
  *
- * Provider (Stripe/PayPal) ancora in valutazione: questo è il punto d'innesto.
- * Finché non è configurato risponde in modo controllato senza simulare incassi.
+ * Modello promo: partner fondatori gratis 3 mesi (prenotabili) / 1 mese
+ * (vetrina) dalla data di lancio; nuovi fornitori post-lancio pagano la
+ * quota di attivazione €99 (primo mese incluso) insieme al primo checkout.
  */
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   const supabase = createSupabaseServerClient();
   const {
     data: { user },
@@ -18,31 +21,63 @@ export async function POST(_request: NextRequest) {
 
   const { data: supplier } = await supabase
     .from("suppliers")
-    .select("id, profile_id")
+    .select(
+      "id, profile_id, mode, is_founding_partner, activation_fee_paid_at, subscription_status, current_period_end, contact_email",
+    )
     .eq("profile_id", user.id)
     .maybeSingle();
   if (!supplier) {
     return NextResponse.json({ error: "Profilo fornitore non trovato" }, { status: 404 });
   }
 
-  const providerConfigured = Boolean(
-    process.env.STRIPE_SECRET_KEY || process.env.PAYPAL_CLIENT_ID,
-  );
-  if (!providerConfigured) {
+  const launchDate = await getLaunchDate();
+  const billing = computeBilling(supplier, launchDate);
+
+  if (billing.phase === "attivo") {
+    return NextResponse.json(
+      { error: "Il canone è già attivo.", info: billing.label },
+      { status: 400 },
+    );
+  }
+  if (billing.phase === "promo" || billing.phase === "attesa_lancio") {
+    return NextResponse.json(
+      { error: `Niente da pagare al momento: ${billing.label}.`, info: billing.label },
+      { status: 400 },
+    );
+  }
+
+  if (!stripeConfigured()) {
     return NextResponse.json(
       {
-        error:
-          "Pagamento canone in attivazione. Il provider (Stripe/PayPal) è in fase di configurazione.",
+        error: "Pagamento canone in attivazione: l'account Stripe è in fase di configurazione.",
         pending: true,
       },
       { status: 503 },
     );
   }
 
-  // TODO: avviare l'abbonamento ricorrente €29/mese (Stripe Billing / PayPal
-  // subscriptions). Il webhook aggiornerà subscription_status e current_period_end.
-  return NextResponse.json(
-    { error: "Integrazione provider non ancora implementata.", pending: true },
-    { status: 501 },
-  );
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
+    const { url, sessionId } = await createSubscriptionCheckout({
+      supplierId: supplier.id,
+      customerEmail: supplier.contact_email ?? user.email,
+      activationFeeCents: billing.activationDueCents,
+      siteUrl,
+    });
+
+    await logAudit({
+      actorId: user.id,
+      action: "subscription.checkout.created",
+      entityType: "supplier",
+      entityId: supplier.id,
+      metadata: { activation_cents: billing.activationDueCents, session_id: sessionId },
+    });
+
+    return NextResponse.json({ url });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Errore Stripe" },
+      { status: 502 },
+    );
+  }
 }

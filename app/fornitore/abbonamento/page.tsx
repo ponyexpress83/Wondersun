@@ -1,10 +1,13 @@
-import { LayoutDashboard, Compass, Calendar, CreditCard, AlertCircle } from "lucide-react";
+import { LayoutDashboard, Compass, Calendar, CreditCard, AlertCircle, Sparkles } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SubscriptionPayButton from "@/components/dashboard/SubscriptionPayButton";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { computeBilling, getLaunchDate, ACTIVATION_FEE_CENTS } from "@/lib/subscription";
+import { formatEur } from "@/lib/types";
 
 export const metadata = { title: "Abbonamento" };
+export const dynamic = "force-dynamic";
 
 export default async function SupplierSubscriptionPage() {
   const profile = await requireRole("fornitore");
@@ -15,15 +18,18 @@ export default async function SupplierSubscriptionPage() {
     .eq("profile_id", profile.id)
     .maybeSingle();
 
-  const isTrial = supplier?.subscription_status === "trial";
-  // Prossima scadenza: fine periodo a pagamento se presente, altrimenti fine trial.
-  const renewal = supplier
-    ? new Date(supplier.current_period_end ?? supplier.trial_ends_at)
-    : null;
+  const launchDate = await getLaunchDate();
+  const billing = supplier ? computeBilling(supplier, launchDate) : null;
+  const isVetrina = supplier?.mode === "vetrina";
+
+  const payable = billing?.phase === "da_pagare" || billing?.phase === "attivazione";
+  const renewal =
+    billing?.phase === "attivo" && supplier?.current_period_end
+      ? new Date(supplier.current_period_end)
+      : billing?.freeUntil;
   const daysLeft = renewal
     ? Math.max(0, Math.ceil((renewal.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-    : 0;
-  const expiringSoon = daysLeft <= 7;
+    : null;
 
   const nav = [
     { href: "/fornitore/dashboard", label: "Panoramica", icon: LayoutDashboard },
@@ -39,22 +45,25 @@ export default async function SupplierSubscriptionPage() {
       title="Il tuo abbonamento"
       subtitle="Gestisci il piano fornitore Wondersun."
     >
-      {expiringSoon && (
-        <div
-          className={`rounded-2xl p-5 mb-6 flex items-start gap-3 border ${isTrial ? "bg-ws-blue-pale border-ws-blue/15" : "bg-ws-yellow/15 border-ws-yellow/30"}`}
-        >
+      {billing && (billing.phase === "promo" || billing.phase === "attesa_lancio") && (
+        <div className="rounded-2xl p-5 mb-6 flex items-start gap-3 border bg-ws-blue-pale border-ws-blue/15">
+          <Sparkles size={20} className="text-ws-blue flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-ws-dark">Partner fondatore Wondersun</p>
+            <p className="text-sm text-ws-text">{billing.label}.</p>
+          </div>
+        </div>
+      )}
+      {payable && (
+        <div className="rounded-2xl p-5 mb-6 flex items-start gap-3 border bg-ws-yellow/15 border-ws-yellow/30">
           <AlertCircle size={20} className="text-ws-yellow-dark flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-bold text-ws-dark">
-              {isTrial
-                ? `La prova gratuita scade tra ${daysLeft} ${daysLeft === 1 ? "giorno" : "giorni"}`
-                : `Il canone si rinnova tra ${daysLeft} ${daysLeft === 1 ? "giorno" : "giorni"}`}
+              {billing?.phase === "attivazione"
+                ? "Completa l'attivazione per pubblicare le tue schede"
+                : "Attiva il canone per continuare a ricevere clienti"}
             </p>
-            <p className="text-sm text-ws-text">
-              {isTrial
-                ? "Al termine della prova attiva il canone di €29/mese per continuare a ricevere prenotazioni."
-                : "Assicurati che il metodo di pagamento sia attivo per non interrompere il servizio."}
-            </p>
+            <p className="text-sm text-ws-text">{billing?.label}.</p>
           </div>
         </div>
       )}
@@ -69,7 +78,9 @@ export default async function SupplierSubscriptionPage() {
               <p className="text-xs font-semibold uppercase tracking-widest text-ws-text-light">
                 Piano attuale
               </p>
-              <p className="font-display text-2xl font-bold text-ws-dark">Fornitore Wondersun</p>
+              <p className="font-display text-2xl font-bold text-ws-dark">
+                {isVetrina ? "Vetrina Wondersun" : "Fornitore Wondersun"}
+              </p>
             </div>
           </div>
 
@@ -77,7 +88,15 @@ export default async function SupplierSubscriptionPage() {
             <div>
               <p className="text-xs text-ws-text-light">Stato</p>
               <p className="font-bold text-ws-text">
-                {isTrial ? "In prova gratuita" : (supplier?.subscription_status ?? "—")}
+                {billing?.phase === "attivo"
+                  ? "Canone attivo"
+                  : billing?.phase === "promo"
+                    ? "Periodo gratuito"
+                    : billing?.phase === "attesa_lancio"
+                      ? "In attesa del lancio"
+                      : billing?.phase === "attivazione"
+                        ? "Da attivare"
+                        : "Canone da attivare"}
               </p>
             </div>
             <div>
@@ -86,30 +105,62 @@ export default async function SupplierSubscriptionPage() {
             </div>
             <div>
               <p className="text-xs text-ws-text-light">
-                {isTrial ? "Prova termina il" : "Prossimo rinnovo"}
+                {billing?.phase === "attivo" ? "Prossimo rinnovo" : "Periodo gratuito fino al"}
               </p>
               <p className="font-bold text-ws-text">
-                {renewal?.toLocaleDateString("it-IT") ?? "—"}
+                {renewal ? renewal.toLocaleDateString("it-IT") : "—"}
               </p>
             </div>
             <div>
               <p className="text-xs text-ws-text-light">Giorni rimanenti</p>
-              <p className="font-bold text-ws-text">{daysLeft}</p>
+              <p className="font-bold text-ws-text">{daysLeft ?? "—"}</p>
             </div>
           </div>
 
           <div className="bg-ws-blue-pale rounded-xl p-4 text-sm text-ws-blue-dark mb-6">
-            <strong>Come funziona:</strong> i primi 3 mesi sono gratuiti. Poi il canone è di €29/mese.
-            Su ogni prenotazione Wondersun trattiene il 25% (per le esperienze premium oltre €1.000
-            una quota fissa). La tua parte la incassi direttamente dal cliente al momento
-            dell&apos;esperienza.
+            <strong>Come funziona:</strong>{" "}
+            {supplier?.is_founding_partner ? (
+              <>
+                come partner fondatore hai{" "}
+                {isVetrina ? "1 mese gratuito" : "3 mesi gratuiti"} dalla data di lancio della
+                piattaforma, poi il canone è di €29/mese.
+              </>
+            ) : (
+              <>
+                l&apos;attivazione una tantum è di {formatEur(ACTIVATION_FEE_CENTS)} (primo mese
+                incluso), poi il canone è di €29/mese.
+              </>
+            )}{" "}
+            {isVetrina ? (
+              <>
+                La tua scheda è in modalità vetrina: i clienti ti contattano direttamente e non
+                paghi alcuna percentuale sulle prenotazioni.
+              </>
+            ) : (
+              <>
+                Su ogni prenotazione il cliente paga online la quota Wondersun (15%); la tua parte
+                la incassi direttamente al momento dell&apos;esperienza.
+              </>
+            )}
           </div>
 
-          <SubscriptionPayButton
-            label={isTrial ? "Attiva canone €29/mese" : "Paga canone €29"}
-          />
+          {payable ? (
+            <SubscriptionPayButton
+              label={
+                billing?.phase === "attivazione"
+                  ? `Attiva ora · ${formatEur(ACTIVATION_FEE_CENTS)} + €29/mese`
+                  : "Attiva canone €29/mese"
+              }
+            />
+          ) : (
+            <p className="text-center text-sm font-semibold text-ws-text-light border border-dashed border-gray-200 rounded-xl py-3">
+              {billing?.phase === "attivo"
+                ? "Canone attivo — nessuna azione necessaria"
+                : "Niente da pagare in questo momento"}
+            </p>
+          )}
           <p className="text-xs text-ws-text-light mt-3 text-center">
-            Pagamento sicuro. Il metodo (Stripe/PayPal) è in fase di configurazione.
+            Pagamento sicuro con Stripe.
           </p>
         </div>
 
@@ -118,15 +169,25 @@ export default async function SupplierSubscriptionPage() {
             Cosa è incluso
           </p>
           <ul className="space-y-3 text-sm">
-            {[
-              "Dashboard completa",
-              "Esperienze illimitate",
-              "Gestione richieste di prenotazione",
-              "Notifiche email + WhatsApp sulle nuove richieste",
-              "Pagamenti online sicuri",
-              "Statistiche prenotazioni",
-              "Supporto prioritario",
-            ].map((f) => (
+            {(isVetrina
+              ? [
+                  "Scheda vetrina con foto e descrizione",
+                  "Recapiti diretti: telefono, WhatsApp, email, sito",
+                  "Visibilità nel catalogo e nel concierge Sole",
+                  "Nessuna percentuale sulle prenotazioni",
+                  "Modifica della scheda in autonomia",
+                  "Supporto prioritario",
+                ]
+              : [
+                  "Dashboard completa",
+                  "Esperienze illimitate",
+                  "Gestione richieste di prenotazione",
+                  "Notifiche email + WhatsApp sulle nuove richieste",
+                  "Pagamenti online sicuri",
+                  "Statistiche prenotazioni",
+                  "Supporto prioritario",
+                ]
+            ).map((f) => (
               <li key={f} className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-ws-yellow" />
                 {f}

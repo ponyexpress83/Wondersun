@@ -82,6 +82,9 @@ export async function provisionDemoAccount(role: DemoRole): Promise<{ userId: st
 
   if (role === "fornitore") {
     await ensureSupplierWithExperience(admin, userId);
+    // Le due schede vetrina d'esempio (omaggio concordato con la committente 05/06):
+    // un agriturismo e un ristorante in modalità "contatto diretto".
+    await ensureVetrinaShowcase(admin);
   }
 
   return { userId };
@@ -217,5 +220,114 @@ async function ensureSupplierWithExperience(
       status: "pubblicata",
     });
     if (expErr) throw new Error(`insert esperienza demo fallita: ${expErr.message}`);
+  }
+}
+
+/**
+ * Due schede vetrina d'esempio (omaggio 05/06): fornitore in modalità
+ * "vetrina" con agriturismo e ristorante a contatto diretto. Idempotente.
+ */
+async function ensureVetrinaShowcase(
+  admin: ReturnType<typeof createSupabaseAdminClient>,
+): Promise<void> {
+  const account: DemoAccount = {
+    role: "fornitore",
+    email: "demo.vetrina@wondersun.it",
+    password: DEMO_PASSWORD,
+    fullName: "Vetrina Demo",
+    title: "Vetrina",
+    description: "",
+    redirectTo: "/fornitore/dashboard",
+    highlights: [],
+  };
+  const userId = await ensureAuthUser(admin, account);
+  await ensureProfile(admin, userId, account);
+
+  const { data: existing } = await admin
+    .from("suppliers")
+    .select("id")
+    .eq("profile_id", userId)
+    .maybeSingle();
+
+  let supplierId: string;
+  if (existing) {
+    supplierId = existing.id;
+    await admin
+      .from("suppliers")
+      .update({ mode: "vetrina", status: "approvato" })
+      .eq("id", supplierId);
+  } else {
+    const inserted = await admin
+      .from("suppliers")
+      .insert({
+        profile_id: userId,
+        business_name: "Maremma Ospitalità · Demo",
+        city: "Manciano",
+        province: "GR",
+        description:
+          "Struttura dimostrativa in modalità vetrina: i clienti contattano direttamente la struttura.",
+        contact_email: "demo.vetrina@wondersun.it",
+        contact_phone: "+39 0564 000000",
+        website: "https://example.com",
+        mode: "vetrina",
+        status: "approvato",
+        status_notes: "Account demo vetrina — auto-approvato",
+        approved_at: new Date().toISOString(),
+        subscription_status: "trial",
+      })
+      .select("id")
+      .single();
+    if (inserted.error || !inserted.data) {
+      throw new Error(`insert supplier vetrina demo fallito: ${inserted.error?.message}`);
+    }
+    supplierId = inserted.data.id;
+  }
+
+  const schede = [
+    {
+      slug: "agriturismo-le-querce-maremma-demo",
+      title: "Agriturismo Le Querce di Maremma",
+      short_description:
+        "Camere e colazione contadina tra gli ulivi di Manciano. Contatto diretto con la struttura.",
+      description:
+        "Casale dell'Ottocento ristrutturato tra le colline di Manciano: sette camere, piscina panoramica, colazione con prodotti dell'azienda agricola. Prenotazione e disponibilità direttamente con la struttura — telefono, WhatsApp o sito ufficiale.",
+      category: "Natura & Avventura",
+      location_name: "Manciano",
+      location_area: "Manciano",
+      price_cents: 0,
+    },
+    {
+      slug: "osteria-del-porto-demo",
+      title: "Osteria del Porto · cucina di mare",
+      short_description:
+        "Pescato del giorno e vermentino a Porto Santo Stefano. Prenota direttamente al telefono.",
+      description:
+        "Osteria storica sul porto: crudo di pesce locale, spaghetti alle vongole veraci e la cantina di vermentini della Costa d'Argento. Tavoli limitati: la prenotazione avviene direttamente con il ristorante via telefono o WhatsApp.",
+      category: "Enogastronomia",
+      location_name: "Porto Santo Stefano",
+      location_area: "Argentario",
+      price_cents: 0,
+    },
+  ];
+
+  for (const scheda of schede) {
+    const { data: expExisting } = await admin
+      .from("experiences")
+      .select("id")
+      .eq("slug", scheda.slug)
+      .maybeSingle();
+    if (expExisting) continue;
+    const { error } = await admin.from("experiences").insert({
+      supplier_id: supplierId,
+      ...scheda,
+      duration_label: null,
+      min_participants: 1,
+      max_participants: 99,
+      price_type: "gruppo",
+      requires_request: false,
+      is_bookable: false,
+      status: "pubblicata",
+    });
+    if (error) throw new Error(`insert scheda vetrina demo fallita: ${error.message}`);
   }
 }

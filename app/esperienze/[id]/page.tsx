@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingRequestForm from "@/components/BookingRequestForm";
 import AddToPackageButton from "@/components/AddToPackageButton";
+import SupplierContactCard from "@/components/SupplierContactCard";
 import { getExperienceBySlug } from "@/lib/data/experiences";
 import { getCurrentProfile } from "@/lib/supabase/auth-helpers";
 import { formatEur, computeCommission } from "@/lib/types";
@@ -30,8 +31,41 @@ export default async function ExperienceDetailPage({
   const totalSample = exp.price_cents * exp.min_participants;
   const breakdown = computeCommission(totalSample);
 
+  // Structured data per i motori di ricerca (Allegato A § 6 · SEO on-page)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": exp.is_bookable ? "TouristAttraction" : "LocalBusiness",
+    name: exp.title,
+    description: exp.short_description ?? exp.description?.slice(0, 200),
+    image: exp.cover_image_url ?? undefined,
+    address: exp.location_name
+      ? { "@type": "PostalAddress", addressLocality: exp.location_name, addressRegion: "GR", addressCountry: "IT" }
+      : undefined,
+    geo:
+      exp.latitude && exp.longitude
+        ? { "@type": "GeoCoordinates", latitude: exp.latitude, longitude: exp.longitude }
+        : undefined,
+    aggregateRating:
+      exp.rating > 0
+        ? { "@type": "AggregateRating", ratingValue: Number(exp.rating).toFixed(1), reviewCount: exp.reviews_count }
+        : undefined,
+    offers:
+      exp.is_bookable && exp.price_cents > 0
+        ? {
+            "@type": "Offer",
+            price: (exp.price_cents / 100).toFixed(2),
+            priceCurrency: "EUR",
+            availability: "https://schema.org/InStock",
+          }
+        : undefined,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar profile={profile} variant="solid" />
       <main className="pt-24 pb-20 bg-ws-ivory min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -127,6 +161,27 @@ export default async function ExperienceDetailPage({
             </article>
 
             <aside className="lg:sticky lg:top-24 self-start">
+              {!exp.is_bookable ? (
+                <>
+                  <SupplierContactCard
+                    businessName={exp.supplier?.business_name ?? exp.title}
+                    phone={exp.supplier?.contact_phone}
+                    email={exp.supplier?.contact_email}
+                    website={exp.supplier?.website}
+                  />
+                  {exp.price_cents > 0 && (
+                    <div className="mt-4 bg-white rounded-2xl shadow-ws-card border border-gray-100 p-5 text-center">
+                      <p className="text-xs text-ws-text-light">Prezzo indicativo</p>
+                      <p className="font-display text-3xl font-bold text-ws-blue">
+                        {formatEur(exp.price_cents)}
+                        <span className="text-sm font-normal text-ws-text-light ml-1">
+                          {exp.price_type === "pro_capite" ? "a persona" : "a gruppo"}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </>
+              ) : (
               <div className="bg-white rounded-2xl shadow-ws-card border border-gray-100 p-6">
                 <div className="flex items-baseline gap-2 mb-1">
                   <span className="font-display text-4xl font-bold text-ws-blue">
@@ -187,7 +242,9 @@ export default async function ExperienceDetailPage({
                   </div>
                 </details>
               </div>
+              )}
 
+              {exp.is_bookable && (
               <div className="mt-4 bg-ws-blue-pale rounded-2xl p-5 border border-ws-blue/15">
                 <div className="flex items-start gap-3">
                   <Calendar size={18} className="text-ws-blue flex-shrink-0 mt-0.5" />
@@ -206,6 +263,7 @@ export default async function ExperienceDetailPage({
                   </div>
                 </div>
               </div>
+              )}
             </aside>
           </div>
         </div>

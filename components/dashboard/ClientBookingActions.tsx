@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, X, CreditCard } from "lucide-react";
+import { Check, X, CreditCard, ShieldCheck } from "lucide-react";
 import { formatEur } from "@/lib/types";
 
 interface Props {
@@ -21,6 +21,8 @@ export default function ClientBookingActions({
 }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [showInformativa, setShowInformativa] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   const patch = async (body: Record<string, unknown>, okMsg: string) => {
     setBusy(true);
@@ -46,7 +48,11 @@ export default function ClientBookingActions({
   const pay = async () => {
     setBusy(true);
     try {
-      const res = await fetch(`/api/bookings/${bookingId}/pay`, { method: "POST" });
+      const res = await fetch(`/api/bookings/${bookingId}/pay`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ informativaAccepted: true }),
+      });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         if (data.url) {
@@ -96,7 +102,10 @@ export default function ClientBookingActions({
       <div className="flex flex-col items-end gap-1.5 mt-2">
         <button
           disabled={busy}
-          onClick={pay}
+          onClick={() => {
+            setAccepted(false);
+            setShowInformativa(true);
+          }}
           className="inline-flex items-center gap-1 ws-btn-primary text-[0.65rem] py-1.5 px-3"
         >
           <CreditCard size={12} /> Paga quota {formatEur(payNowCents)}
@@ -108,6 +117,80 @@ export default function ClientBookingActions({
         >
           Annulla
         </button>
+
+        {showInformativa && (
+          <div
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Cosa stai pagando"
+          >
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-left">
+              <div className="flex items-start gap-3 mb-4">
+                <ShieldCheck size={22} className="text-ws-blue flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-display text-xl font-bold text-ws-dark">
+                    Cosa stai pagando
+                  </h3>
+                  <p className="text-xs text-ws-text-light">
+                    Informativa richiesta prima del pagamento
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3 text-sm text-ws-text mb-5">
+                <p>
+                  Stai pagando <strong>{formatEur(payNowCents)}</strong> a Wondersun come{" "}
+                  <strong>servizio di prenotazione digitale personalizzata</strong> (il concierge
+                  digitale che ha gestito la tua richiesta).
+                </p>
+                <p>
+                  Il pagamento del <strong>servizio turistico</strong> (l&apos;esperienza vera e
+                  propria) <strong>NON</strong> avviene su questa piattaforma: lo verserai
+                  direttamente al fornitore al momento della fruizione, secondo le modalità da lui
+                  indicate.
+                </p>
+                <p className="text-xs text-ws-text-light">
+                  Si applicano i Termini e Condizioni della piattaforma. Annullamento gratuito
+                  fino a 48 ore prima dell&apos;esperienza (salvo policy specifica indicata sulla
+                  scheda).
+                </p>
+              </div>
+
+              <label className="flex items-start gap-3 cursor-pointer mb-5">
+                <input
+                  type="checkbox"
+                  checked={accepted}
+                  onChange={(e) => setAccepted(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-ws-blue focus:ring-ws-blue"
+                />
+                <span className="text-sm text-ws-text">
+                  Ho letto e compreso che cosa sto pagando online e che il servizio turistico si
+                  paga direttamente al fornitore.
+                </span>
+              </label>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowInformativa(false)}
+                  className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-sm font-semibold text-ws-text hover:bg-gray-50"
+                >
+                  Annulla
+                </button>
+                <button
+                  disabled={!accepted || busy}
+                  onClick={() => {
+                    setShowInformativa(false);
+                    pay();
+                  }}
+                  className="flex-1 ws-btn-primary text-sm disabled:opacity-50"
+                >
+                  Procedi al pagamento
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

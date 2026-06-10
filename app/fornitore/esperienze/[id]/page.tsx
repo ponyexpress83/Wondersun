@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { LayoutDashboard, Compass, Calendar, CreditCard } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ExperienceEditor from "@/components/dashboard/ExperienceEditor";
+import AvailabilityManager from "@/components/dashboard/AvailabilityManager";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Experience } from "@/lib/types";
@@ -14,7 +15,7 @@ export default async function EditExperiencePage({ params }: { params: { id: str
 
   const { data: supplier } = await supabase
     .from("suppliers")
-    .select("id")
+    .select("id, mode")
     .eq("profile_id", profile.id)
     .maybeSingle();
   if (!supplier) redirect("/fornitore/registrati");
@@ -41,7 +42,8 @@ export default async function EditExperiencePage({ params }: { params: { id: str
       title="Modifica esperienza"
       subtitle={(experience as Experience).title}
     >
-      <ExperienceEditor supplierId={supplier.id} experience={experience as Experience} />
+      <ExperienceEditor supplierId={supplier.id} experience={experience as Experience} supplierMode={supplier.mode} />
+      {supplier.mode !== "vetrina" && <AvailabilityManager experienceId={params.id} />}
     </DashboardLayout>
   );
 }

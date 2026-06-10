@@ -31,6 +31,11 @@ export default function ExperienceCard({ experience: e }: ExperienceCardProps) {
         <div className="absolute bottom-4 left-4 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
           <span className="text-xs font-semibold text-ws-blue">{e.category}</span>
         </div>
+        {e.is_bookable === false && (
+          <div className="absolute bottom-4 right-4 bg-ws-dark/80 backdrop-blur-sm rounded-full px-3 py-1">
+            <span className="text-xs font-semibold text-white">Contatto diretto</span>
+          </div>
+        )}
       </div>
 
       <div className="p-6">
@@ -72,12 +77,18 @@ export default function ExperienceCard({ experience: e }: ExperienceCardProps) {
 
         <div className="flex items-center justify-between">
           <div>
-            <div className="font-display text-2xl font-bold text-ws-blue">
-              {formatEur(e.price_cents)}
-            </div>
-            <span className="text-xs text-ws-text-light">
-              {e.price_type === "pro_capite" ? "a persona" : "a gruppo"}
-            </span>
+            {e.price_cents > 0 ? (
+              <>
+                <div className="font-display text-2xl font-bold text-ws-blue">
+                  {formatEur(e.price_cents)}
+                </div>
+                <span className="text-xs text-ws-text-light">
+                  {e.price_type === "pro_capite" ? "a persona" : "a gruppo"}
+                </span>
+              </>
+            ) : (
+              <span className="text-xs text-ws-text-light">Prezzi dalla struttura</span>
+            )}
           </div>
           <span className="flex items-center gap-1.5 text-sm font-bold text-ws-red group-hover:gap-3 transition-all">
             Scopri

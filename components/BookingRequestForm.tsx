@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
 import { formatEur, computeCommission } from "@/lib/types";
+
+interface Slot {
+  id: string;
+  starts_at: string;
+  capacity: number;
+  booked_count: number;
+}
 
 interface Props {
   experienceId: string;
@@ -31,6 +38,16 @@ export default function BookingRequestForm({
   const [participants, setParticipants] = useState(minParticipants);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [slots, setSlots] = useState<Slot[]>([]);
+
+  // Calendario disponibilità: se il fornitore ha caricato date a slot, il
+  // cliente sceglie tra quelle; altrimenti la data resta libera (call 23/05).
+  useEffect(() => {
+    fetch(`/api/experiences/${experienceId}/slots`)
+      .then((r) => r.json())
+      .then((d) => setSlots(d.slots ?? []))
+      .catch(() => setSlots([]));
+  }, [experienceId]);
 
   const total = pricePerUnit * participants;
   const breakdown = computeCommission(total);
@@ -76,17 +93,44 @@ export default function BookingRequestForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="ws-label" htmlFor="date">
-          Data preferita
+          {slots.length > 0 ? "Scegli una data disponibile" : "Data preferita"}
         </label>
-        <input
-          id="date"
-          type="date"
-          required
-          value={date}
-          min={today}
-          onChange={(e) => setDate(e.target.value)}
-          className="ws-input"
-        />
+        {slots.length > 0 ? (
+          <select
+            id="date"
+            required
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="ws-input"
+          >
+            <option value="">— Seleziona —</option>
+            {slots.map((s) => (
+              <option key={s.id} value={s.starts_at}>
+                {new Date(s.starts_at).toLocaleDateString("it-IT", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "long",
+                })}{" "}
+                ·{" "}
+                {new Date(s.starts_at).toLocaleTimeString("it-IT", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}{" "}
+                ({s.capacity - s.booked_count} posti)
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            id="date"
+            type="date"
+            required
+            value={date}
+            min={today}
+            onChange={(e) => setDate(e.target.value)}
+            className="ws-input"
+          />
+        )}
       </div>
 
       <div>

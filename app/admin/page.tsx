@@ -11,6 +11,8 @@ import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
 import { ADMIN_NAV } from "@/lib/admin-nav";
+import LaunchDateSetting from "@/components/admin/LaunchDateSetting";
+import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Admin" };
 
@@ -25,6 +27,19 @@ export default async function AdminPage() {
       supabase.from("experiences").select("*", { count: "exact", head: true }),
       supabase.from("bookings").select("*", { count: "exact", head: true }),
     ]);
+
+  let launchDateValue: string | null = null;
+  try {
+    const adminClient = createSupabaseAdminClient();
+    const { data: setting } = await adminClient
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "launch_date")
+      .maybeSingle();
+    launchDateValue = setting?.value ?? null;
+  } catch {
+    // tabella non ancora creata: il widget parte vuoto
+  }
 
   const { data: pendingSuppliers = [] } = await supabase
     .from("suppliers")
@@ -113,6 +128,8 @@ export default async function AdminPage() {
           </div>
         </section>
       </div>
+
+      <LaunchDateSetting currentValue={launchDateValue} />
     </DashboardLayout>
   );
 }

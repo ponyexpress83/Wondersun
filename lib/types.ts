@@ -56,9 +56,17 @@ export interface Supplier {
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   current_period_end: string | null;
+  /** 'prenotabile' = flusso completo · 'vetrina' = solo visibilità con recapiti diretti. */
+  mode: SupplierMode;
+  /** Aderente al pre-lancio: promo calcolata dalla data di lancio piattaforma. */
+  is_founding_partner: boolean;
+  /** Quota di attivazione €99 (post-lancio) saldata in questa data. */
+  activation_fee_paid_at: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export type SupplierMode = "prenotabile" | "vetrina";
 
 export interface Experience {
   id: string;
@@ -88,6 +96,8 @@ export interface Experience {
    * immersioni, charter). Se false la prenotazione è diretta.
    */
   requires_request: boolean;
+  /** false = scheda vetrina: niente calendario/checkout, solo recapiti diretti. */
+  is_bookable: boolean;
   status: ExperienceStatus;
   rating: number;
   reviews_count: number;
@@ -145,7 +155,10 @@ export interface PackageItem {
 }
 
 export interface ExperienceWithSupplier extends Experience {
-  supplier?: Pick<Supplier, "id" | "business_name" | "city" | "logo_url"> | null;
+  supplier?:
+    | (Pick<Supplier, "id" | "business_name" | "city" | "logo_url"> &
+        Partial<Pick<Supplier, "description" | "contact_email" | "contact_phone" | "website" | "mode">>)
+    | null;
 }
 
 export const CATEGORIES = [

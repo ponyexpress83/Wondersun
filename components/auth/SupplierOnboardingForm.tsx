@@ -33,6 +33,7 @@ export default function SupplierOnboardingForm({ profileId }: Props) {
           contact_email: fd.get("contact_email"),
           contact_phone: fd.get("contact_phone"),
           website: fd.get("website"),
+          mode: fd.get("mode") ?? "prenotabile",
         }),
       });
       if (!res.ok) {
@@ -66,6 +67,42 @@ export default function SupplierOnboardingForm({ profileId }: Props) {
         </label>
         <input id="business_name" name="business_name" type="text" required className="ws-input" />
       </div>
+
+      <fieldset className="space-y-2">
+        <legend className="ws-label">Come vuoi essere presente su Wondersun? *</legend>
+        <label className="flex items-start gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-ws-blue/40 has-[:checked]:border-ws-blue has-[:checked]:bg-ws-blue-pale/40">
+          <input
+            type="radio"
+            name="mode"
+            value="prenotabile"
+            defaultChecked
+            className="mt-1 h-4 w-4 text-ws-blue focus:ring-ws-blue"
+          />
+          <span className="text-sm">
+            <span className="font-bold text-ws-dark block">Con prenotazione diretta</span>
+            <span className="text-ws-text-light">
+              Le tue esperienze sono prenotabili in piattaforma: ricevi le richieste, confermi e
+              incassi il saldo dal cliente al momento dell&apos;esperienza.
+            </span>
+          </span>
+        </label>
+        <label className="flex items-start gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:border-ws-blue/40 has-[:checked]:border-ws-blue has-[:checked]:bg-ws-blue-pale/40">
+          <input
+            type="radio"
+            name="mode"
+            value="vetrina"
+            className="mt-1 h-4 w-4 text-ws-blue focus:ring-ws-blue"
+          />
+          <span className="text-sm">
+            <span className="font-bold text-ws-dark block">Solo vetrina · contatto diretto</span>
+            <span className="text-ws-text-light">
+              Per strutture ricettive (hotel, camping, B&amp;B) e operatori che preferiscono
+              ricevere i clienti su telefono, WhatsApp, email o sito: scheda di visibilità senza
+              prenotazione in piattaforma.
+            </span>
+          </span>
+        </label>
+      </fieldset>
 
       <div className="grid grid-cols-2 gap-4">
         <div>

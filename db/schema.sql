@@ -294,6 +294,36 @@ create table if not exists public.supplier_documents (
 create index if not exists supplier_docs_supplier_idx on public.supplier_documents(supplier_id);
 
 -- ─────────────────────────────────────────────────────────────────────────
+-- VETRINA FORNITORI + MODELLO COMMERCIALE (modifica Art. 8 · call/chat 04-05/06/2026)
+-- ─────────────────────────────────────────────────────────────────────────
+-- mode 'vetrina' = fornitore senza prenotazione diretta: scheda con recapiti
+-- (telefono, WhatsApp, email, sito) al posto di calendario e checkout.
+-- Vale per ricettivo (hotel/camping/B&B) e per qualunque operatore che
+-- preferisce il contatto diretto.
+alter table public.suppliers
+  add column if not exists mode text not null default 'prenotabile';
+alter table public.suppliers
+  add column if not exists is_founding_partner boolean not null default true;
+alter table public.suppliers
+  add column if not exists activation_fee_paid_at timestamptz;
+
+-- Scheda non prenotabile: il dettaglio nasconde form e breakdown e mostra i
+-- recapiti diretti del fornitore.
+alter table public.experiences
+  add column if not exists is_bookable boolean not null default true;
+
+-- Impostazioni piattaforma (chiave/valore). Usata per la data di lancio, da
+-- cui partono i periodi promozionali dei partner fondatori:
+--   · prenotabili → 3 mesi gratis dal lancio, poi €29/mese
+--   · vetrina     → 1 mese gratis dal lancio, poi €29/mese
+-- Post-lancio: attivazione una tantum €99 (primo mese incluso) + €29/mese.
+create table if not exists public.platform_settings (
+  key text primary key,
+  value text,
+  updated_at timestamptz not null default now()
+);
+
+-- ─────────────────────────────────────────────────────────────────────────
 -- PREFERITI
 -- ─────────────────────────────────────────────────────────────────────────
 create table if not exists public.favorites (

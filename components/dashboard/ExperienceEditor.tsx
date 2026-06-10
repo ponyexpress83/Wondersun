@@ -10,9 +10,12 @@ import { slugify } from "@/lib/utils";
 interface Props {
   supplierId: string;
   experience?: Experience;
+  /** 'vetrina' = la scheda viene pubblicata senza prenotazione (recapiti diretti). */
+  supplierMode?: "prenotabile" | "vetrina";
 }
 
-export default function ExperienceEditor({ supplierId, experience }: Props) {
+export default function ExperienceEditor({ supplierId, experience, supplierMode }: Props) {
+  const isVetrina = supplierMode === "vetrina";
   const router = useRouter();
   const isEdit = !!experience;
   const [submitting, setSubmitting] = useState(false);
@@ -331,6 +334,14 @@ export default function ExperienceEditor({ supplierId, experience }: Props) {
         </div>
       </div>
 
+      {isVetrina ? (
+        <div className="rounded-xl border border-ws-blue/20 p-4 bg-ws-blue-pale/40 text-sm text-ws-blue-dark">
+          <strong>Modalità vetrina.</strong> Questa scheda viene pubblicata senza prenotazione in
+          piattaforma: i clienti vedranno i tuoi recapiti diretti (telefono, WhatsApp, email,
+          sito) e ti contatteranno direttamente. Il prezzo, se indicato, è mostrato come
+          indicativo.
+        </div>
+      ) : (
       <div className="rounded-xl border border-gray-200 p-4 bg-ws-ivory">
         <label htmlFor="requires_request" className="flex items-start gap-3 cursor-pointer">
           <input
@@ -352,6 +363,7 @@ export default function ExperienceEditor({ supplierId, experience }: Props) {
           </span>
         </label>
       </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

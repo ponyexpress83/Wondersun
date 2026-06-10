@@ -78,7 +78,9 @@ export async function getExperienceBySlug(slug: string): Promise<ExperienceWithS
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
       .from("experiences")
-      .select("*, supplier:suppliers(id, business_name, city, logo_url, description, contact_email, contact_phone)")
+      .select(
+        "*, supplier:suppliers(id, business_name, city, logo_url, description, contact_email, contact_phone, website, mode)",
+      )
       .eq("slug", slug)
       .single();
     if (error || !data) return MOCK_EXPERIENCES.find((e) => e.slug === slug) ?? null;

@@ -12,7 +12,7 @@ export default async function NewExperiencePage() {
   const supabase = createSupabaseServerClient();
   const { data: supplier } = await supabase
     .from("suppliers")
-    .select("id, status")
+    .select("id, status, mode")
     .eq("profile_id", profile.id)
     .maybeSingle();
 
@@ -32,7 +32,7 @@ export default async function NewExperiencePage() {
       title="Nuova esperienza"
       subtitle="Compila i dettagli e salva. Puoi pubblicare subito o salvare come bozza."
     >
-      <ExperienceEditor supplierId={supplier.id} />
+      <ExperienceEditor supplierId={supplier.id} supplierMode={supplier.mode} />
     </DashboardLayout>
   );
 }

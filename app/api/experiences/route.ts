@@ -39,12 +39,16 @@ export async function POST(request: NextRequest) {
     // Verifica che il supplier appartenga all'utente
     const { data: supplier } = await supabase
       .from("suppliers")
-      .select("profile_id")
+      .select("profile_id, mode")
       .eq("id", data.supplier_id)
       .single();
     if (!supplier || supplier.profile_id !== user.id) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }
+
+    // Fornitore in modalità vetrina → le sue schede non sono prenotabili:
+    // il dettaglio mostra i recapiti diretti al posto del form (Art. 8 04/06).
+    const isBookable = supplier.mode !== "vetrina";
 
     // Garantisci slug univoco
     const baseSlug = data.slug;
@@ -62,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     const { data: created, error } = await supabase
       .from("experiences")
-      .insert({ ...data, slug })
+      .insert({ ...data, slug, is_bookable: isBookable, requires_request: isBookable && data.requires_request })
       .select()
       .single();
 

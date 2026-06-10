@@ -12,6 +12,9 @@ const SupplierInput = z.object({
   contact_email: z.string().email(),
   contact_phone: z.string().optional().nullable(),
   website: z.string().url().optional().or(z.literal("")),
+  // 'prenotabile' = flusso completo · 'vetrina' = solo visibilità con recapiti
+  // diretti (modifica Art. 8 · 04-05/06/2026).
+  mode: z.enum(["prenotabile", "vetrina"]).default("prenotabile"),
 });
 
 export async function POST(request: NextRequest) {
@@ -44,6 +47,7 @@ export async function POST(request: NextRequest) {
         contact_email: data.contact_email,
         contact_phone: data.contact_phone || null,
         website: data.website || null,
+        mode: data.mode,
         status: "in_attesa",
       })
       .select()
