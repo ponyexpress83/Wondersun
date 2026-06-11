@@ -5,7 +5,7 @@
 /* ============================================================
    WONDERSUN — Coastal Editorial Design System
    Payoff: "Local Escape"
-   Palette: Blu Luminoso #2B7DD4 · Giallo Sole #FFC533 · Rosso Elegante #B71C1C
+   Palette: Blu Luminoso #2E9BE8 · Giallo Sole #FFC833 · Rosso Elegante #E63946
    Typography: Cormorant Garamond (display) + Nunito Sans (body)
    ============================================================ */
 
@@ -15,7 +15,7 @@
   }
   body {
     font-family: "Nunito Sans", sans-serif;
-    background: #FAFAF7;
+    background: #FDFCF7;
     color: #2C2C3E;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -38,26 +38,26 @@
 
   /* ── Buttons ── */
   .ws-btn-primary {
-    background-color: #B71C1C;
+    background-color: #E63946;
     color: white;
     padding: 0.875rem 2rem;
-    border-radius: 0.5rem;
+    border-radius: 9999px;
     font-weight: 700;
     font-size: 0.875rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     transition: all 0.25s ease;
-    border: 2px solid #B71C1C;
+    border: 2px solid #E63946;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
   }
   .ws-btn-primary:hover {
-    background-color: #8b1414;
-    border-color: #8b1414;
+    background-color: #C92836;
+    border-color: #C92836;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(183, 28, 28, 0.3);
+    box-shadow: 0 8px 24px rgba(230, 57, 70, 0.3);
   }
   .ws-btn-primary:disabled {
     opacity: 0.5;
@@ -69,7 +69,7 @@
     background-color: transparent;
     color: white;
     padding: 0.875rem 2rem;
-    border-radius: 0.5rem;
+    border-radius: 9999px;
     font-weight: 700;
     font-size: 0.875rem;
     letter-spacing: 0.06em;
@@ -87,26 +87,26 @@
   }
 
   .ws-btn-blue {
-    background-color: #2B7DD4;
+    background-color: #2E9BE8;
     color: white;
     padding: 0.875rem 2rem;
-    border-radius: 0.5rem;
+    border-radius: 9999px;
     font-weight: 700;
     font-size: 0.875rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     transition: all 0.25s ease;
-    border: 2px solid #2B7DD4;
+    border: 2px solid #2E9BE8;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
   }
   .ws-btn-blue:hover {
-    background-color: #1E5AA8;
-    border-color: #1E5AA8;
+    background-color: #1D7FC9;
+    border-color: #1D7FC9;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(43, 125, 212, 0.3);
+    box-shadow: 0 8px 24px rgba(46, 155, 232, 0.3);
   }
   .ws-btn-blue:disabled {
     opacity: 0.5;
@@ -118,7 +118,7 @@
     background-color: transparent;
     color: #2C2C3E;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
+    border-radius: 9999px;
     font-weight: 600;
     font-size: 0.875rem;
     transition: all 0.2s ease;
@@ -130,8 +130,8 @@
   }
   .ws-btn-ghost:hover {
     background-color: #f9fafb;
-    border-color: #2B7DD4;
-    color: #2B7DD4;
+    border-color: #2E9BE8;
+    color: #2E9BE8;
   }
 
   /* ── Inputs ── */
@@ -146,8 +146,8 @@
   }
   .ws-input:focus {
     outline: none;
-    border-color: #2B7DD4;
-    box-shadow: 0 0 0 3px rgba(43, 125, 212, 0.15);
+    border-color: #2E9BE8;
+    box-shadow: 0 0 0 3px rgba(46, 155, 232, 0.15);
   }
   .ws-label {
     display: block;
@@ -161,7 +161,7 @@
   .ws-section-divider {
     width: 56px;
     height: 3px;
-    background: linear-gradient(90deg, #2B7DD4, #FFC533);
+    background: linear-gradient(90deg, #2E9BE8, #FFC833);
     border-radius: 2px;
     margin: 1rem auto;
   }
@@ -179,19 +179,19 @@
     text-transform: uppercase;
   }
   .ws-badge-blue {
-    background-color: rgba(43, 125, 212, 0.08);
-    color: #2B7DD4;
-    border: 1px solid rgba(43, 125, 212, 0.18);
+    background-color: rgba(46, 155, 232, 0.08);
+    color: #2E9BE8;
+    border: 1px solid rgba(46, 155, 232, 0.18);
   }
   .ws-badge-yellow {
-    background-color: rgba(255, 197, 51, 0.12);
-    color: #a07800;
-    border: 1px solid rgba(255, 197, 51, 0.25);
+    background-color: rgba(255, 200, 51, 0.12);
+    color: #9a7400;
+    border: 1px solid rgba(255, 200, 51, 0.25);
   }
   .ws-badge-red {
-    background-color: rgba(183, 28, 28, 0.08);
-    color: #B71C1C;
-    border: 1px solid rgba(183, 28, 28, 0.18);
+    background-color: rgba(230, 57, 70, 0.08);
+    color: #E63946;
+    border: 1px solid rgba(230, 57, 70, 0.18);
   }
   .ws-badge-green {
     background-color: rgba(34, 139, 81, 0.1);
@@ -205,7 +205,7 @@
   }
   .ws-navbar.scrolled {
     background-color: white !important;
-    box-shadow: 0 2px 20px rgba(43, 125, 212, 0.08);
+    box-shadow: 0 2px 20px rgba(46, 155, 232, 0.08);
   }
 
   /* ── Experience cards ── */
@@ -214,7 +214,24 @@
   }
   .ws-exp-card:hover {
     transform: translateY(-8px) scale(1.01);
-    box-shadow: 0 20px 56px rgba(43, 125, 212, 0.13);
+    box-shadow: 0 22px 60px rgba(46, 155, 232, 0.16);
+  }
+  /* Ingresso fluido e scaglionato delle card (richiesta committente 11/05:
+     "card moderne con animazioni fluide, dinamico ma pulito"). */
+  @media (prefers-reduced-motion: no-preference) {
+    .ws-exp-card {
+      animation: ws-card-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+    .ws-exp-card:nth-child(2) { animation-delay: 0.07s; }
+    .ws-exp-card:nth-child(3) { animation-delay: 0.14s; }
+    .ws-exp-card:nth-child(4) { animation-delay: 0.21s; }
+    .ws-exp-card:nth-child(5) { animation-delay: 0.28s; }
+    .ws-exp-card:nth-child(6) { animation-delay: 0.35s; }
+    .ws-exp-card:nth-child(n+7) { animation-delay: 0.42s; }
+  }
+  @keyframes ws-card-in {
+    from { opacity: 0; transform: translateY(26px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   /* ── Scroll fade-in animation ── */
@@ -242,10 +259,10 @@
   }
   .ws-sidebar-item:hover {
     background-color: #f3f4f6;
-    color: #2B7DD4;
+    color: #2E9BE8;
   }
   .ws-sidebar-item.active {
-    background-color: #e8f2fc;
-    color: #2B7DD4;
+    background-color: #EAF6FE;
+    color: #2E9BE8;
   }
 }

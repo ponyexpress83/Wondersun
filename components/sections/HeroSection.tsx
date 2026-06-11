@@ -24,8 +24,8 @@ export default function HeroSection() {
           alt="Costa d'Argento — Maremma Toscana"
           className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ws-blue/65 via-ws-blue-dark/65 to-ws-blue-deeper/80" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ws-blue-deeper/35 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ws-blue/50 via-ws-blue-dark/55 to-ws-blue-deeper/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ws-blue-deeper/25 via-transparent to-transparent" />
       </div>
 
       {/* Floating badges */}

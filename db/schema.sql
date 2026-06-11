@@ -112,7 +112,7 @@ create table if not exists public.experiences (
   description text,
   category text not null,                -- "Mare & Costa", "Enogastronomia", ...
   tag text,                              -- "Più Prenotata", "Esclusivo", "Novità"
-  tag_color text default '#2B7DD4',
+  tag_color text default '#2E9BE8',
 
   -- Durata e capacità
   duration_label text,                   -- "3 ore", "Mezza giornata"
@@ -317,6 +317,9 @@ alter table public.experiences
 --   · prenotabili → 3 mesi gratis dal lancio, poi €29/mese
 --   · vetrina     → 1 mese gratis dal lancio, poi €29/mese
 -- Post-lancio: attivazione una tantum €99 (primo mese incluso) + €29/mese.
+-- Refresh palette 06/06: allinea il default del colore tag al nuovo blu.
+alter table public.experiences alter column tag_color set default '#2E9BE8';
+
 create table if not exists public.platform_settings (
   key text primary key,
   value text,

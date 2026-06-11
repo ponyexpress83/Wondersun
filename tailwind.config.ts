@@ -9,20 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Refresh 06/06/2026 · richiesta committente: "più fresco, luminoso,
+        // giovane — non platinum luxury". Blu schiarito verso il cielo
+        // mediterraneo, rosso corallo vivace al posto del bordeaux, giallo sole.
         ws: {
-          blue: "#2B7DD4",
-          "blue-dark": "#1E5AA8",
-          "blue-deeper": "#163f78",
-          "blue-light": "#4a96e8",
-          "blue-pale": "#e8f2fc",
-          yellow: "#FFC533",
-          "yellow-dark": "#e6a800",
-          "yellow-light": "#ffd166",
-          red: "#B71C1C",
-          "red-dark": "#8b1414",
-          "red-light": "#d32f2f",
-          ivory: "#FAFAF7",
-          "ivory-dark": "#F2F1EC",
+          blue: "#2E9BE8",
+          "blue-dark": "#1D7FC9",
+          "blue-deeper": "#16639E",
+          "blue-light": "#62B8F2",
+          "blue-pale": "#EAF6FE",
+          yellow: "#FFC833",
+          "yellow-dark": "#E8A800",
+          "yellow-light": "#FFD96B",
+          red: "#E63946",
+          "red-dark": "#C92836",
+          "red-light": "#F2606B",
+          ivory: "#FDFCF7",
+          "ivory-dark": "#F4F2EA",
           dark: "#1a1a2e",
           text: "#2C2C3E",
           "text-light": "#5a5a72",
@@ -33,8 +36,8 @@ const config: Config = {
         body: ['"Nunito Sans"', "sans-serif"],
       },
       boxShadow: {
-        "ws-card": "0 4px 24px rgba(43, 125, 212, 0.07)",
-        "ws-card-hover": "0 20px 56px rgba(43, 125, 212, 0.13)",
+        "ws-card": "0 4px 24px rgba(46, 155, 232, 0.08)",
+        "ws-card-hover": "0 22px 60px rgba(46, 155, 232, 0.16)",
       },
       animation: {
         "ws-float": "ws-float 3s ease-in-out infinite",
