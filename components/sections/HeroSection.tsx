@@ -24,9 +24,15 @@ export default function HeroSection() {
           alt="Costa d'Argento — Maremma Toscana"
           className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ws-blue/50 via-ws-blue-dark/55 to-ws-blue-deeper/70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ws-blue-deeper/25 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ws-blue/45 via-ws-blue-dark/50 to-ws-blue-deeper/75" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ws-blue-deeper/30 via-transparent to-transparent" />
+        {/* riflesso tramonto in basso per scaldare la scena */}
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ws-red/25 via-ws-yellow/10 to-transparent" />
       </div>
+
+      {/* Blob luminosi animati */}
+      <div className="ws-blob ws-blob-sun w-96 h-96 -top-20 -right-20" />
+      <div className="ws-blob ws-blob-coral w-80 h-80 bottom-24 -left-24" style={{ animationDelay: "3s" }} />
 
       {/* Floating badges */}
       <div
@@ -71,7 +77,9 @@ export default function HeroSection() {
           >
             Scopri la
             <br />
-            <span className="text-ws-yellow italic">Maremma</span>
+            <span className="ws-gradient-text-sun italic drop-shadow-[0_2px_12px_rgba(255,200,51,0.35)]">
+              Maremma
+            </span>
             <br />
             che non conosci
           </h1>
@@ -103,7 +111,9 @@ export default function HeroSection() {
               { number: "4", label: "Zone della Maremma" },
             ].map((stat) => (
               <div key={stat.label} className="text-white">
-                <div className="font-display text-3xl font-bold text-ws-yellow">{stat.number}</div>
+                <div className="font-display text-4xl font-bold ws-gradient-text-sun">
+                  {stat.number}
+                </div>
                 <div className="text-sm text-white/70 mt-0.5">{stat.label}</div>
               </div>
             ))}
@@ -128,7 +138,7 @@ export default function HeroSection() {
         <svg viewBox="0 0 1440 80" fill="none" className="w-full">
           <path
             d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z"
-            fill="#FAFAF7"
+            fill="#FDFCF7"
           />
         </svg>
       </div>

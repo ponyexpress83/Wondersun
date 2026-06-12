@@ -1,5 +1,13 @@
 import { Search, Heart, Calendar, MessageSquare, Sparkles } from "lucide-react";
 
+const TILE_GRADIENTS = [
+  "from-ws-blue to-ws-blue-dark shadow-[0_10px_26px_rgba(46,155,232,0.35)]",
+  "from-ws-red-light to-ws-red shadow-[0_10px_26px_rgba(230,57,70,0.3)]",
+  "from-ws-yellow to-ws-yellow-dark shadow-[0_10px_26px_rgba(255,200,51,0.35)]",
+  "from-ws-blue-light to-ws-blue shadow-[0_10px_26px_rgba(46,155,232,0.35)]",
+  "from-ws-red to-ws-red-dark shadow-[0_10px_26px_rgba(230,57,70,0.3)]",
+];
+
 const STEPS = [
   {
     icon: Search,
@@ -35,7 +43,7 @@ export default function HowItWorksSection() {
         <div className="text-center mb-16">
           <span className="ws-badge ws-badge-yellow mb-4">Come Funziona</span>
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-ws-dark mt-4 mb-4">
-            Cinque passi verso il tuo <span className="text-ws-blue italic">Local Escape</span>
+            Cinque passi verso il tuo <span className="ws-gradient-text italic">Local Escape</span>
           </h2>
           <div className="ws-section-divider" />
         </div>
@@ -46,10 +54,12 @@ export default function HowItWorksSection() {
             return (
               <div key={step.title} className="text-center relative">
                 <div className="relative inline-flex">
-                  <div className="w-20 h-20 rounded-2xl bg-ws-blue-pale flex items-center justify-center mb-4">
-                    <Icon size={32} className="text-ws-blue" />
+                  <div
+                    className={`ws-step-tile w-20 h-20 rounded-3xl bg-gradient-to-br ${TILE_GRADIENTS[idx % TILE_GRADIENTS.length]} flex items-center justify-center mb-4`}
+                  >
+                    <Icon size={32} className="text-white drop-shadow" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-ws-yellow text-ws-dark font-bold flex items-center justify-center text-sm">
+                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white text-ws-dark font-bold flex items-center justify-center text-sm shadow-md border-2 border-ws-yellow">
                     {idx + 1}
                   </div>
                 </div>
