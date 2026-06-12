@@ -359,7 +359,8 @@ create index if not exists audit_created_idx on public.audit_log(created_at desc
 -- TRIGGER: updated_at automatico
 -- ─────────────────────────────────────────────────────────────────────────
 create or replace function public.touch_updated_at()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql
+set search_path = public, pg_temp as $$
 begin
   new.updated_at = now();
   return new;
@@ -389,7 +390,8 @@ create trigger packages_touch before update on public.packages
 -- TRIGGER: crea profilo all'auth.users insert
 -- ─────────────────────────────────────────────────────────────────────────
 create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer
+set search_path = public, pg_temp as $$
 begin
   insert into public.profiles (id, email, full_name, role)
   values (
@@ -407,16 +409,21 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- handle_new_user è invocata solo dal trigger: nessun client la chiama direttamente
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
+
 -- ─────────────────────────────────────────────────────────────────────────
 -- HELPER: ruolo dell'utente corrente
 -- ─────────────────────────────────────────────────────────────────────────
 create or replace function public.current_role()
-returns user_role language sql stable as $$
+returns user_role language sql stable
+set search_path = public, pg_temp as $$
   select role from public.profiles where id = auth.uid();
 $$;
 
 create or replace function public.is_admin()
-returns boolean language sql stable as $$
+returns boolean language sql stable
+set search_path = public, pg_temp as $$
   select coalesce(public.current_role() = 'admin', false);
 $$;
 
