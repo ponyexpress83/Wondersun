@@ -8,7 +8,8 @@
 
 -- Estensioni
 create extension if not exists "uuid-ossp";
-create extension if not exists "postgis";
+-- postgis rimosso (giugno 2026): lat/lon sono colonne numeric, l'estensione era inutilizzata
+-- e la sua spatial_ref_sys triggerava l'avviso rls_disabled_in_public di Supabase.
 
 -- ─────────────────────────────────────────────────────────────────────────
 -- ENUM
@@ -531,3 +532,42 @@ create policy "availability_write_supplier" on public.availability_slots for all
 -- AUDIT — solo admin in lettura, insert da service role
 drop policy if exists "audit_admin_read" on public.audit_log;
 create policy "audit_admin_read" on public.audit_log for select using (public.is_admin());
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- RLS tabelle aggiunte (giugno 2026) — fix avviso Supabase 08/06.
+-- Le API usano il service role (bypass): queste policy chiudono l'accesso
+-- diretto via chiave anon.
+-- ─────────────────────────────────────────────────────────────────────────
+alter table public.discount_codes enable row level security;
+drop policy if exists "discount_admin_all" on public.discount_codes;
+create policy "discount_admin_all" on public.discount_codes for all
+  using (public.is_admin()) with check (public.is_admin());
+
+alter table public.static_pages enable row level security;
+drop policy if exists "static_pages_read_all" on public.static_pages;
+create policy "static_pages_read_all" on public.static_pages for select using (true);
+drop policy if exists "static_pages_admin_write" on public.static_pages;
+create policy "static_pages_admin_write" on public.static_pages for all
+  using (public.is_admin()) with check (public.is_admin());
+
+alter table public.email_templates enable row level security;
+drop policy if exists "email_templates_admin" on public.email_templates;
+create policy "email_templates_admin" on public.email_templates for all
+  using (public.is_admin()) with check (public.is_admin());
+
+alter table public.supplier_documents enable row level security;
+drop policy if exists "supplier_docs_owner" on public.supplier_documents;
+create policy "supplier_docs_owner" on public.supplier_documents for all
+  using (exists (select 1 from public.suppliers s
+                 where s.id = supplier_id
+                   and (s.profile_id = auth.uid() or public.is_admin())))
+  with check (exists (select 1 from public.suppliers s
+                      where s.id = supplier_id
+                        and (s.profile_id = auth.uid() or public.is_admin())));
+
+alter table public.platform_settings enable row level security;
+drop policy if exists "settings_read_all" on public.platform_settings;
+create policy "settings_read_all" on public.platform_settings for select using (true);
+drop policy if exists "settings_admin_write" on public.platform_settings;
+create policy "settings_admin_write" on public.platform_settings for all
+  using (public.is_admin()) with check (public.is_admin());
