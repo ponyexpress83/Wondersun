@@ -12,10 +12,10 @@ export default function ExperienceCard({ experience: e }: ExperienceCardProps) {
       href={`/esperienze/${e.slug}`}
       className="ws-exp-card bg-white rounded-2xl overflow-hidden shadow-ws-card border border-gray-100 group block"
     >
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-52 overflow-hidden bg-gradient-to-br from-ws-blue-light via-ws-blue to-ws-blue-deeper">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={e.cover_image_url ?? "/placeholder-cover.jpg"}
+          src={e.cover_image_url ?? "/placeholder-cover.svg"}
           alt={e.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
