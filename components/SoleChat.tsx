@@ -39,6 +39,13 @@ export default function SoleChat() {
 
   const whatsapp = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP;
 
+  // Aperture programmatiche dall'hero (link "chiedi a Sole" nella search bar)
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("ws-open-sole", handler);
+    return () => window.removeEventListener("ws-open-sole", handler);
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;

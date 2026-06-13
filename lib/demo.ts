@@ -208,6 +208,7 @@ async function ensureSupplierWithExperience(
         "Salpiamo al pomeriggio dal porto di Cala Galera e costeggiamo la Rocca aldobrandesca fino a vivere il tramonto da mare aperto. A bordo skipper locale, calice di vermentino e taglierino tipico maremmano. Esperienza pensata per coppie e piccoli gruppi.",
       category: "Mare & Costa",
       tag: "Più Prenotata",
+      tag_color: "#E63946",
       duration_label: "2 ore",
       duration_hours: 2,
       min_participants: 2,
@@ -216,7 +217,11 @@ async function ensureSupplierWithExperience(
       price_type: "pro_capite",
       location_name: "Porto Ercole",
       location_area: "Argentario",
+      cover_image_url:
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=80&auto=format&fit=crop",
       requires_request: true,
+      rating: 4.9,
+      reviews_count: 38,
       status: "pubblicata",
     });
     if (expErr) throw new Error(`insert esperienza demo fallita: ${expErr.message}`);
@@ -295,6 +300,8 @@ async function ensureVetrinaShowcase(
       location_name: "Manciano",
       location_area: "Manciano",
       price_cents: 0,
+      cover_image_url:
+        "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=1200&q=80&auto=format&fit=crop",
     },
     {
       slug: "osteria-del-porto-demo",
@@ -307,6 +314,8 @@ async function ensureVetrinaShowcase(
       location_name: "Porto Santo Stefano",
       location_area: "Argentario",
       price_cents: 0,
+      cover_image_url:
+        "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=1200&q=80&auto=format&fit=crop",
     },
   ];
 

@@ -59,9 +59,12 @@ export default function SignupForm({ role, redirectTo }: Props) {
       <div className="text-center py-8">
         <CheckCircle2 size={48} className="text-green-500 mx-auto mb-4" />
         <p className="font-display text-2xl font-bold text-ws-dark mb-2">Controlla la tua email</p>
-        <p className="text-sm text-ws-text-light">
+        <p className="text-sm text-ws-text-light mb-3">
           Ti abbiamo inviato un link di conferma a <strong>{email}</strong>. Clicca per attivare
-          l&apos;account.
+          l&apos;account Wondersun.
+        </p>
+        <p className="text-xs text-ws-text-light">
+          Se non lo trovi controlla la cartella <strong>spam</strong>.
         </p>
       </div>
     );
