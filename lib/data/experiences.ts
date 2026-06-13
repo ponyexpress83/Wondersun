@@ -17,6 +17,14 @@ export interface ExperienceFilter {
   limit?: number;
 }
 
+/**
+ * Stati abbonamento che tengono il fornitore "in vetrina pubblica".
+ * Un fornitore sospeso o scaduto (canone non pagato) sparisce dal catalogo
+ * pubblico ma resta visibile a sé stesso e all'admin (gestito dalle RLS +
+ * dalle query dashboard). Modello commerciale call 04-10/06.
+ */
+const VISIBLE_SUBSCRIPTION = new Set(["trial", "attivo"]);
+
 function applyFilters(items: ExperienceWithSupplier[], f: ExperienceFilter) {
   let out = items.filter((e) => e.status === "pubblicata");
   if (f.category && f.category !== "all") out = out.filter((e) => e.category === f.category);
@@ -46,8 +54,12 @@ export async function listExperiences(
     const supabase = createSupabaseServerClient();
     let q = supabase
       .from("experiences")
-      .select("*, supplier:suppliers(id, business_name, city, logo_url)")
-      .eq("status", "pubblicata");
+      .select(
+        "*, supplier:suppliers!inner(id, business_name, city, logo_url, status, subscription_status)",
+      )
+      .eq("status", "pubblicata")
+      .eq("supplier.status", "approvato")
+      .in("supplier.subscription_status", ["trial", "attivo"]);
     if (filter.category && filter.category !== "all") q = q.eq("category", filter.category);
     if (filter.area && filter.area !== "all") q = q.eq("location_area", filter.area);
     if (filter.minPrice != null) q = q.gte("price_cents", filter.minPrice * 100);

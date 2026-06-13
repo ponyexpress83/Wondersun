@@ -36,13 +36,17 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
 
-    // Verifica che il supplier appartenga all'utente
+    // L'admin può creare esperienze per qualsiasi fornitore (onboarding gestito).
+    const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    const isAdmin = me?.role === "admin";
+
+    // Verifica che il supplier appartenga all'utente (o che l'utente sia admin)
     const { data: supplier } = await supabase
       .from("suppliers")
       .select("profile_id, mode")
       .eq("id", data.supplier_id)
       .single();
-    if (!supplier || supplier.profile_id !== user.id) {
+    if (!supplier || (supplier.profile_id !== user.id && !isAdmin)) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }
 

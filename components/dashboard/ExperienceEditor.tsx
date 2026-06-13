@@ -12,10 +12,13 @@ interface Props {
   experience?: Experience;
   /** 'vetrina' = la scheda viene pubblicata senza prenotazione (recapiti diretti). */
   supplierMode?: "prenotabile" | "vetrina";
+  /** Dove tornare dopo il salvataggio (default area fornitore). */
+  redirectTo?: string;
 }
 
-export default function ExperienceEditor({ supplierId, experience, supplierMode }: Props) {
+export default function ExperienceEditor({ supplierId, experience, supplierMode, redirectTo }: Props) {
   const isVetrina = supplierMode === "vetrina";
+  const backTo = redirectTo ?? "/fornitore/esperienze";
   const router = useRouter();
   const isEdit = !!experience;
   const [submitting, setSubmitting] = useState(false);
@@ -64,7 +67,7 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode 
         throw new Error(err.error ?? "Errore durante il salvataggio");
       }
       toast.success(publish ? "Esperienza pubblicata!" : "Bozza salvata");
-      router.push("/fornitore/esperienze");
+      router.push(backTo);
       router.refresh();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Errore imprevisto";
@@ -100,7 +103,7 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode 
       const res = await fetch(`/api/experiences/${experience!.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
       toast.success("Esperienza eliminata");
-      router.push("/fornitore/esperienze");
+      router.push(backTo);
       router.refresh();
     } catch {
       toast.error("Errore durante l'eliminazione");

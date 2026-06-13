@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AdminSupplierActions from "@/components/dashboard/AdminSupplierActions";
+import SeedMontautoButton from "@/components/admin/SeedMontautoButton";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Supplier } from "@/lib/types";
@@ -67,6 +68,15 @@ export default async function AdminSuppliersPage({
       title="Gestione fornitori"
       subtitle="Approva, rifiuta o sospendi gli operatori della piattaforma."
     >
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/fornitori/nuovo" className="ws-btn-blue text-sm">
+            <Store size={15} /> Nuovo fornitore
+          </Link>
+          <SeedMontautoButton />
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
         {TABS.map((t) => {
@@ -122,8 +132,16 @@ function SupplierCard({ supplier: s }: { supplier: Supplier }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-3 mb-1">
-            <h2 className="font-display text-2xl font-bold text-ws-dark">{s.business_name}</h2>
+            <Link
+              href={`/admin/fornitori/${s.id}`}
+              className="font-display text-2xl font-bold text-ws-dark hover:text-ws-blue transition-colors"
+            >
+              {s.business_name}
+            </Link>
             <span className={`ws-badge ${meta.cls} text-[0.65rem]`}>{meta.label}</span>
+            {s.mode === "vetrina" && (
+              <span className="ws-badge ws-badge-blue text-[0.65rem]">Vetrina</span>
+            )}
           </div>
           <p className="text-xs text-ws-text-light">
             Richiesta del {new Date(s.created_at).toLocaleDateString("it-IT")}
