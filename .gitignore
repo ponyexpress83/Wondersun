@@ -1,6 +1,8 @@
 # dependencies
 /node_modules
 /.pnp
+# package-lock.json è il lockfile ufficiale del progetto
+pnpm-lock.yaml
 .pnp.*
 .yarn/*
 !.yarn/patches
