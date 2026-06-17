@@ -78,6 +78,7 @@ export default function Footer() {
             <ul className="space-y-3 mb-6">
               {[
                 { label: "Area Personale", href: "/dashboard" },
+                { label: "Chi Siamo", href: "/chi-siamo" },
                 { label: "Diventa Fornitore", href: "/fornitore/registrati" },
                 { label: "Area Fornitori", href: "/fornitore/dashboard" },
                 { label: "Privacy Policy", href: "/privacy" },

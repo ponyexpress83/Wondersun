@@ -30,6 +30,7 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
     { label: "Esperienze", href: "/esperienze" },
     { label: "Come Funziona", href: "/#come-funziona" },
     { label: "La Maremma", href: "/#territorio" },
+    { label: "Chi Siamo", href: "/chi-siamo" },
     { label: "Diventa Fornitore", href: "/fornitore/registrati" },
   ];
 
