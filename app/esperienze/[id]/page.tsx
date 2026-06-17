@@ -139,7 +139,7 @@ export default async function ExperienceDetailPage({
                 <p className="text-xs text-ws-text-light mb-6">
                   {exp.requires_request
                     ? "Esperienza a richiesta: nessun addebito fino alla conferma del fornitore."
-                    : "Prenotazione diretta: paghi online solo la quota Wondersun."}
+                    : "Richiesta di prenotazione: paghi online solo la quota Wondersun (concierge digitale)."}
                 </p>
 
                 <BookingRequestForm
@@ -193,7 +193,7 @@ export default async function ExperienceDetailPage({
                   <Calendar size={18} className="text-ws-blue flex-shrink-0 mt-0.5" />
                   <div className="text-xs text-ws-blue-dark">
                     <p className="font-bold mb-1">
-                      {exp.requires_request ? "Prenotazione a richiesta" : "Prenotazione diretta"}
+                      {exp.requires_request ? "Prenotazione a richiesta" : "Richiesta di prenotazione"}
                     </p>
                     <p className="leading-relaxed">
                       {exp.requires_request

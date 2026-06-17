@@ -21,9 +21,12 @@ export default function Footer() {
                 </p>
               </div>
             </div>
-            <p className="text-sm text-white/60 leading-relaxed max-w-sm mb-6">
-              La piattaforma di esperienze autentiche nella Maremma Toscana. Dall&apos;Argentario
-              a Sorano — il tuo Local Escape su misura.
+            <p className="text-sm text-white/60 leading-relaxed max-w-sm mb-4">
+              Il concierge digitale delle esperienze autentiche nella Maremma Toscana.
+              Dall&apos;Argentario a Sorano — il tuo Local Escape su misura.
+            </p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold text-white bg-ws-red/90 rounded-lg px-3 py-1.5 mb-6">
+              Non siamo un&apos;agenzia viaggi
             </p>
             <div className="flex items-center gap-3">
               {[

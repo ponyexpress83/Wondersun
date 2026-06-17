@@ -18,9 +18,10 @@ const config: Config = {
           yellow: "#FFC533",
           "yellow-dark": "#e6a800",
           "yellow-light": "#ffd166",
-          red: "#B71C1C",
-          "red-dark": "#8b1414",
-          "red-light": "#d32f2f",
+          // Rosso acceso (da usare con moderazione) · richiesta committente 17/06/2026
+          red: "#E53935",
+          "red-dark": "#C62828",
+          "red-light": "#EF5350",
           ivory: "#FAFAF7",
           "ivory-dark": "#F2F1EC",
           dark: "#1a1a2e",
