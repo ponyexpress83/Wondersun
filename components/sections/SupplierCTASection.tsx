@@ -13,7 +13,7 @@ export default function SupplierCTASection() {
             </h2>
             <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-xl">
               Sei un operatore turistico della Maremma? Pubblica le tue esperienze, ricevi
-              prenotazioni dirette e gestisci tutto da un&apos;unica dashboard.
+              richieste di prenotazione e gestisci tutto da un&apos;unica dashboard.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">

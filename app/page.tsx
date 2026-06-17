@@ -13,12 +13,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <Navbar profile={profile} />
+      <Navbar profile={profile} variant="solid" />
       <main>
         <HeroSection />
+        <TerritorySection />
         <ExperiencesPreview />
         <HowItWorksSection />
-        <TerritorySection />
         <TestimonialsSection />
         <SupplierCTASection />
       </main>
