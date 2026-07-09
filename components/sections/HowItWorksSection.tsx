@@ -1,49 +1,25 @@
 import { Search, Heart, Calendar, MessageSquare, Sparkles } from "lucide-react";
+import { getI18n } from "@/lib/i18n.server";
 
-const STEPS = [
-  {
-    icon: Search,
-    title: "Esplora il catalogo",
-    description: "Scopri le esperienze selezionate da Wondersun nella Maremma Toscana.",
-  },
-  {
-    icon: Heart,
-    title: "Scegli le tue preferite",
-    description: "Salva le esperienze che ami e componi il tuo percorso, una esperienza alla volta.",
-  },
-  {
-    icon: Calendar,
-    title: "Invia richiesta",
-    description: "Indica data e numero di partecipanti. Il fornitore conferma la disponibilità.",
-  },
-  {
-    icon: MessageSquare,
-    title: "Conferma & vivi",
-    description:
-      "Il fornitore conferma la richiesta. Online paghi solo la quota digitale Wondersun; l'esperienza la saldi a lui sul posto.",
-  },
-  {
-    icon: Sparkles,
-    title: "Vivi l'esperienza",
-    description: "Ricevi tutti i dettagli via email e goditi la tua avventura maremmana.",
-  },
-];
+const ICONS = [Search, Heart, Calendar, MessageSquare, Sparkles];
 
 export default function HowItWorksSection() {
+  const t = getI18n().dict.how;
+
   return (
     <section id="come-funziona" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="ws-badge ws-badge-yellow mb-4">Come Funziona</span>
+          <span className="ws-badge ws-badge-yellow mb-4">{t.badge}</span>
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-ws-dark mt-4 mb-4">
-            Cinque passi verso il tuo <span className="text-ws-blue italic">Local Escape</span>
+            {t.titleLead} <span className="text-ws-blue italic">{t.titleEm}</span>
           </h2>
           <div className="ws-section-divider" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {STEPS.map((step, idx) => {
-            const Icon = step.icon;
+          {t.steps.map((step, idx) => {
+            const Icon = ICONS[idx] ?? Sparkles;
             return (
               <div key={step.title} className="text-center relative">
                 <div className="relative inline-flex">

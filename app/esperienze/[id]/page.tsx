@@ -47,7 +47,7 @@ export default async function ExperienceDetailPage({
               <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-ws-card mb-8">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={exp.cover_image_url ?? "/placeholder-cover.jpg"}
+                  src={exp.cover_image_url ?? "/placeholder-cover.svg"}
                   alt={exp.title}
                   className="w-full h-full object-cover"
                 />

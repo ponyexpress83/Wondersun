@@ -15,7 +15,7 @@ export default function ExperienceCard({ experience: e }: ExperienceCardProps) {
       <div className="relative h-52 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={e.cover_image_url ?? "/placeholder-cover.jpg"}
+          src={e.cover_image_url ?? "/placeholder-cover.svg"}
           alt={e.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />

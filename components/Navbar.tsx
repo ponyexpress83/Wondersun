@@ -7,6 +7,9 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import Logo from "@/components/ui/Logo";
 import { toast } from "sonner";
 import type { Profile } from "@/lib/types";
+import { useLocale } from "@/components/LocaleProvider";
+import { getDictionary } from "@/lib/dictionaries";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface NavbarProps {
   profile?: Profile | null;
@@ -26,12 +29,15 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
     return () => window.removeEventListener("scroll", handleScroll);
   }, [variant]);
 
+  const locale = useLocale();
+  const t = getDictionary(locale).nav;
+
   const navLinks = [
-    { label: "Esperienze", href: "/esperienze" },
-    { label: "Come Funziona", href: "/#come-funziona" },
-    { label: "La Maremma", href: "/#territorio" },
-    { label: "Chi Siamo", href: "/chi-siamo" },
-    { label: "Diventa Fornitore", href: "/fornitore/registrati" },
+    { label: t.experiences, href: "/esperienze" },
+    { label: t.howItWorks, href: "/#come-funziona" },
+    { label: t.maremma, href: "/#territorio" },
+    { label: t.about, href: "/chi-siamo" },
+    { label: t.becomeSupplier, href: "/fornitore/registrati" },
   ];
 
   const handleLogout = async () => {
@@ -86,6 +92,7 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
 
           {/* Auth */}
           <div className="hidden lg:flex items-center gap-3">
+            <LanguageSwitcher light={!scrolled} />
             {profile ? (
               <div className="relative">
                 <button
@@ -111,7 +118,7 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 text-sm text-ws-text hover:bg-ws-blue-pale hover:text-ws-blue transition-colors"
                     >
-                      <LayoutDashboard size={15} /> Dashboard
+                      <LayoutDashboard size={15} /> {t.dashboard}
                     </Link>
                     {profile.role === "cliente" && (
                       <Link
@@ -119,14 +126,14 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-sm text-ws-text hover:bg-ws-blue-pale hover:text-ws-blue transition-colors"
                       >
-                        <Store size={15} /> Diventa Fornitore
+                        <Store size={15} /> {t.becomeSupplier}
                       </Link>
                     )}
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-ws-red hover:bg-red-50 transition-colors border-t border-gray-50"
                     >
-                      <LogOut size={15} /> Esci
+                      <LogOut size={15} /> {t.logout}
                     </button>
                   </div>
                 )}
@@ -137,12 +144,12 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl border font-semibold text-sm transition-all duration-200 ${scrolled ? "border-ws-blue text-ws-blue hover:bg-ws-blue-pale" : "border-white/40 text-white hover:border-white hover:bg-white/10"}`}
               >
                 <User size={15} />
-                Accedi
+                {t.login}
               </Link>
             )}
             <Link href="/esperienze" className="ws-btn-primary text-xs py-2.5 px-5">
               <Search size={14} />
-              Scopri
+              {t.discover}
             </Link>
           </div>
 
@@ -170,18 +177,21 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
               </Link>
             ))}
             <div className="flex flex-col gap-3 pt-2">
+              <div className="flex justify-center pb-1">
+                <LanguageSwitcher />
+              </div>
               {profile ? (
                 <>
                   <Link href={dashboardHref} className="ws-btn-ghost justify-center">
-                    <LayoutDashboard size={15} /> Dashboard
+                    <LayoutDashboard size={15} /> {t.dashboard}
                   </Link>
                   <button onClick={handleLogout} className="ws-btn-ghost justify-center text-ws-red">
-                    <LogOut size={15} /> Esci
+                    <LogOut size={15} /> {t.logout}
                   </button>
                 </>
               ) : (
                 <Link href="/login" className="ws-btn-ghost justify-center">
-                  <User size={15} /> Accedi
+                  <User size={15} /> {t.login}
                 </Link>
               )}
               <Link
@@ -190,7 +200,7 @@ export default function Navbar({ profile, variant = "transparent" }: NavbarProps
                 className="ws-btn-primary w-full"
               >
                 <Search size={15} />
-                Scopri le Esperienze
+                {t.discover}
               </Link>
             </div>
           </div>

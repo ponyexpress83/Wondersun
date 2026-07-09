@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import SoleChat from "@/components/SoleChat";
 import CookieBanner from "@/components/CookieBanner";
+import { LocaleProvider } from "@/components/LocaleProvider";
+import { getLocale } from "@/lib/i18n.server";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wondersun.it";
@@ -89,8 +91,9 @@ const JSON_LD = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = getLocale();
   return (
-    <html lang="it">
+    <html lang={locale}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -104,9 +107,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        {children}
-        <SoleChat />
-        <CookieBanner />
+        <LocaleProvider initial={locale}>
+          {children}
+          <SoleChat />
+          <CookieBanner />
+        </LocaleProvider>
         <Toaster position="top-right" richColors closeButton />
       </body>
     </html>

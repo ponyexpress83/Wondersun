@@ -68,3 +68,21 @@ riscrittura in Next.js, recuperando:
 - Logica preferiti/pacchetti (rimappata sul nuovo schema)
 
 Il codice v2 originale è stato accantonato e non più utilizzato.
+
+## 5. Conferma modello 25% vs indicazione avvocata (09/07/2026)
+
+La Committente (via Valerio) ha **confermato il modello marketplace con commissione
+del 25%** come quello corretto da rendere coerente su tutta la piattaforma
+(Termini, onboarding fornitore, pagina abbonamento, `computeCommission`,
+sezione fornitori della homepage).
+
+⚠️ **Punto aperto da verificare con l'avvocata.** Questa scelta è in tensione con
+quanto emerso nella corrispondenza legale, dove si indicava un modello a
+"0% commissione, il cliente paga direttamente il fornitore, Wondersun non è
+un'agenzia". Il modello a 25% sul totale, con incasso della quota da parte di
+Wondersun, è proprio il modello marketplace che l'Art. 2-bis del contratto non
+prevede e che ha le implicazioni fiscali/regolatorie descritte al § 2.
+
+**Azione consigliata:** sottoporre esplicitamente all'avvocata la scelta del 25%
+prima del go-live, così da allineare Termini e informativa e formalizzare via
+Art. 8 (Change Management).
