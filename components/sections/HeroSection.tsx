@@ -29,14 +29,15 @@ export default function HeroSection() {
               Maremma · Costa d&apos;Argento
             </span>
 
-            <h1 className="mb-5 font-display text-5xl font-bold leading-[1.05] text-white drop-shadow-sm sm:text-6xl lg:text-7xl">
-              Scopri la <span className="italic text-ws-yellow">Maremma</span>
-              <br className="hidden sm:block" /> che non conosci
+            <h1 className="mb-5 font-display text-[2.1rem] font-bold leading-[1.08] text-white drop-shadow-sm sm:text-6xl lg:text-7xl">
+              Nessuno decide la tua vacanza{" "}
+              <span className="italic text-ws-yellow">al posto tuo.</span>
             </h1>
 
-            <p className="mx-auto mb-9 max-w-xl text-lg text-white/90 sm:text-xl">
-              Il tuo concierge digitale per vivere esperienze autentiche, selezionate
-              tra i migliori operatori locali. Tu sogni, noi ti facciamo vivere la Maremma.
+            <p className="mx-auto mb-9 max-w-xl text-base text-white/90 sm:text-xl">
+              Scopri, scegli e organizza le esperienze che desideri — in un unico posto.
+              Nessun itinerario imposto, nessun pacchetto preconfezionato. Solo la libertà di
+              vivere la Maremma come vuoi tu, con Sole al tuo fianco 24 ore su 24.
             </p>
 
             {/* Barra di ricerca → catalogo */}
@@ -67,7 +68,7 @@ export default function HeroSection() {
               </span>
               <span className="flex items-center gap-1.5">
                 <ShieldCheck size={15} className="text-ws-yellow" />
-                Paghi solo la quota concierge
+                Paghi solo la quota digitale, l&apos;esperienza al fornitore
               </span>
               <span className="flex items-center gap-1.5">
                 <CalendarCheck size={15} className="text-ws-yellow" />
@@ -92,6 +93,20 @@ export default function HeroSection() {
             >
               {c.label}
             </Link>
+          ))}
+        </div>
+
+        {/* Strip posizionamento */}
+        <div className="mt-8 grid grid-cols-1 gap-3 rounded-2xl border border-ws-blue/10 bg-white/70 p-5 text-center shadow-ws-card sm:grid-cols-3 sm:text-left">
+          {[
+            "Esperienze di operatori locali indipendenti",
+            "Tu componi il tuo percorso, esperienza dopo esperienza",
+            "Nessun pacchetto imposto, nessun intermediario sul prezzo",
+          ].map((t) => (
+            <p key={t} className="flex items-center justify-center gap-2 text-sm font-semibold text-ws-blue-dark sm:justify-start">
+              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-ws-yellow-dark" />
+              {t}
+            </p>
           ))}
         </div>
       </div>

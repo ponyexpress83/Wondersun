@@ -9,19 +9,20 @@ export default function SupplierCTASection() {
           <div>
             <span className="ws-badge bg-white/15 text-white border-white/25 mb-4">Per i Fornitori</span>
             <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Porta la tua esperienza <span className="text-ws-yellow italic">in Wondersun</span>
+              Più di una vetrina. <span className="text-ws-yellow italic">Un partner</span> per la tua attività.
             </h2>
             <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-xl">
-              Sei un operatore turistico della Maremma? Pubblica le tue esperienze, ricevi
-              richieste di prenotazione e gestisci tutto da un&apos;unica dashboard.
+              Non ci limitiamo a pubblicare una scheda: ti aiutiamo concretamente a valorizzare il tuo
+              lavoro e a crescere — con supporto umano rapido, contenuti curati e promozione. Gestisci
+              esperienze e richieste da un&apos;unica dashboard.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
               {[
-                { Icon: Gift, label: "3 mesi gratis", note: "Trial sull'abbonamento" },
-                { Icon: TrendingUp, label: "Più prenotazioni", note: "Marketing incluso" },
-                { Icon: ShieldCheck, label: "Pagamenti sicuri", note: "Stripe integrato" },
-                { Icon: Store, label: "Dashboard dedicata", note: "Gestione autonoma" },
+                { Icon: Gift, label: "3 mesi gratis", note: "Poi €29/mese, disdici quando vuoi" },
+                { Icon: TrendingUp, label: "Crescita, non solo visibilità", note: "Contenuti, promozione, ottimizzazione" },
+                { Icon: ShieldCheck, label: "Gli incassi restano tuoi", note: "Il cliente paga te, direttamente" },
+                { Icon: Store, label: "Supporto umano", note: "Rapido, diretto e continuo" },
               ].map(({ Icon, label, note }) => (
                 <div key={label} className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
@@ -36,14 +37,14 @@ export default function SupplierCTASection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/fornitore/registrati" className="ws-btn-primary">
-                Diventa Fornitore
+              <Link href="/fornitore/registrati" className="ws-btn-accent">
+                Diventa partner
               </Link>
               <Link
                 href="/fornitore/dashboard"
                 className="ws-btn-outline border-white/40 hover:border-white"
               >
-                Accedi Area Fornitori
+                Area fornitori
               </Link>
             </div>
           </div>
@@ -66,22 +67,25 @@ export default function SupplierCTASection() {
 
               <div className="flex items-baseline justify-between border-b border-white/15 pb-4">
                 <div>
-                  <p className="text-sm text-white/60">Commissione su prenotazione</p>
-                  <p className="font-display text-3xl font-bold">25%</p>
+                  <p className="text-sm text-white/60">Commissione sui tuoi incassi</p>
+                  <p className="font-display text-3xl font-bold text-ws-yellow">0%</p>
                 </div>
-                <span className="text-xs text-white/50">sul totale incassato</span>
+                <span className="text-xs text-white/50 text-right max-w-[9rem]">
+                  Il cliente paga te, direttamente
+                </span>
               </div>
 
               <div className="flex items-baseline justify-between">
                 <div>
-                  <p className="text-sm text-white/60">Esperienze premium (oltre €1.000)</p>
-                  <p className="font-display text-lg font-bold">+ fee fissa concordata</p>
+                  <p className="text-sm text-white/60">Attivazione e setup</p>
+                  <p className="font-display text-lg font-bold">Nessun costo</p>
                 </div>
               </div>
             </div>
 
-            <p className="text-xs text-white/50 mt-6">
-              Nessun costo di setup. Cancella in qualsiasi momento.
+            <p className="text-xs text-white/50 mt-6 leading-relaxed">
+              Wondersun incassa esclusivamente il proprio corrispettivo per il servizio digitale.
+              Il prezzo dell&apos;esperienza resta tuo e lo ricevi direttamente dal cliente.
             </p>
           </div>
         </div>

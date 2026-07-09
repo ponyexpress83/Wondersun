@@ -10,7 +10,7 @@ const TESTIMONIALS = [
   {
     name: "Marco e Giulia",
     location: "Torino",
-    text: "Pacchetto vacanza su misura per la nostra settimana in Maremma. Wondersun ha organizzato tutto. Ci ha permesso di scoprire luoghi che non avremmo mai trovato da soli.",
+    text: "Abbiamo composto la nostra settimana in Maremma esperienza dopo esperienza, come volevamo noi. Wondersun ci ha fatto scoprire posti che da soli non avremmo mai trovato.",
     rating: 5,
   },
   {

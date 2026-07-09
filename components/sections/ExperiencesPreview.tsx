@@ -16,8 +16,8 @@ export default async function ExperiencesPreview() {
           </h2>
           <div className="ws-section-divider" />
           <p className="text-lg text-ws-text-light max-w-2xl mx-auto mt-4">
-            Selezioniamo le esperienze più autentiche della Maremma, dai migliori artigiani locali.
-            Tu scegli, noi organizziamo tutto.
+            Selezioniamo le esperienze più autentiche della Maremma, dai migliori operatori locali.
+            Tu scegli e componi il tuo percorso, una esperienza alla volta.
           </p>
         </div>
 

@@ -9,7 +9,7 @@ const STEPS = [
   {
     icon: Heart,
     title: "Scegli le tue preferite",
-    description: "Salva le esperienze nei preferiti e componi il tuo pacchetto su misura.",
+    description: "Salva le esperienze che ami e componi il tuo percorso, una esperienza alla volta.",
   },
   {
     icon: Calendar,
@@ -18,8 +18,9 @@ const STEPS = [
   },
   {
     icon: MessageSquare,
-    title: "Conferma & paga",
-    description: "Una volta confermata la prenotazione paghi in sicurezza con Stripe.",
+    title: "Conferma & vivi",
+    description:
+      "Il fornitore conferma la richiesta. Online paghi solo la quota digitale Wondersun; l'esperienza la saldi a lui sul posto.",
   },
   {
     icon: Sparkles,
