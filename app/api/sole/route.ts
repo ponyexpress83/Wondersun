@@ -112,7 +112,7 @@ function buildReply(suggestions: ExperienceWithSupplier[], helpAnswer: string | 
   if (suggestions.length === 0) {
     return "Raccontami cosa ti piacerebbe vivere: mare e barca a vela, una cena di pesce, vino in cantina, cavallo nella Maremma o i borghi etruschi? Ti propongo le esperienze giuste per te. ☀️";
   }
-  return "Ho qualche idea perfetta per te! ☀️ Dai un'occhiata a queste esperienze — se vuoi le combiniamo in un unico pacchetto.";
+  return "Ho qualche idea perfetta per te! ☀️ Dai un'occhiata qui sotto — da ogni scheda invii una richiesta singola al fornitore, scegliendo data e persone.";
 }
 
 async function enhanceReply(
@@ -203,6 +203,7 @@ export async function POST(request: NextRequest) {
         price_cents: e.price_cents,
         cover_image_url: e.cover_image_url,
         requires_request: e.requires_request,
+        supplier: e.supplier?.business_name ?? null,
       })),
     });
   } catch (e) {
