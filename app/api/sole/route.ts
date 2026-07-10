@@ -46,6 +46,10 @@ const INTENT_MAP: { keywords: string[]; categories: string[] }[] = [
     keywords: ["storia", "cultura", "etrusch", "archeolog", "borghi", "necropoli", "arte", "museo"],
     categories: ["Cultura & Arte"],
   },
+  {
+    keywords: ["benessere", "massagg", "relax", "rilassante", "spa", "wellness", "olistic", "kobido", "coccola"],
+    categories: ["Benessere"],
+  },
 ];
 
 const AREA_KEYWORDS = ["argentario", "manciano", "sorano", "arcille", "orbetello", "pitigliano", "maremma", "porto santo stefano", "porto ercole"];

@@ -31,11 +31,13 @@ export default async function TerminiPage() {
             dopo la conferma del Fornitore tramite Stripe.
           </p>
 
-          <h2 className="font-display text-2xl mt-8 mb-3 text-ws-dark">3. Commissioni</h2>
+          <h2 className="font-display text-2xl mt-8 mb-3 text-ws-dark">3. Corrispettivi</h2>
           <p>
-            Su ogni prenotazione confermata Wondersun trattiene una commissione del 25% sul totale.
-            Per esperienze il cui totale superi €1.000 si applica una fee fissa concordata con il
-            Fornitore.
+            Wondersun eroga un servizio digitale di concierge e prenotazione. Il Cliente versa
+            online esclusivamente la quota per il servizio digitale Wondersun; il corrispettivo
+            dell&apos;esperienza è pagato direttamente al Fornitore. I Fornitori accedono alla
+            piattaforma tramite un abbonamento (canone mensile con periodo di prova iniziale),
+            senza commissioni sui propri incassi.
           </p>
 
           <h2 className="font-display text-2xl mt-8 mb-3 text-ws-dark">

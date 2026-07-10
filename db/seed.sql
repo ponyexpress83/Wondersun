@@ -60,5 +60,24 @@ insert into public.experiences (
    'Visita guidata alle necropoli etrusche di Sorano con un archeologo locale. Storia millenaria tra tufo e cielo.',
    'Cultura & Arte', 'Culturale', '#1565c0',
    '2 ore', 2, 1, 15, 2500, 'pro_capite', 'Sorano', 'Sorano', 42.6831, 11.7172,
-   'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1200&q=80', false, 'pubblicata')
+   'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1200&q=80', false, 'pubblicata'),
+  -- ── Esperienze di riferimento (fornitori reali · demo Sole) ──
+  ((select id from s), 'immersioni-snorkeling-argentario', 'Immersioni & snorkeling all''Argentario',
+   'Esplora i fondali di Argentario, Giannutri e Giglio.',
+   'Esplora i fondali di Argentario, Giannutri e Giglio a bordo della Galathea con Full Dive. Anche battesimo del mare per i principianti. Uscita giornaliera con skipper e istruttore.',
+   'Mare & Costa', 'Più Prenotata', '#B71C1C',
+   'Giornata intera', 8, 1, 12, 7500, 'pro_capite', 'Porto Ercole', 'Argentario', 42.3920, 11.2070,
+   'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=80', true, 'pubblicata'),
+  ((select id from s), 'degustazione-tenuta-montauto', 'Degustazione in tenuta',
+   'Cantina, barricaia e degustazione a Capalbio.',
+   'Visita a cantina e barricaia della Tenuta Montauto a Capalbio, con degustazione di vini Sauvignon e Pinot Nero e olio EVO bio IGP. Con tagliere o safari tra i vigneti.',
+   'Vino & Degustazioni', 'Autentico', '#7b2d8b',
+   '45 min – 2 ore', 2, 2, 10, 2500, 'pro_capite', 'Capalbio', 'Manciano', 42.4530, 11.4200,
+   'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&q=80', false, 'pubblicata'),
+  ((select id from s), 'massaggio-benessere-onsite', 'Massaggio benessere on-site',
+   'Relax nel tuo alloggio, senza spostarti.',
+   'Massaggio rilassante, olistico o Kobido direttamente nel tuo alloggio, villa o appartamento. Un momento di benessere su appuntamento, senza doverti spostare.',
+   'Benessere', 'Benessere', '#FFC533',
+   '50 – 75 min', 1, 1, 2, 6000, 'pro_capite', 'Maremma · a domicilio', 'Argentario', 42.4396, 11.2150,
+   'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=1200&q=80', true, 'pubblicata')
 on conflict (slug) do nothing;

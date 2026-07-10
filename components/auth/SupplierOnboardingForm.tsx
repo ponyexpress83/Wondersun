@@ -146,7 +146,8 @@ export default function SupplierOnboardingForm({ profileId }: Props) {
 
       <div className="bg-ws-blue-pale border border-ws-blue/15 rounded-lg p-3 text-xs text-ws-blue-dark">
         Inviando la candidatura prendi atto che: il primo abbonamento parte dopo 3 mesi di prova
-        (€29/mese); su ogni prenotazione confermata viene trattenuta la commissione del 25%.
+        (€29/mese); non sono previste commissioni sui tuoi incassi — il cliente paga te
+        direttamente l&apos;esperienza.
       </div>
 
       <button type="submit" disabled={submitting} className="ws-btn-primary w-full">

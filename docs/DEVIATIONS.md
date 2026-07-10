@@ -69,20 +69,29 @@ riscrittura in Next.js, recuperando:
 
 Il codice v2 originale è stato accantonato e non più utilizzato.
 
-## 5. Conferma modello 25% vs indicazione avvocata (09/07/2026)
+## 5. Modello definitivo: concierge digitale, no 25% (brief 09/07/2026)
 
-La Committente (via Valerio) ha **confermato il modello marketplace con commissione
-del 25%** come quello corretto da rendere coerente su tutta la piattaforma
-(Termini, onboarding fornitore, pagina abbonamento, `computeCommission`,
-sezione fornitori della homepage).
+Il brief "portare la demo al 100%" fissa come **vincolo non negoziabile** il
+modello **concierge digitale**:
 
-⚠️ **Punto aperto da verificare con l'avvocata.** Questa scelta è in tensione con
-quanto emerso nella corrispondenza legale, dove si indicava un modello a
-"0% commissione, il cliente paga direttamente il fornitore, Wondersun non è
-un'agenzia". Il modello a 25% sul totale, con incasso della quota da parte di
-Wondersun, è proprio il modello marketplace che l'Art. 2-bis del contratto non
-prevede e che ha le implicazioni fiscali/regolatorie descritte al § 2.
+- Wondersun NON è un tour operator e NON vende pacchetti; ogni richiesta è
+  singola verso un solo fornitore (art. 33 Cod. Turismo).
+- Pagamenti separati: online il Cliente paga **solo la quota digitale Wondersun**;
+  l'esperienza la paga **direttamente al Fornitore**. Wondersun non incassa il totale.
+- I Fornitori pagano un **abbonamento (€29/mese + attivazione)**, **non** una
+  commissione del 25%.
 
-**Azione consigliata:** sottoporre esplicitamente all'avvocata la scelta del 25%
-prima del go-live, così da allineare Termini e informativa e formalizzare via
-Art. 8 (Change Management).
+Copy allineato a questo modello in: homepage (sezione fornitori), Termini §3,
+onboarding fornitore, pagina abbonamento, dizionari i18n.
+
+> Nota di percorso: in un messaggio precedente era stato indicato il 25% come
+> corretto; il brief scritto successivo (fonte di verità) ha chiarito il modello
+> a 0%/abbonamento, che è stato reso coerente ovunque.
+
+⚠️ **Ancora da riconciliare (logica, non copy):** `computeCommission` calcola
+ancora la quota come 25% del totale con split 75% al fornitore (modello
+marketplace). Sotto il modello concierge va ridefinita: il Fornitore incassa il
+prezzo pieno dell'esperienza e la "quota digitale Wondersun" pagata online dal
+Cliente è un corrispettivo separato (importo da definire con la Committente).
+Finché non è deciso l'importo, la scheda esperienza mostra ancora il breakdown
+25%/75%. **Serve la decisione sull'importo della quota digitale.**

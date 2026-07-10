@@ -100,9 +100,8 @@ export default async function SupplierSubscriptionPage() {
 
           <div className="bg-ws-blue-pale rounded-xl p-4 text-sm text-ws-blue-dark mb-6">
             <strong>Come funziona:</strong> i primi 3 mesi sono gratuiti. Poi il canone è di €29/mese.
-            Su ogni prenotazione Wondersun trattiene il 25% (per le esperienze premium oltre €1.000
-            una quota fissa). La tua parte la incassi direttamente dal cliente al momento
-            dell&apos;esperienza.
+            Nessuna commissione sui tuoi incassi: il cliente paga direttamente te l&apos;esperienza.
+            A Wondersun versi solo il canone di abbonamento.
           </div>
 
           <SubscriptionPayButton
