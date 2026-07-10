@@ -155,6 +155,7 @@ export const CATEGORIES = [
   "Vino & Degustazioni",
   "Sport & Avventura",
   "Cultura & Arte",
+  "Benessere",
 ] as const;
 
 export const AREAS = ["Argentario", "Manciano", "Sorano", "Arcille", "Orbetello", "Pitigliano"] as const;

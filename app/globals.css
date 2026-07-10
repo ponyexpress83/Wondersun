@@ -21,7 +21,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Poppins", "Nunito Sans", sans-serif;
+    letter-spacing: -0.01em;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -33,8 +34,33 @@
 }
 
 @layer components {
-  .font-display { font-family: "Cormorant Garamond", serif; }
+  .font-display { font-family: "Poppins", "Nunito Sans", sans-serif; }
   .font-body { font-family: "Nunito Sans", sans-serif; }
+  .font-script { font-family: "Caveat", cursive; }
+
+  /* CTA gialla a pillola (azione primaria nel nuovo design) */
+  .ws-btn-yellow {
+    background-color: #FFC533;
+    color: #0b1f42;
+    padding: 0.875rem 2rem;
+    border-radius: 9999px;
+    font-weight: 800;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    transition: all 0.25s ease;
+    border: 2px solid #FFC533;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .ws-btn-yellow:hover {
+    background-color: #f2b41f;
+    border-color: #f2b41f;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(242, 180, 31, 0.45);
+  }
+  .ws-btn-yellow:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
   /* ── Buttons ──
      Primario = BLU (affidabilità). Il rosso è un accento, da usare con

@@ -1,88 +1,70 @@
 import Link from "next/link";
-import { Clock, Users, Star, MapPin, ArrowRight } from "lucide-react";
-import { formatEur, type ExperienceWithSupplier } from "@/lib/types";
+import { Clock, Heart } from "lucide-react";
+import type { ExperienceWithSupplier } from "@/lib/types";
 
 interface ExperienceCardProps {
   experience: ExperienceWithSupplier;
 }
 
+/** Badge categoria colorato (label + colore) coerente col nuovo design. */
+function categoryBadge(category: string): { label: string; bg: string; text: string } {
+  const c = category.toLowerCase();
+  if (c.includes("mare")) return { label: "MARE", bg: "#2B7DD4", text: "#fff" };
+  if (c.includes("cultura") || c.includes("arte")) return { label: "CULTURA", bg: "#E53935", text: "#fff" };
+  if (c.includes("vino") || c.includes("enogastr") || c.includes("gastr"))
+    return { label: "ENOGASTRONOMIA", bg: "#F2B41F", text: "#0b1f42" };
+  if (c.includes("benessere") || c.includes("relax")) return { label: "BENESSERE", bg: "#E53935", text: "#fff" };
+  if (c.includes("natura") || c.includes("sport") || c.includes("avventura"))
+    return { label: "NATURA", bg: "#2B7DD4", text: "#fff" };
+  return { label: category.toUpperCase(), bg: "#1E5AA8", text: "#fff" };
+}
+
 export default function ExperienceCard({ experience: e }: ExperienceCardProps) {
+  const badge = categoryBadge(e.category);
+  const euros = Math.round(e.price_cents / 100);
+
   return (
     <Link
       href={`/esperienze/${e.slug}`}
-      className="ws-exp-card bg-white rounded-2xl overflow-hidden shadow-ws-card border border-gray-100 group block"
+      className="ws-exp-card group block bg-white rounded-3xl overflow-hidden shadow-ws-card border border-gray-100"
     >
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={e.cover_image_url ?? "/placeholder-cover.svg"}
           alt={e.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-        {e.tag && (
-          <div
-            className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm"
-            style={{ backgroundColor: e.tag_color }}
-          >
-            {e.tag}
-          </div>
-        )}
-        <div className="absolute bottom-4 left-4 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-          <span className="text-xs font-semibold text-ws-blue">{e.category}</span>
-        </div>
+        <span
+          className="absolute top-4 left-4 px-3 py-1 rounded-full text-[0.7rem] font-extrabold tracking-wide shadow-sm"
+          style={{ backgroundColor: badge.bg, color: badge.text }}
+        >
+          {badge.label}
+        </span>
+        <span className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/95 flex items-center justify-center text-ws-blue-dark shadow-sm transition-colors group-hover:text-ws-red">
+          <Heart size={17} />
+        </span>
       </div>
 
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-1 text-ws-text-light">
-            <MapPin size={11} />
-            <span className="text-xs">{e.location_name}</span>
-          </div>
-          {e.rating > 0 && (
-            <div className="flex items-center gap-1.5">
-              <Star size={12} className="text-ws-yellow fill-ws-yellow" />
-              <span className="text-sm font-bold text-ws-text">{Number(e.rating).toFixed(1)}</span>
-              <span className="text-xs text-ws-text-light">({e.reviews_count})</span>
-            </div>
-          )}
-        </div>
-
-        <h3 className="font-display text-xl font-bold text-ws-dark mb-2 group-hover:text-ws-blue transition-colors duration-200">
+      <div className="p-5">
+        <h3 className="font-display text-xl font-extrabold text-ws-blue-dark leading-snug mb-2 line-clamp-2">
           {e.title}
         </h3>
-        <p className="text-sm text-ws-text-light leading-relaxed mb-4 line-clamp-2">
+        <p className="text-sm text-ws-text-light leading-relaxed mb-5 line-clamp-2">
           {e.short_description ?? e.description}
         </p>
 
-        <div className="flex items-center gap-4 mb-5 pb-5 border-b border-gray-100">
-          {e.duration_label && (
-            <div className="flex items-center gap-1.5 text-ws-text-light">
-              <Clock size={12} />
-              <span className="text-xs">{e.duration_label}</span>
-            </div>
-          )}
+        <div className="flex items-end justify-between">
           <div className="flex items-center gap-1.5 text-ws-text-light">
-            <Users size={12} />
-            <span className="text-xs">
-              {e.min_participants}–{e.max_participants} persone
-            </span>
+            <Clock size={15} />
+            <span className="text-sm font-semibold">{e.duration_label}</span>
           </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="font-display text-2xl font-bold text-ws-blue">
-              {formatEur(e.price_cents)}
-            </div>
-            <span className="text-xs text-ws-text-light">
+          <div className="text-right leading-none">
+            <span className="font-display text-2xl font-extrabold text-ws-red">€ {euros}</span>
+            <p className="text-xs text-ws-text-light mt-1">
               {e.price_type === "pro_capite" ? "a persona" : "a gruppo"}
-            </span>
+            </p>
           </div>
-          <span className="flex items-center gap-1.5 text-sm font-bold text-ws-red group-hover:gap-3 transition-all">
-            Scopri
-            <ArrowRight size={14} />
-          </span>
         </div>
       </div>
     </Link>

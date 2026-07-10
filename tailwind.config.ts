@@ -30,8 +30,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', "serif"],
+        display: ['"Poppins"', '"Nunito Sans"', "sans-serif"],
         body: ['"Nunito Sans"', "sans-serif"],
+        script: ['"Caveat"', "cursive"],
       },
       boxShadow: {
         "ws-card": "0 4px 24px rgba(43, 125, 212, 0.07)",

@@ -6,12 +6,15 @@ import type { Locale } from "@/lib/i18n";
  */
 export interface Dictionary {
   nav: {
+    home: string;
     experiences: string;
     howItWorks: string;
     maremma: string;
     about: string;
+    contact: string;
     becomeSupplier: string;
     login: string;
+    loginRegister: string;
     discover: string;
     dashboard: string;
     logout: string;
@@ -21,9 +24,12 @@ export interface Dictionary {
     titleLead: string;
     titleEm: string;
     lead: string;
+    ctaExplore: string;
+    ctaHow: string;
     searchPlaceholder: string;
     searchCta: string;
     trust: string[];
+    stats: { value: string; label: string }[];
     quickLinks: string[];
     strip: string[];
   };
@@ -80,12 +86,15 @@ export interface Dictionary {
 
 const it: Dictionary = {
   nav: {
+    home: "Home",
     experiences: "Esperienze",
     howItWorks: "Come Funziona",
     maremma: "La Maremma",
     about: "Chi Siamo",
+    contact: "Contatti",
     becomeSupplier: "Diventa Fornitore",
     login: "Accedi",
+    loginRegister: "Accedi / Registrati",
     discover: "Scopri",
     dashboard: "Dashboard",
     logout: "Esci",
@@ -94,13 +103,21 @@ const it: Dictionary = {
     eyebrow: "Maremma · Costa d'Argento",
     titleLead: "Nessuno decide la tua vacanza",
     titleEm: "al posto tuo.",
-    lead: "Scopri, scegli e organizza le esperienze che desideri — in un unico posto. Nessun itinerario imposto, nessun pacchetto preconfezionato. Solo la libertà di vivere la Maremma come vuoi tu, con Sole al tuo fianco 24 ore su 24.",
+    lead: "Raccontaci cosa ami: la nostra AI ti suggerisce le esperienze perfette per te all'Argentario. Nessun pacchetto imposto — scegli e organizzi tu.",
+    ctaExplore: "Esplora le esperienze",
+    ctaHow: "Come funziona",
     searchPlaceholder: "Cerca: barca al tramonto, degustazione, trekking…",
     searchCta: "Cerca",
     trust: [
       "Esperienze selezionate",
       "Paghi solo la quota digitale, l'esperienza al fornitore",
       "Annulli gratis fino a 48h",
+    ],
+    stats: [
+      { value: "50+", label: "Esperienze uniche all'Argentario" },
+      { value: "100%", label: "Personalizzate per te" },
+      { value: "4", label: "Tipologie di esperienze" },
+      { value: "★", label: "Prenota in sicurezza e vivi senza pensieri" },
     ],
     quickLinks: ["Mare & Costa", "Enogastronomia", "Natura & Avventura", "Cultura & Arte"],
     strip: [
@@ -198,12 +215,15 @@ const it: Dictionary = {
 
 const en: Dictionary = {
   nav: {
+    home: "Home",
     experiences: "Experiences",
     howItWorks: "How it works",
     maremma: "The Maremma",
     about: "About us",
+    contact: "Contact",
     becomeSupplier: "Become a partner",
     login: "Log in",
+    loginRegister: "Log in / Sign up",
     discover: "Explore",
     dashboard: "Dashboard",
     logout: "Log out",
@@ -212,13 +232,21 @@ const en: Dictionary = {
     eyebrow: "Maremma · Costa d'Argento",
     titleLead: "No one decides your holiday",
     titleEm: "for you.",
-    lead: "Discover, choose and arrange the experiences you want — all in one place. No fixed itinerary, no pre-packaged bundle. Just the freedom to live the Maremma your way, with Sole by your side 24/7.",
+    lead: "Tell us what you love: our AI suggests the experiences that are right for you around the Argentario. No fixed bundle — you choose and arrange your own trip.",
+    ctaExplore: "Explore experiences",
+    ctaHow: "How it works",
     searchPlaceholder: "Search: sunset boat trip, wine tasting, trekking…",
     searchCta: "Search",
     trust: [
       "Hand-picked experiences",
       "You pay only the digital fee, the experience to the operator",
       "Free cancellation up to 48h",
+    ],
+    stats: [
+      { value: "50+", label: "Unique experiences around the Argentario" },
+      { value: "100%", label: "Tailored to you" },
+      { value: "4", label: "Types of experience" },
+      { value: "★", label: "Book safely and travel worry-free" },
     ],
     quickLinks: ["Sea & Coast", "Food & Wine", "Nature & Adventure", "Culture & Art"],
     strip: [

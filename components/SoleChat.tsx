@@ -80,6 +80,13 @@ export default function SoleChat() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, open, sending]);
 
+  // Apertura da trigger esterni (es. card AI nell'hero)
+  useEffect(() => {
+    const openHandler = () => setOpen(true);
+    window.addEventListener("sole:open", openHandler);
+    return () => window.removeEventListener("sole:open", openHandler);
+  }, []);
+
   const toggleVoice = () => {
     const rec = recognitionRef.current;
     if (!rec) return;
