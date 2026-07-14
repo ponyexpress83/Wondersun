@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Mail, Instagram, Facebook, Linkedin } from "lucide-react";
+import { MapPin, Mail, Phone, Instagram, Facebook, Linkedin } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { getI18n } from "@/lib/i18n.server";
 
@@ -109,15 +109,24 @@ export default function Footer() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-white/50">
                 <MapPin size={13} className="text-ws-yellow" />
-                <span className="text-xs">Porto Ercole, Grosseto (GR)</span>
+                <span className="text-xs">Via Maestrale 12, Porto Ercole (GR)</span>
               </div>
               <div className="flex items-center gap-2 text-white/50">
                 <Mail size={13} className="text-ws-yellow" />
                 <a
-                  href="mailto:info@wondersun.it"
+                  href="mailto:wondersun.localescape@gmail.com"
+                  className="text-xs hover:text-ws-yellow transition-colors break-all"
+                >
+                  wondersun.localescape@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center gap-2 text-white/50">
+                <Phone size={13} className="text-ws-yellow" />
+                <a
+                  href="tel:+393793785317"
                   className="text-xs hover:text-ws-yellow transition-colors"
                 >
-                  info@wondersun.it
+                  379 378 5317
                 </a>
               </div>
             </div>

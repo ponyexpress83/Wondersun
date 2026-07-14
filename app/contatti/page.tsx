@@ -9,8 +9,6 @@ export const metadata = {
   description: "Contatta Wondersun — la tua guida digitale per le esperienze della Maremma Toscana.",
 };
 
-const SUPPORT_WHATSAPP = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP;
-
 export default async function ContattiPage() {
   const profile = await getCurrentProfile();
 
@@ -18,26 +16,22 @@ export default async function ContattiPage() {
     {
       Icon: Mail,
       title: "Email",
-      value: "info@wondersun.it",
-      href: "mailto:info@wondersun.it",
+      value: "wondersun.localescape@gmail.com",
+      href: "mailto:wondersun.localescape@gmail.com",
       color: "bg-ws-blue",
     },
-    ...(SUPPORT_WHATSAPP
-      ? [
-          {
-            Icon: MessageCircle,
-            title: "WhatsApp",
-            value: SUPPORT_WHATSAPP,
-            href: `https://wa.me/${SUPPORT_WHATSAPP.replace(/[^\d]/g, "")}`,
-            color: "bg-ws-yellow-dark",
-          },
-        ]
-      : []),
+    {
+      Icon: MessageCircle,
+      title: "Telefono / WhatsApp",
+      value: "379 378 5317",
+      href: "https://wa.me/393793785317",
+      color: "bg-ws-yellow-dark",
+    },
     {
       Icon: MapPin,
       title: "Dove siamo",
-      value: "Porto Ercole, Grosseto (GR)",
-      href: "https://maps.google.com/?q=Porto+Ercole+Grosseto",
+      value: "Via Maestrale 12, Porto Ercole (GR)",
+      href: "https://maps.google.com/?q=Via+Maestrale+12+Porto+Ercole",
       color: "bg-ws-red",
     },
   ];

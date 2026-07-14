@@ -88,10 +88,9 @@ onboarding fornitore, pagina abbonamento, dizionari i18n.
 > corretto; il brief scritto successivo (fonte di verità) ha chiarito il modello
 > a 0%/abbonamento, che è stato reso coerente ovunque.
 
-⚠️ **Ancora da riconciliare (logica, non copy):** `computeCommission` calcola
-ancora la quota come 25% del totale con split 75% al fornitore (modello
-marketplace). Sotto il modello concierge va ridefinita: il Fornitore incassa il
-prezzo pieno dell'esperienza e la "quota digitale Wondersun" pagata online dal
-Cliente è un corrispettivo separato (importo da definire con la Committente).
-Finché non è deciso l'importo, la scheda esperienza mostra ancora il breakdown
-25%/75%. **Serve la decisione sull'importo della quota digitale.**
+✅ **Risolto (conferma committente 10/07/2026).** Il Corrispettivo digitale è il
+**15%** del prezzo dell'esperienza, **a carico del Cliente** e pagato ONLINE **in
+aggiunta** (non una trattenuta sul prezzo del Fornitore). Il Fornitore incassa il
+prezzo pieno (100%), direttamente. `computeCommission` e il breakdown in UI sono
+stati aggiornati di conseguenza (default `WONDERSUN_COMMISSION_PCT=15`, niente più
+quota fissa premium). Totale a carico del Cliente = prezzo esperienza + 15%.

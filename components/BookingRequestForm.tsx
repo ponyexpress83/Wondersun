@@ -133,30 +133,36 @@ export default function BookingRequestForm({
         <div className="bg-ws-ivory rounded-xl p-3 space-y-2 mt-2">
           <div className="flex justify-between items-start gap-3 text-sm">
             <span className="text-ws-text">
-              Paghi ora online
+              Prezzo esperienza
               <span className="block text-[0.7rem] text-ws-text-light">
-                Concierge digitale Wondersun
-              </span>
-            </span>
-            <span className="font-bold text-ws-text whitespace-nowrap">
-              {formatEur(breakdown.pay_now_cents)}
-            </span>
-          </div>
-          <div className="flex justify-between items-start gap-3 text-sm border-t border-gray-100 pt-2">
-            <span className="text-ws-text">
-              Saldo al fornitore
-              <span className="block text-[0.7rem] text-ws-text-light">
-                Lo paghi sul posto, quando vivi l&apos;esperienza
+                Pagato direttamente al fornitore
               </span>
             </span>
             <span className="font-bold text-ws-text whitespace-nowrap">
               {formatEur(breakdown.pay_onsite_cents)}
             </span>
           </div>
+          <div className="flex justify-between items-start gap-3 text-sm border-t border-gray-100 pt-2">
+            <span className="text-ws-text">
+              Quota digitale Wondersun ({breakdown.commission_pct}%)
+              <span className="block text-[0.7rem] text-ws-text-light">
+                La versi online — concierge digitale
+              </span>
+            </span>
+            <span className="font-bold text-ws-text whitespace-nowrap">
+              {formatEur(breakdown.pay_now_cents)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center gap-3 text-sm border-t border-gray-200 pt-2">
+            <span className="font-semibold text-ws-text">Totale a carico tuo</span>
+            <span className="font-display text-lg font-bold text-ws-blue whitespace-nowrap">
+              {formatEur(total + breakdown.pay_now_cents)}
+            </span>
+          </div>
         </div>
         <p className="text-[0.7rem] text-ws-text-light mt-2 text-center">
-          Paghi solo quello che vivi: online versi la quota Wondersun, il resto direttamente
-          al fornitore.
+          Online versi solo la quota digitale Wondersun; il prezzo dell&apos;esperienza lo paghi
+          direttamente al fornitore.
         </p>
       </div>
 

@@ -162,28 +162,24 @@ export default async function ExperienceDetailPage({
                     <p>Esempio per {exp.min_participants} partecipanti:</p>
                     <div className="bg-ws-ivory rounded-lg p-3 space-y-1.5">
                       <div className="flex justify-between">
-                        <span>Prezzo esperienza</span>
+                        <span>Prezzo esperienza (al fornitore)</span>
                         <strong className="text-ws-text">{formatEur(totalSample)}</strong>
                       </div>
                       <div className="flex justify-between text-ws-text-light">
-                        <span>
-                          Paghi ora online{" "}
-                          {breakdown.is_high_value
-                            ? "(quota fissa)"
-                            : `(${breakdown.commission_pct}%)`}
-                        </span>
+                        <span>Quota digitale Wondersun ({breakdown.commission_pct}%) · online</span>
                         <span>{formatEur(breakdown.pay_now_cents)}</span>
                       </div>
-                      <div className="flex justify-between text-ws-text-light">
-                        <span>Saldo al fornitore in loco</span>
-                        <span>{formatEur(breakdown.pay_onsite_cents)}</span>
+                      <div className="flex justify-between border-t border-gray-200 pt-1.5">
+                        <span className="font-semibold text-ws-text">Totale a carico tuo</span>
+                        <strong className="text-ws-text">
+                          {formatEur(totalSample + breakdown.pay_now_cents)}
+                        </strong>
                       </div>
                     </div>
-                    {breakdown.is_high_value && (
-                      <p className="text-[0.7rem]">
-                        Esperienza premium: la quota Wondersun è fissa, non in percentuale.
-                      </p>
-                    )}
+                    <p className="text-[0.7rem]">
+                      Il prezzo dell&apos;esperienza lo paghi direttamente al fornitore. Online versi
+                      solo la quota digitale Wondersun (il concierge digitale).
+                    </p>
                   </div>
                 </details>
               </div>
@@ -197,8 +193,8 @@ export default async function ExperienceDetailPage({
                     </p>
                     <p className="leading-relaxed">
                       {exp.requires_request
-                        ? "Il fornitore conferma data e disponibilità o propone un'alternativa. Paghi la quota Wondersun solo dopo la conferma."
-                        : "Confermi subito la data. Paghi online la quota Wondersun e saldi il resto al fornitore sul posto."}
+                        ? "Il fornitore conferma data e disponibilità o propone un'alternativa. Paghi la quota digitale Wondersun solo dopo la conferma."
+                        : "Confermi subito la data. Online paghi solo la quota digitale Wondersun; il prezzo dell'esperienza lo paghi direttamente al fornitore."}
                     </p>
                     <p className="leading-relaxed mt-2">
                       Annullamento gratuito fino a 48 ore prima dell&apos;esperienza.

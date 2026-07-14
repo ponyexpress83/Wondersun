@@ -164,68 +164,48 @@ export const AREAS = ["Argentario", "Manciano", "Sorano", "Arcille", "Orbetello"
 export const CANCELLATION_HOURS = 48;
 
 export interface PriceBreakdown {
+  /** Prezzo dell'esperienza (Servizio Principale), dovuto interamente al Fornitore. */
   total_cents: number;
-  /** true se l'esperienza supera la soglia di alto valore (quota fissa). */
   is_high_value: boolean;
   model: "percentuale" | "fissa";
-  /** Percentuale effettiva trattenuta (per trasparenza in UI). */
+  /** Percentuale del Corrispettivo digitale (default 15%). */
   commission_pct: number;
-  /** Quota Wondersun = importo che il cliente paga ONLINE al momento (acconto). */
+  /** Corrispettivo digitale Wondersun = 15% del prezzo, a carico del cliente. */
   commission_cents: number;
-  /** Alias esplicito di commission_cents: "paghi ora" online. */
+  /** Importo pagato ONLINE dal cliente a Wondersun (= Corrispettivo digitale). */
   pay_now_cents: number;
-  /** Saldo pagato DIRETTAMENTE al fornitore al momento dell'esperienza. */
+  /** Prezzo pieno dell'esperienza, pagato DIRETTAMENTE al Fornitore. */
   pay_onsite_cents: number;
-  /** Quota fornitore = saldo in loco (alias per compatibilità DB). */
+  /** Quota fornitore = prezzo pieno (il Fornitore incassa il 100%). */
   supplier_payout_cents: number;
-  /** = commission_cents quando è premium a quota fissa, altrimenti 0. */
   high_value_fee_cents: number;
 }
 
 /**
- * Calcola la quota Wondersun secondo il modello marketplace concordato con la
- * committente (call 14/05/2026 + 23/05/2026):
+ * Modello concierge (contratti avvocato + conferma committente 10/07/2026):
  *
- * - Esperienze standard: 25% del totale.
- * - Esperienze premium oltre soglia (default €1.000): quota FISSA *al posto*
- *   della percentuale — non in aggiunta — per non arrivare a cifre assurde
- *   (es. uno yacht da €28.000 al 25% farebbe €7.000).
+ * - Il prezzo dell'esperienza è dovuto INTERAMENTE e DIRETTAMENTE al Fornitore.
+ * - Il "Corrispettivo digitale" Wondersun è il 15% del prezzo, a carico del
+ *   CLIENTE finale e pagato ONLINE, IN AGGIUNTA (non una trattenuta sul prezzo
+ *   del Fornitore, non una commissione).
  *
- * Il prezzo mostrato in vetrina è già comprensivo della quota. In fase di
- * pagamento l'importo viene scorporato: il cliente paga ONLINE solo la quota
- * Wondersun ("paghi solo quello che vivi" — il concierge digitale) e salda la
- * parte restante DIRETTAMENTE al fornitore al momento dell'esperienza.
- *
- * Valori configurabili via env: WONDERSUN_COMMISSION_PCT,
- * WONDERSUN_HIGH_VALUE_THRESHOLD, WONDERSUN_HIGH_VALUE_FIXED_FEE.
- * NB: la quota fissa premium è un placeholder — la committente la sta ancora
- * definendo (vedi call).
+ * Totale a carico del cliente = prezzo esperienza + 15%.
+ * Percentuale configurabile via env WONDERSUN_COMMISSION_PCT (default 15).
  */
-export function computeCommission(totalCents: number): PriceBreakdown {
-  const pct = Number(process.env.WONDERSUN_COMMISSION_PCT ?? 25);
-  const thresholdEur = Number(process.env.WONDERSUN_HIGH_VALUE_THRESHOLD ?? 1000);
-  const highValueFeeEur = Number(process.env.WONDERSUN_HIGH_VALUE_FIXED_FEE ?? 149);
-
-  const isHighValue = totalCents > thresholdEur * 100;
-
-  const commissionCents = isHighValue
-    ? Math.round(highValueFeeEur * 100)
-    : Math.round((totalCents * pct) / 100);
-
-  const payOnsiteCents = Math.max(0, totalCents - commissionCents);
-  const effectivePct =
-    totalCents > 0 ? Math.round((commissionCents / totalCents) * 1000) / 10 : 0;
+export function computeCommission(priceCents: number): PriceBreakdown {
+  const pct = Number(process.env.WONDERSUN_COMMISSION_PCT ?? 15);
+  const feeCents = Math.round((priceCents * pct) / 100);
 
   return {
-    total_cents: totalCents,
-    is_high_value: isHighValue,
-    model: isHighValue ? "fissa" : "percentuale",
-    commission_pct: isHighValue ? effectivePct : pct,
-    commission_cents: commissionCents,
-    pay_now_cents: commissionCents,
-    pay_onsite_cents: payOnsiteCents,
-    supplier_payout_cents: payOnsiteCents,
-    high_value_fee_cents: isHighValue ? commissionCents : 0,
+    total_cents: priceCents,
+    is_high_value: false,
+    model: "percentuale",
+    commission_pct: pct,
+    commission_cents: feeCents,
+    pay_now_cents: feeCents,
+    pay_onsite_cents: priceCents,
+    supplier_payout_cents: priceCents,
+    high_value_fee_cents: 0,
   };
 }
 
