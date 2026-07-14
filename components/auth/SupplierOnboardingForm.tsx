@@ -147,7 +147,16 @@ export default function SupplierOnboardingForm({ profileId }: Props) {
       <div className="bg-ws-blue-pale border border-ws-blue/15 rounded-lg p-3 text-xs text-ws-blue-dark">
         Inviando la candidatura prendi atto che: il primo abbonamento parte dopo 3 mesi di prova
         (€29/mese); non sono previste commissioni sui tuoi incassi — il cliente paga te
-        direttamente l&apos;esperienza.
+        direttamente l&apos;esperienza.{" "}
+        <a
+          href="/termini-fornitori"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold underline hover:text-ws-blue"
+        >
+          Leggi i Termini per i Fornitori
+        </a>
+        .
       </div>
 
       <button type="submit" disabled={submitting} className="ws-btn-primary w-full">

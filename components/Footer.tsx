@@ -28,6 +28,7 @@ export default function Footer() {
     { label: t.links.supplierArea, href: "/fornitore/dashboard" },
     { label: t.links.privacy, href: "/privacy" },
     { label: t.links.terms, href: "/termini" },
+    { label: t.links.termsSupplier, href: "/termini-fornitori" },
     { label: t.links.cookie, href: "/cookie" },
   ];
 
