@@ -24,12 +24,12 @@ export const DEMO_ACCOUNTS: Record<DemoRole, DemoAccount> = {
     fullName: "Cliente Demo",
     title: "Cliente",
     description:
-      "Naviga il catalogo, invia una richiesta di prenotazione e componi un pacchetto multi-esperienza.",
+      "Naviga il catalogo, invia una richiesta di prenotazione singola e gestisci le tue prenotazioni.",
     redirectTo: "/dashboard",
     highlights: [
       "Catalogo + scheda esperienza con breakdown prezzo",
       "Richiesta prenotazione (premium “a richiesta”)",
-      "Carrello pacchetti → N prenotazioni indipendenti",
+      "Ogni richiesta è singola, verso un solo fornitore",
     ],
   },
   fornitore: {

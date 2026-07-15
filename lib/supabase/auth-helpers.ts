@@ -8,14 +8,20 @@ import type { Profile, UserRole } from "@/lib/types";
  */
 export async function getCurrentProfile(): Promise<Profile | null> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
-  const supabase = createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  try {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
 
-  const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-  return (data as Profile) ?? null;
+    const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+    return (data as Profile) ?? null;
+  } catch {
+    // Supabase non raggiungibile / mal configurato: degrada a "non autenticato"
+    // così le pagine pubbliche restano navigabili (nessun 500/503).
+    return null;
+  }
 }
 
 export async function requireProfile(): Promise<Profile> {
