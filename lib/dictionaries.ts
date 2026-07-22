@@ -103,7 +103,7 @@ const it: Dictionary = {
     eyebrow: "Maremma · Costa d'Argento",
     titleLead: "Nessuno decide la tua vacanza",
     titleEm: "al posto tuo.",
-    lead: "Raccontaci cosa ami: la nostra AI ti suggerisce le esperienze perfette per te all'Argentario. Nessun pacchetto imposto — scegli e organizzi tu.",
+    lead: "Raccontaci cosa ami, la nostra AI crea per te esperienze uniche all'Argentario.",
     ctaExplore: "Esplora le esperienze",
     ctaHow: "Come funziona",
     searchPlaceholder: "Cerca: barca al tramonto, degustazione, trekking…",
