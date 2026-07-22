@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Mail, Phone, Instagram, Facebook, Linkedin } from "lucide-react";
+import { MapPin, Mail, Phone, Instagram, Facebook } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { getI18n } from "@/lib/i18n.server";
 
@@ -54,9 +54,16 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-3">
               {[
-                { Icon: Instagram, label: "Instagram", href: "https://instagram.com" },
-                { Icon: Facebook, label: "Facebook", href: "https://facebook.com" },
-                { Icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com" },
+                {
+                  Icon: Instagram,
+                  label: "Instagram",
+                  href: "https://www.instagram.com/wondersun_local_escape/",
+                },
+                {
+                  Icon: Facebook,
+                  label: "Facebook",
+                  href: "https://www.facebook.com/profile.php?id=61589087354209",
+                },
               ].map(({ Icon, label, href }) => (
                 <a
                   key={label}
