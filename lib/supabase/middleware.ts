@@ -29,33 +29,42 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
+    const pathname = request.nextUrl.pathname;
 
-  const requiresAuth =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/fornitore") ||
-    pathname.startsWith("/admin");
+    const requiresAuth =
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/fornitore") ||
+      pathname.startsWith("/admin");
 
-  if (requiresAuth && !user) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Protezione admin: solo ruolo admin può entrare in /admin
-  if (pathname.startsWith("/admin") && user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    if (profile?.role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    if (requiresAuth && !user) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
     }
+
+    // Protezione admin: solo ruolo admin può entrare in /admin
+    if (pathname.startsWith("/admin") && user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      if (profile?.role !== "admin") {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+  } catch (err) {
+    // Supabase irraggiungibile / mal configurato: NON far cadere l'intera app
+    // (il middleware gira su ogni route, home inclusa → un throw = 503 ovunque).
+    // Degradiamo "fail-open": le pagine protette restano comunque protette da
+    // requireProfile(), che reindirizza a /login quando il profilo è null.
+    console.warn("[middleware] Supabase non raggiungibile, degrado fail-open:", err);
+    return response;
   }
 
   return response;
