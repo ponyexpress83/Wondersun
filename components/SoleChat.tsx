@@ -34,14 +34,14 @@ interface Message {
 
 const WELCOME: Message = {
   role: "sole",
-  text: "Ciao! Sono Sole ☀️ Raccontami che vacanza sogni — mare e barca, vino in cantina, benessere, i borghi etruschi… — e ti propongo le esperienze giuste. Puoi anche parlarmi a voce con il microfono.",
+  text: "Ciao! Sono Wondersun AI ☀️ Raccontami cosa ami fare in vacanza e ti suggerirò esperienze perfette per te all'Argentario. Puoi anche parlarmi a voce con il microfono.",
 };
 
 const QUICK = [
-  "Vino al tramonto",
-  "Mare e immersioni",
+  "Barca al tramonto",
+  "Snorkeling nelle calette",
   "Relax e benessere",
-  "Borghi etruschi",
+  "Degustazione vini",
 ];
 
 export default function SoleChat() {
@@ -139,7 +139,7 @@ export default function SoleChat() {
       {/* Launcher · sole 3D */}
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Apri la chat con Sole"
+        aria-label="Apri la chat con Wondersun AI"
         className={`fixed bottom-6 right-6 z-[60] w-[68px] h-[68px] rounded-full flex items-center justify-center text-ws-blue-deeper ${
           open ? "bg-ws-blue" : "ws-sun-btn"
         }`}
@@ -164,10 +164,10 @@ export default function SoleChat() {
               <Sun size={20} className="text-ws-blue-deeper" />
             </div>
             <div className="leading-tight">
-              <p className="font-display text-lg font-bold">Sole</p>
+              <p className="font-display text-lg font-bold">Wondersun AI</p>
               <p className="text-[0.72rem] text-white/85 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                Assistente · online 24h
+                Online
               </p>
             </div>
           </div>
@@ -264,8 +264,8 @@ export default function SoleChat() {
           <div className="flex items-start gap-1.5 px-4 py-2 bg-white border-t border-gray-50 text-[0.66rem] leading-tight text-ws-text-light">
             <Info size={12} className="flex-shrink-0 mt-0.5" />
             <span>
-              Sole è un assistente basato su intelligenza artificiale — non è una persona reale. Ti
-              aiuta a scegliere, non sceglie per te.
+              Wondersun AI è un assistente basato su intelligenza artificiale — non è una persona
+              reale. Ti aiuta a scegliere, non sceglie per te.
             </span>
           </div>
 
@@ -307,7 +307,7 @@ export default function SoleChat() {
                 }
               }}
               rows={1}
-              placeholder={listening ? "Sto ascoltando…" : "Scrivi o parla a Sole…"}
+              placeholder={listening ? "Sto ascoltando…" : "Scrivi un messaggio…"}
               className="flex-1 resize-none rounded-2xl border border-gray-200 px-3.5 py-2.5 text-sm focus:outline-none focus:border-ws-blue max-h-24"
             />
             <button
