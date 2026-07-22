@@ -1,8 +1,12 @@
 /**
  * Rate limiter in-memory per route API (Allegato A § 5.2).
  *
- * Funziona per worker singolo (Vercel serverless function). Per protezione
- * distribuita su scale > 1 worker conviene Upstash Redis: TODO Sprint 4.
+ * Funziona per worker singolo (Vercel serverless function). Per il lancio va
+ * bene: ogni istanza limita in autonomia.
+ *
+ * TODO (produzione, post-lancio): migrare a uno store distribuito (Upstash
+ * Redis) per un rate limit condiviso tra tutte le istanze serverless — in
+ * ambiente multi-worker il limite in-memory è per-istanza e quindi più lasco.
  */
 type Bucket = { count: number; resetAt: number };
 const store = new Map<string, Bucket>();
