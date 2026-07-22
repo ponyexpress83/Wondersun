@@ -168,6 +168,7 @@ export const CATEGORIES = [
   "Vino & Degustazioni",
   "Sport & Avventura",
   "Cultura & Arte",
+  "Benessere",
 ] as const;
 
 export const AREAS = ["Argentario", "Manciano", "Sorano", "Arcille", "Orbetello", "Pitigliano"] as const;
@@ -176,61 +177,47 @@ export const AREAS = ["Argentario", "Manciano", "Sorano", "Arcille", "Orbetello"
 export const CANCELLATION_HOURS = 48;
 
 export interface PriceBreakdown {
+  /** Prezzo dell'esperienza (Servizio Principale), dovuto interamente al Fornitore. */
   total_cents: number;
-  /** true se l'esperienza supera la soglia di alto valore (quota fissa). */
   is_high_value: boolean;
   model: "percentuale" | "fissa";
-  /** Percentuale effettiva trattenuta (per trasparenza in UI). */
+  /** Percentuale del Corrispettivo digitale (default 15%). */
   commission_pct: number;
-  /** Quota Wondersun = importo che il cliente paga ONLINE al momento (acconto). */
+  /** Corrispettivo digitale Wondersun = 15% del prezzo, a carico del cliente. */
   commission_cents: number;
-  /** Alias esplicito di commission_cents: "paghi ora" online. */
+  /** Importo pagato ONLINE dal cliente a Wondersun (= Corrispettivo digitale). */
   pay_now_cents: number;
-  /** Saldo pagato DIRETTAMENTE al fornitore al momento dell'esperienza. */
+  /** Prezzo pieno dell'esperienza, pagato DIRETTAMENTE al Fornitore. */
   pay_onsite_cents: number;
-  /** Quota fornitore = saldo in loco (alias per compatibilità DB). */
+  /** Quota fornitore = prezzo pieno (il Fornitore incassa il 100%). */
   supplier_payout_cents: number;
-  /** = commission_cents quando è premium a quota fissa, altrimenti 0. */
   high_value_fee_cents: number;
 }
 
 /**
- * Calcola la quota Wondersun "servizio digitale" sul totale della prenotazione.
+ * Modello concierge (contratti avvocato + conferma committente 10/07/2026):
  *
- * Modello concordato con la committente nelle call 14/05 + 23/05 + 04/06/2026:
- * - **15% del totale** (call 04/06), abbassato dal 25% iniziale per puntare al
- *   volume di conversioni invece che al margine per prenotazione.
- * - **Niente quota fissa premium**: le esperienze sopra €1.000 e le strutture
- *   ricettive (hotel, camping, glamping) NON usano percentuale; per loro è
- *   previsto un canone mensile separato e nessuna prenotazione diretta in
- *   piattaforma — pagina solo "vetrina" con link esterno al fornitore.
+ * - Il prezzo dell'esperienza è dovuto INTERAMENTE e DIRETTAMENTE al Fornitore.
+ * - Il "Corrispettivo digitale" Wondersun è il 15% del prezzo, a carico del
+ *   CLIENTE finale e pagato ONLINE, IN AGGIUNTA (non una trattenuta sul prezzo
+ *   del Fornitore, non una commissione).
  *
- * Il prezzo mostrato in vetrina è già comprensivo della quota. In fase di
- * pagamento l'importo viene scorporato: il cliente paga ONLINE solo la quota
- * Wondersun ("paghi solo quello che vivi" — il concierge digitale) e salda la
- * parte restante DIRETTAMENTE al fornitore al momento dell'esperienza.
- *
- * ⚠ Avvertenza fiscale: una percentuale sul totale assomiglia strutturalmente
- * a una commissione da intermediario. Va validato col commercialista del
- * Committente che il modello "servizio digitale di prenotazione" Art. 2-bis
- * regga ugualmente con questa parametrizzazione. Vedi docs/SEPARAZIONE-DOCUMENTALE.md.
- *
- * Valore configurabile via env: WONDERSUN_COMMISSION_PCT (default 15).
+ * Totale a carico del cliente = prezzo esperienza + 15%.
+ * Percentuale configurabile via env WONDERSUN_COMMISSION_PCT (default 15).
  */
-export function computeCommission(totalCents: number): PriceBreakdown {
+export function computeCommission(priceCents: number): PriceBreakdown {
   const pct = Number(process.env.WONDERSUN_COMMISSION_PCT ?? 15);
-  const commissionCents = Math.round((totalCents * pct) / 100);
-  const payOnsiteCents = Math.max(0, totalCents - commissionCents);
+  const feeCents = Math.round((priceCents * pct) / 100);
 
   return {
-    total_cents: totalCents,
+    total_cents: priceCents,
     is_high_value: false,
     model: "percentuale",
     commission_pct: pct,
-    commission_cents: commissionCents,
-    pay_now_cents: commissionCents,
-    pay_onsite_cents: payOnsiteCents,
-    supplier_payout_cents: payOnsiteCents,
+    commission_cents: feeCents,
+    pay_now_cents: feeCents,
+    pay_onsite_cents: priceCents,
+    supplier_payout_cents: priceCents,
     high_value_fee_cents: 0,
   };
 }

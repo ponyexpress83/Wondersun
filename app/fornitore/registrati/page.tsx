@@ -87,11 +87,11 @@ export default async function SupplierSignupPage() {
             </ul>
 
             <div className="bg-ws-yellow/15 border border-ws-yellow/30 rounded-2xl p-5 mt-6">
-              <p className="text-sm font-bold text-ws-dark mb-1">Commissioni</p>
+              <p className="text-sm font-bold text-ws-dark mb-1">Come guadagni</p>
               <p className="text-sm text-ws-text">
-                25% sul totale per ogni prenotazione confermata.
-                <br />
-                Per esperienze oltre €1.000 si applica una fee fissa concordata.
+                Nessuna commissione sui tuoi incassi: il cliente paga te direttamente
+                l&apos;esperienza.
+                <br />A Wondersun versi solo il canone di abbonamento (primi 3 mesi gratis).
               </p>
             </div>
           </div>

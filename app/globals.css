@@ -5,7 +5,7 @@
 /* ============================================================
    WONDERSUN — Coastal Editorial Design System
    Payoff: "Local Escape"
-   Palette: Blu Luminoso #2E9BE8 · Giallo Sole #FFC833 · Rosso Elegante #E63946
+   Palette: Blu Luminoso #2B7DD4 · Giallo Sole #FFC533 · Rosso Elegante #B71C1C
    Typography: Cormorant Garamond (display) + Nunito Sans (body)
    ============================================================ */
 
@@ -15,13 +15,14 @@
   }
   body {
     font-family: "Nunito Sans", sans-serif;
-    background: #FDFCF7;
+    background: #FAFAF7;
     color: #2C2C3E;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Poppins", "Nunito Sans", sans-serif;
+    letter-spacing: -0.01em;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -33,36 +34,85 @@
 }
 
 @layer components {
-  .font-display { font-family: "Cormorant Garamond", serif; }
+  .font-display { font-family: "Poppins", "Nunito Sans", sans-serif; }
   .font-body { font-family: "Nunito Sans", sans-serif; }
+  .font-script { font-family: "Caveat", cursive; }
 
-  /* ── Buttons ── */
-  .ws-btn-primary {
-    background: linear-gradient(135deg, #FF6B5B 0%, #E63946 55%, #D62839 100%);
-    color: white;
+  /* CTA gialla a pillola (azione primaria nel nuovo design) */
+  .ws-btn-yellow {
+    background-color: #FFC533;
+    color: #0b1f42;
     padding: 0.875rem 2rem;
     border-radius: 9999px;
     font-weight: 800;
     font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border: none;
-    box-shadow: 0 6px 20px rgba(230, 57, 70, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+    letter-spacing: 0.02em;
+    transition: all 0.25s ease;
+    border: 2px solid #FFC533;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .ws-btn-yellow:hover {
+    background-color: #f2b41f;
+    border-color: #f2b41f;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(242, 180, 31, 0.45);
+  }
+  .ws-btn-yellow:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ── Buttons ──
+     Primario = BLU (affidabilità). Il rosso è un accento, da usare con
+     moderazione (vedi .ws-btn-accent). Forma a pillola per un look fresco. */
+  .ws-btn-primary {
+    background-color: #2B7DD4;
+    color: white;
+    padding: 0.875rem 2rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    transition: all 0.25s ease;
+    border: 2px solid #2B7DD4;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
   }
   .ws-btn-primary:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 14px 34px rgba(230, 57, 70, 0.45), inset 0 1px 0 rgba(255,255,255,0.25);
-    filter: brightness(1.06);
+    background-color: #1E5AA8;
+    border-color: #1E5AA8;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(43, 125, 212, 0.32);
   }
   .ws-btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+  }
+
+  /* Accento rosso · uso moderato (CTA speciali, urgenze) */
+  .ws-btn-accent {
+    background-color: #E53935;
+    color: white;
+    padding: 0.875rem 2rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    transition: all 0.25s ease;
+    border: 2px solid #E53935;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .ws-btn-accent:hover {
+    background-color: #C62828;
+    border-color: #C62828;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(229, 57, 53, 0.3);
   }
 
   .ws-btn-outline {
@@ -72,8 +122,7 @@
     border-radius: 9999px;
     font-weight: 700;
     font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
     transition: all 0.25s ease;
     border: 2px solid rgba(255, 255, 255, 0.65);
     display: inline-flex;
@@ -82,31 +131,30 @@
     gap: 0.5rem;
   }
   .ws-btn-outline:hover {
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: rgba(255, 255, 255, 0.16);
     border-color: white;
   }
 
   .ws-btn-blue {
-    background: linear-gradient(135deg, #4FB3F5 0%, #2E9BE8 55%, #1D7FC9 100%);
+    background-color: #2B7DD4;
     color: white;
     padding: 0.875rem 2rem;
     border-radius: 9999px;
-    font-weight: 800;
+    font-weight: 700;
     font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border: none;
-    box-shadow: 0 6px 20px rgba(46, 155, 232, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+    letter-spacing: 0.04em;
+    transition: all 0.25s ease;
+    border: 2px solid #2B7DD4;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
   }
   .ws-btn-blue:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 14px 34px rgba(46, 155, 232, 0.45), inset 0 1px 0 rgba(255,255,255,0.25);
-    filter: brightness(1.06);
+    background-color: #1E5AA8;
+    border-color: #1E5AA8;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(43, 125, 212, 0.32);
   }
   .ws-btn-blue:disabled {
     opacity: 0.5;
@@ -130,8 +178,8 @@
   }
   .ws-btn-ghost:hover {
     background-color: #f9fafb;
-    border-color: #2E9BE8;
-    color: #2E9BE8;
+    border-color: #2B7DD4;
+    color: #2B7DD4;
   }
 
   /* ── Inputs ── */
@@ -146,8 +194,8 @@
   }
   .ws-input:focus {
     outline: none;
-    border-color: #2E9BE8;
-    box-shadow: 0 0 0 3px rgba(46, 155, 232, 0.15);
+    border-color: #2B7DD4;
+    box-shadow: 0 0 0 3px rgba(43, 125, 212, 0.15);
   }
   .ws-label {
     display: block;
@@ -161,7 +209,7 @@
   .ws-section-divider {
     width: 56px;
     height: 3px;
-    background: linear-gradient(90deg, #2E9BE8, #FFC833);
+    background: linear-gradient(90deg, #2B7DD4, #FFC533);
     border-radius: 2px;
     margin: 1rem auto;
   }
@@ -179,19 +227,19 @@
     text-transform: uppercase;
   }
   .ws-badge-blue {
-    background-color: rgba(46, 155, 232, 0.08);
-    color: #2E9BE8;
-    border: 1px solid rgba(46, 155, 232, 0.18);
+    background-color: rgba(43, 125, 212, 0.08);
+    color: #2B7DD4;
+    border: 1px solid rgba(43, 125, 212, 0.18);
   }
   .ws-badge-yellow {
-    background-color: rgba(255, 200, 51, 0.12);
-    color: #9a7400;
-    border: 1px solid rgba(255, 200, 51, 0.25);
+    background-color: rgba(255, 197, 51, 0.12);
+    color: #a07800;
+    border: 1px solid rgba(255, 197, 51, 0.25);
   }
   .ws-badge-red {
-    background-color: rgba(230, 57, 70, 0.08);
-    color: #E63946;
-    border: 1px solid rgba(230, 57, 70, 0.18);
+    background-color: rgba(183, 28, 28, 0.08);
+    color: #B71C1C;
+    border: 1px solid rgba(183, 28, 28, 0.18);
   }
   .ws-badge-green {
     background-color: rgba(34, 139, 81, 0.1);
@@ -205,37 +253,16 @@
   }
   .ws-navbar.scrolled {
     background-color: white !important;
-    box-shadow: 0 2px 20px rgba(46, 155, 232, 0.08);
+    box-shadow: 0 2px 20px rgba(43, 125, 212, 0.08);
   }
 
-  /* ── Experience cards · 3D ── */
+  /* ── Experience cards ── */
   .ws-exp-card {
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
-    transform-style: preserve-3d;
-    will-change: transform;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
   }
   .ws-exp-card:hover {
-    transform: translateY(-10px) rotateX(2deg) rotateY(-1.5deg) scale(1.02);
-    box-shadow:
-      0 30px 60px -12px rgba(46, 155, 232, 0.28),
-      0 8px 24px rgba(230, 57, 70, 0.08);
-  }
-  /* Ingresso fluido e scaglionato delle card (richiesta committente 11/05:
-     "card moderne con animazioni fluide, dinamico ma pulito"). */
-  @media (prefers-reduced-motion: no-preference) {
-    .ws-exp-card {
-      animation: ws-card-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-    }
-    .ws-exp-card:nth-child(2) { animation-delay: 0.07s; }
-    .ws-exp-card:nth-child(3) { animation-delay: 0.14s; }
-    .ws-exp-card:nth-child(4) { animation-delay: 0.21s; }
-    .ws-exp-card:nth-child(5) { animation-delay: 0.28s; }
-    .ws-exp-card:nth-child(6) { animation-delay: 0.35s; }
-    .ws-exp-card:nth-child(n+7) { animation-delay: 0.42s; }
-  }
-  @keyframes ws-card-in {
-    from { opacity: 0; transform: translateY(26px); }
-    to { opacity: 1; transform: translateY(0); }
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 56px rgba(43, 125, 212, 0.13);
   }
 
   /* ── Scroll fade-in animation ── */
@@ -263,53 +290,63 @@
   }
   .ws-sidebar-item:hover {
     background-color: #f3f4f6;
-    color: #2E9BE8;
+    color: #2B7DD4;
   }
   .ws-sidebar-item.active {
-    background-color: #EAF6FE;
-    color: #2E9BE8;
+    background-color: #e8f2fc;
+    color: #2B7DD4;
   }
 
-  /* ── Testo sfumato (titoli accattivanti) ── */
-  .ws-gradient-text {
-    background: linear-gradient(110deg, #2E9BE8 0%, #FFB347 55%, #E63946 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  /* ── Sole · sole 3D + chat ── */
+  .ws-sun-btn {
+    position: relative;
+    background: radial-gradient(circle at 35% 30%, #ffe89b, #ffc533 46%, #f2a41f 78%, #e07b12);
+    box-shadow:
+      0 12px 30px rgba(224, 123, 18, 0.5),
+      0 0 0 6px rgba(255, 197, 51, 0.16),
+      inset -6px -9px 15px rgba(150, 74, 8, 0.4),
+      inset 7px 9px 16px rgba(255, 255, 255, 0.6);
+    animation: ws-sun-bob 4.2s ease-in-out infinite;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  .ws-gradient-text-sun {
-    background: linear-gradient(110deg, #FFC833 0%, #FF8A5C 60%, #E63946 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  /* ── Blob decorativi animati ── */
-  .ws-blob {
+  .ws-sun-btn::before {
+    content: "";
     position: absolute;
+    inset: -11px;
     border-radius: 9999px;
-    filter: blur(70px);
-    opacity: 0.5;
-    pointer-events: none;
-    animation: ws-blob-float 9s ease-in-out infinite;
+    z-index: -1;
+    background: repeating-conic-gradient(#ffd75e 0deg 11deg, transparent 11deg 30deg);
+    -webkit-mask: radial-gradient(circle, transparent 55%, #000 56%);
+    mask: radial-gradient(circle, transparent 55%, #000 56%);
+    animation: ws-sun-spin 16s linear infinite;
   }
-  .ws-blob-sun { background: radial-gradient(circle, #FFC833 0%, transparent 70%); }
-  .ws-blob-sky { background: radial-gradient(circle, #62B8F2 0%, transparent 70%); }
-  .ws-blob-coral { background: radial-gradient(circle, #FF6B5B 0%, transparent 70%); }
-  @keyframes ws-blob-float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(24px, -20px) scale(1.08); }
-    66% { transform: translate(-18px, 14px) scale(0.94); }
+  .ws-sun-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    z-index: -1;
+    box-shadow: 0 0 0 0 rgba(255, 197, 51, 0.55);
+    animation: ws-sun-pulse 2.8s ease-out infinite;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .ws-blob { animation: none; }
-  }
+  .ws-sun-btn:hover { transform: scale(1.08) rotate(4deg); }
+  .ws-sun-btn:active { transform: scale(0.96); }
 
-  /* ── Tile gradiente per gli step "come funziona" ── */
-  .ws-step-tile {
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+  .ws-typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 9999px;
+    background: #9aa6b8;
+    animation: ws-typing 1.2s infinite;
   }
-  .ws-step-tile:hover {
-    transform: translateY(-6px) scale(1.04);
-  }
+  .ws-typing-dot:nth-child(2) { animation-delay: 0.18s; }
+  .ws-typing-dot:nth-child(3) { animation-delay: 0.36s; }
+}
+
+@keyframes ws-sun-spin { to { transform: rotate(360deg); } }
+@keyframes ws-sun-bob { 50% { transform: translateY(-6px); } }
+@keyframes ws-sun-pulse { to { box-shadow: 0 0 0 20px rgba(255, 197, 51, 0); } }
+@keyframes ws-typing {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
 }

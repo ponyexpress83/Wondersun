@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, Calendar, User, Package, Compass } from "lucide-react";
+import { Heart, Calendar, User, Compass } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ClientBookingActions from "@/components/dashboard/ClientBookingActions";
 import PrivacyActions from "@/components/dashboard/PrivacyActions";
@@ -32,7 +32,6 @@ export default async function ClientDashboardPage() {
     { href: "/esperienze", label: "Scopri esperienze", icon: Compass },
     { href: "/dashboard?tab=bookings", label: "Le mie prenotazioni", icon: Calendar },
     { href: "/dashboard?tab=favorites", label: "I miei preferiti", icon: Heart },
-    { href: "/dashboard/pacchetti", label: "I miei pacchetti", icon: Package },
   ];
 
   const upcomingBookings = (bookings as any[]).filter((b) =>

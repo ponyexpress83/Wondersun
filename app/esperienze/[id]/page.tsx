@@ -4,8 +4,6 @@ import { Clock, Users, Star, MapPin, ArrowLeft, Calendar, ShieldCheck } from "lu
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingRequestForm from "@/components/BookingRequestForm";
-import AddToPackageButton from "@/components/AddToPackageButton";
-import SupplierContactCard from "@/components/SupplierContactCard";
 import { getExperienceBySlug } from "@/lib/data/experiences";
 import { getCurrentProfile } from "@/lib/supabase/auth-helpers";
 import { formatEur, computeCommission } from "@/lib/types";
@@ -31,41 +29,8 @@ export default async function ExperienceDetailPage({
   const totalSample = exp.price_cents * exp.min_participants;
   const breakdown = computeCommission(totalSample);
 
-  // Structured data per i motori di ricerca (Allegato A § 6 · SEO on-page)
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": exp.is_bookable ? "TouristAttraction" : "LocalBusiness",
-    name: exp.title,
-    description: exp.short_description ?? exp.description?.slice(0, 200),
-    image: exp.cover_image_url ?? undefined,
-    address: exp.location_name
-      ? { "@type": "PostalAddress", addressLocality: exp.location_name, addressRegion: "GR", addressCountry: "IT" }
-      : undefined,
-    geo:
-      exp.latitude && exp.longitude
-        ? { "@type": "GeoCoordinates", latitude: exp.latitude, longitude: exp.longitude }
-        : undefined,
-    aggregateRating:
-      exp.rating > 0
-        ? { "@type": "AggregateRating", ratingValue: Number(exp.rating).toFixed(1), reviewCount: exp.reviews_count }
-        : undefined,
-    offers:
-      exp.is_bookable && exp.price_cents > 0
-        ? {
-            "@type": "Offer",
-            price: (exp.price_cents / 100).toFixed(2),
-            priceCurrency: "EUR",
-            availability: "https://schema.org/InStock",
-          }
-        : undefined,
-  };
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       <Navbar profile={profile} variant="solid" />
       <main className="pt-24 pb-20 bg-ws-ivory min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -161,27 +126,6 @@ export default async function ExperienceDetailPage({
             </article>
 
             <aside className="lg:sticky lg:top-24 self-start">
-              {!exp.is_bookable ? (
-                <>
-                  <SupplierContactCard
-                    businessName={exp.supplier?.business_name ?? exp.title}
-                    phone={exp.supplier?.contact_phone}
-                    email={exp.supplier?.contact_email}
-                    website={exp.supplier?.website}
-                  />
-                  {exp.price_cents > 0 && (
-                    <div className="mt-4 bg-white rounded-2xl shadow-ws-card border border-gray-100 p-5 text-center">
-                      <p className="text-xs text-ws-text-light">Prezzo indicativo</p>
-                      <p className="font-display text-3xl font-bold text-ws-blue">
-                        {formatEur(exp.price_cents)}
-                        <span className="text-sm font-normal text-ws-text-light ml-1">
-                          {exp.price_type === "pro_capite" ? "a persona" : "a gruppo"}
-                        </span>
-                      </p>
-                    </div>
-                  )}
-                </>
-              ) : (
               <div className="bg-white rounded-2xl shadow-ws-card border border-gray-100 p-6">
                 <div className="flex items-baseline gap-2 mb-1">
                   <span className="font-display text-4xl font-bold text-ws-blue">
@@ -194,7 +138,7 @@ export default async function ExperienceDetailPage({
                 <p className="text-xs text-ws-text-light mb-6">
                   {exp.requires_request
                     ? "Esperienza a richiesta: nessun addebito fino alla conferma del fornitore."
-                    : "Prenotazione diretta: paghi online solo la quota Wondersun."}
+                    : "Richiesta di prenotazione: paghi online solo la quota Wondersun (concierge digitale)."}
                 </p>
 
                 <BookingRequestForm
@@ -207,7 +151,6 @@ export default async function ExperienceDetailPage({
                   requiresRequest={exp.requires_request}
                 />
 
-                <AddToPackageButton experienceId={exp.id} isAuthenticated={!!profile} />
 
                 <details className="mt-6 border-t border-gray-100 pt-4">
                   <summary className="text-xs font-semibold text-ws-text-light cursor-pointer flex items-center gap-2">
@@ -217,45 +160,39 @@ export default async function ExperienceDetailPage({
                     <p>Esempio per {exp.min_participants} partecipanti:</p>
                     <div className="bg-ws-ivory rounded-lg p-3 space-y-1.5">
                       <div className="flex justify-between">
-                        <span>Prezzo esperienza</span>
+                        <span>Prezzo esperienza (al fornitore)</span>
                         <strong className="text-ws-text">{formatEur(totalSample)}</strong>
                       </div>
                       <div className="flex justify-between text-ws-text-light">
-                        <span>
-                          Paghi ora online{" "}
-                          {breakdown.is_high_value
-                            ? "(quota fissa)"
-                            : `(${breakdown.commission_pct}%)`}
-                        </span>
+                        <span>Quota digitale Wondersun ({breakdown.commission_pct}%) · online</span>
                         <span>{formatEur(breakdown.pay_now_cents)}</span>
                       </div>
-                      <div className="flex justify-between text-ws-text-light">
-                        <span>Saldo al fornitore in loco</span>
-                        <span>{formatEur(breakdown.pay_onsite_cents)}</span>
+                      <div className="flex justify-between border-t border-gray-200 pt-1.5">
+                        <span className="font-semibold text-ws-text">Totale a carico tuo</span>
+                        <strong className="text-ws-text">
+                          {formatEur(totalSample + breakdown.pay_now_cents)}
+                        </strong>
                       </div>
                     </div>
-                    {breakdown.is_high_value && (
-                      <p className="text-[0.7rem]">
-                        Esperienza premium: la quota Wondersun è fissa, non in percentuale.
-                      </p>
-                    )}
+                    <p className="text-[0.7rem]">
+                      Il prezzo dell&apos;esperienza lo paghi direttamente al fornitore. Online versi
+                      solo la quota digitale Wondersun (il concierge digitale).
+                    </p>
                   </div>
                 </details>
               </div>
-              )}
 
-              {exp.is_bookable && (
               <div className="mt-4 bg-ws-blue-pale rounded-2xl p-5 border border-ws-blue/15">
                 <div className="flex items-start gap-3">
                   <Calendar size={18} className="text-ws-blue flex-shrink-0 mt-0.5" />
                   <div className="text-xs text-ws-blue-dark">
                     <p className="font-bold mb-1">
-                      {exp.requires_request ? "Prenotazione a richiesta" : "Prenotazione diretta"}
+                      {exp.requires_request ? "Prenotazione a richiesta" : "Richiesta di prenotazione"}
                     </p>
                     <p className="leading-relaxed">
                       {exp.requires_request
-                        ? "Il fornitore conferma data e disponibilità o propone un'alternativa. Paghi la quota Wondersun solo dopo la conferma."
-                        : "Confermi subito la data. Paghi online la quota Wondersun e saldi il resto al fornitore sul posto."}
+                        ? "Il fornitore conferma data e disponibilità o propone un'alternativa. Paghi la quota digitale Wondersun solo dopo la conferma."
+                        : "Confermi subito la data. Online paghi solo la quota digitale Wondersun; il prezzo dell'esperienza lo paghi direttamente al fornitore."}
                     </p>
                     <p className="leading-relaxed mt-2">
                       Annullamento gratuito fino a 48 ore prima dell&apos;esperienza.
@@ -263,7 +200,6 @@ export default async function ExperienceDetailPage({
                   </div>
                 </div>
               </div>
-              )}
             </aside>
           </div>
         </div>

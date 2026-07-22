@@ -68,3 +68,29 @@ riscrittura in Next.js, recuperando:
 - Logica preferiti/pacchetti (rimappata sul nuovo schema)
 
 Il codice v2 originale è stato accantonato e non più utilizzato.
+
+## 5. Modello definitivo: concierge digitale, no 25% (brief 09/07/2026)
+
+Il brief "portare la demo al 100%" fissa come **vincolo non negoziabile** il
+modello **concierge digitale**:
+
+- Wondersun NON è un tour operator e NON vende pacchetti; ogni richiesta è
+  singola verso un solo fornitore (art. 33 Cod. Turismo).
+- Pagamenti separati: online il Cliente paga **solo la quota digitale Wondersun**;
+  l'esperienza la paga **direttamente al Fornitore**. Wondersun non incassa il totale.
+- I Fornitori pagano un **abbonamento (€29/mese + attivazione)**, **non** una
+  commissione del 25%.
+
+Copy allineato a questo modello in: homepage (sezione fornitori), Termini §3,
+onboarding fornitore, pagina abbonamento, dizionari i18n.
+
+> Nota di percorso: in un messaggio precedente era stato indicato il 25% come
+> corretto; il brief scritto successivo (fonte di verità) ha chiarito il modello
+> a 0%/abbonamento, che è stato reso coerente ovunque.
+
+✅ **Risolto (conferma committente 10/07/2026).** Il Corrispettivo digitale è il
+**15%** del prezzo dell'esperienza, **a carico del Cliente** e pagato ONLINE **in
+aggiunta** (non una trattenuta sul prezzo del Fornitore). Il Fornitore incassa il
+prezzo pieno (100%), direttamente. `computeCommission` e il breakdown in UI sono
+stati aggiornati di conseguenza (default `WONDERSUN_COMMISSION_PCT=15`, niente più
+quota fissa premium). Totale a carico del Cliente = prezzo esperienza + 15%.

@@ -1,31 +1,38 @@
 import type { MetadataRoute } from "next";
 import { listExperiences } from "@/lib/data/experiences";
 
-export const dynamic = "force-dynamic";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wondersun.it";
 
-/** Sitemap dinamica (Allegato A § 6 · SEO on-page). */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wondersun.it";
-
-  const staticPages: MetadataRoute.Sitemap = [
-    { url: base, changeFrequency: "weekly", priority: 1 },
-    { url: `${base}/esperienze`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${base}/fornitore/registrati`, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.2 },
-    { url: `${base}/termini`, changeFrequency: "yearly", priority: 0.2 },
-    { url: `${base}/cookie`, changeFrequency: "yearly", priority: 0.2 },
+  const staticPaths: { path: string; priority: number }[] = [
+    { path: "", priority: 1 },
+    { path: "/esperienze", priority: 0.9 },
+    { path: "/chi-siamo", priority: 0.7 },
+    { path: "/fornitore/registrati", priority: 0.7 },
+    { path: "/privacy", priority: 0.3 },
+    { path: "/termini", priority: 0.3 },
+    { path: "/cookie", priority: 0.3 },
   ];
 
+  const staticEntries: MetadataRoute.Sitemap = staticPaths.map((s) => ({
+    url: `${siteUrl}${s.path}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: s.priority,
+  }));
+
+  let experienceEntries: MetadataRoute.Sitemap = [];
   try {
-    const experiences = await listExperiences({});
-    const expPages: MetadataRoute.Sitemap = experiences.map((e) => ({
-      url: `${base}/esperienze/${e.slug}`,
-      lastModified: e.updated_at ? new Date(e.updated_at) : undefined,
+    const list = await listExperiences({});
+    experienceEntries = list.map((e) => ({
+      url: `${siteUrl}/esperienze/${e.slug}`,
+      lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.8,
+      priority: 0.6,
     }));
-    return [...staticPages, ...expPages];
   } catch {
-    return staticPages;
+    // in caso di errore data-layer, resta la sitemap statica
   }
+
+  return [...staticEntries, ...experienceEntries];
 }

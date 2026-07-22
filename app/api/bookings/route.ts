@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const breakdown = computeCommission(total);
 
     // Esperienze "a richiesta": il fornitore deve confermare → stato "richiesta".
-    // Esperienze a prenotazione diretta: confermate subito, pronte al pagamento.
+    // Esperienze a conferma immediata: confermate subito, pronte al pagamento.
     const requiresRequest = Boolean(experience.requires_request);
     const initialStatus = requiresRequest ? "richiesta" : "confermata";
 

@@ -1,65 +1,32 @@
 import { Search, Heart, Calendar, MessageSquare, Sparkles } from "lucide-react";
+import { getI18n } from "@/lib/i18n.server";
 
-const TILE_GRADIENTS = [
-  "from-ws-blue to-ws-blue-dark shadow-[0_10px_26px_rgba(46,155,232,0.35)]",
-  "from-ws-red-light to-ws-red shadow-[0_10px_26px_rgba(230,57,70,0.3)]",
-  "from-ws-yellow to-ws-yellow-dark shadow-[0_10px_26px_rgba(255,200,51,0.35)]",
-  "from-ws-blue-light to-ws-blue shadow-[0_10px_26px_rgba(46,155,232,0.35)]",
-  "from-ws-red to-ws-red-dark shadow-[0_10px_26px_rgba(230,57,70,0.3)]",
-];
-
-const STEPS = [
-  {
-    icon: Search,
-    title: "Esplora il catalogo",
-    description: "Scopri le esperienze selezionate da Wondersun nella Maremma Toscana.",
-  },
-  {
-    icon: Heart,
-    title: "Scegli le tue preferite",
-    description: "Salva le esperienze nei preferiti e componi il tuo pacchetto su misura.",
-  },
-  {
-    icon: Calendar,
-    title: "Invia richiesta",
-    description: "Indica data e numero di partecipanti. Il fornitore conferma la disponibilità.",
-  },
-  {
-    icon: MessageSquare,
-    title: "Conferma & paga",
-    description: "Una volta confermata la prenotazione paghi in sicurezza con Stripe.",
-  },
-  {
-    icon: Sparkles,
-    title: "Vivi l'esperienza",
-    description: "Ricevi tutti i dettagli via email e goditi la tua avventura maremmana.",
-  },
-];
+const ICONS = [Search, Heart, Calendar, MessageSquare, Sparkles];
 
 export default function HowItWorksSection() {
+  const t = getI18n().dict.how;
+
   return (
     <section id="come-funziona" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="ws-badge ws-badge-yellow mb-4">Come Funziona</span>
+          <span className="ws-badge ws-badge-yellow mb-4">{t.badge}</span>
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-ws-dark mt-4 mb-4">
-            Cinque passi verso il tuo <span className="ws-gradient-text italic">Local Escape</span>
+            {t.titleLead} <span className="text-ws-blue italic">{t.titleEm}</span>
           </h2>
           <div className="ws-section-divider" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {STEPS.map((step, idx) => {
-            const Icon = step.icon;
+          {t.steps.map((step, idx) => {
+            const Icon = ICONS[idx] ?? Sparkles;
             return (
               <div key={step.title} className="text-center relative">
                 <div className="relative inline-flex">
-                  <div
-                    className={`ws-step-tile w-20 h-20 rounded-3xl bg-gradient-to-br ${TILE_GRADIENTS[idx % TILE_GRADIENTS.length]} flex items-center justify-center mb-4`}
-                  >
-                    <Icon size={32} className="text-white drop-shadow" />
+                  <div className="w-20 h-20 rounded-2xl bg-ws-blue-pale flex items-center justify-center mb-4">
+                    <Icon size={32} className="text-ws-blue" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-white text-ws-dark font-bold flex items-center justify-center text-sm shadow-md border-2 border-ws-yellow">
+                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-ws-yellow text-ws-dark font-bold flex items-center justify-center text-sm">
                     {idx + 1}
                   </div>
                 </div>
