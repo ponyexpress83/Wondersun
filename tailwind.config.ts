@@ -30,9 +30,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ['"Poppins"', '"Nunito Sans"', "sans-serif"],
-        body: ['"Nunito Sans"', "sans-serif"],
-        script: ['"Caveat"', "cursive"],
+        display: ["var(--font-poppins)", "var(--font-nunito)", "sans-serif"],
+        body: ["var(--font-nunito)", "sans-serif"],
+        script: ["var(--font-caveat)", "cursive"],
       },
       boxShadow: {
         "ws-card": "0 4px 24px rgba(43, 125, 212, 0.07)",

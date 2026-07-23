@@ -1,10 +1,35 @@
 import type { Metadata } from "next";
+import { Poppins, Nunito_Sans, Caveat } from "next/font/google";
 import { Toaster } from "sonner";
 import SoleChat from "@/components/SoleChat";
 import CookieBanner from "@/components/CookieBanner";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import { getLocale } from "@/lib/i18n.server";
 import "./globals.css";
+
+// Font self-hosted via next/font (GDPR: nessuna richiesta a Google a runtime,
+// i file font sono serviti dal nostro dominio). Esposti come CSS variables.
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+const nunitoSans = Nunito_Sans({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-nunito",
+  display: "swap",
+  // Next non ha le metriche di override per "Nunito Sans": disattiviamo il
+  // fallback automatico per evitare il warning di build (il font resta self-hosted).
+  adjustFontFallback: false,
+});
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wondersun.it";
 const ogImage =
@@ -93,15 +118,8 @@ const JSON_LD = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = getLocale();
   return (
-    <html lang={locale}>
+    <html lang={locale} className={`${poppins.variable} ${nunitoSans.variable} ${caveat.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Caveat:wght@600;700&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
