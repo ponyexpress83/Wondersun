@@ -15,6 +15,7 @@ interface Props {
 export default function SignupForm({ role, redirectTo }: Props) {
   const router = useRouter();
   const [fullName, setFullName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -24,6 +25,24 @@ export default function SignupForm({ role, redirectTo }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Gate anagrafico: la registrazione richiede almeno 14 anni (art. 2-quinquies
+    // Codice Privacy). La data di nascita serve solo al controllo e NON viene
+    // salvata (minimizzazione dei dati, art. 5 GDPR).
+    if (!birthDate) {
+      setError("Inserisci la tua data di nascita.");
+      return;
+    }
+    const birth = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age -= 1;
+    if (age < 14) {
+      setError("Per registrarti a Wondersun devi avere almeno 14 anni.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const supabase = createSupabaseBrowserClient();
@@ -92,6 +111,25 @@ export default function SignupForm({ role, redirectTo }: Props) {
           className="ws-input"
           autoComplete="name"
         />
+      </div>
+
+      <div>
+        <label htmlFor="birthDate" className="ws-label">
+          Data di nascita
+        </label>
+        <input
+          id="birthDate"
+          type="date"
+          required
+          value={birthDate}
+          onChange={(e) => setBirthDate(e.target.value)}
+          max={new Date().toISOString().split("T")[0]}
+          className="ws-input"
+          autoComplete="bday"
+        />
+        <p className="text-xs text-ws-text-light mt-1">
+          Devi avere almeno 14 anni. Non conserviamo questo dato.
+        </p>
       </div>
 
       <div>
