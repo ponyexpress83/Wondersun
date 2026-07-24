@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Natura e avventura">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5aa06a"/><stop offset="1" stop-color="#2f6b3c"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="480" fill="url(#g)"/>
+  <circle cx="660" cy="90" r="150" fill="#ffffff" opacity="0.12"/>
+  <circle cx="660" cy="90" r="52" fill="#ffe27a" opacity="0.9"/>
+  <g transform="translate(400,250)" fill="#ffffff" opacity="0.92">
+    <path d="M-140,60 L-30,-70 L40,20 L80,-30 L160,60 Z"/>
+    <path d="M-30,-70 L-6,-42 L-54,-42 Z" fill="#eafaff"/>
+  </g>
+  <text x="400" y="450" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="30" font-weight="800" fill="#ffffff" opacity="0.9">NATURA E AVVENTURA</text>
+</svg>

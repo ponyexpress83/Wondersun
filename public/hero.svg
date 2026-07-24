@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Costa dell'Argentario">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a9def0"/>
+      <stop offset="0.55" stop-color="#d7f0fb"/>
+      <stop offset="1" stop-color="#eafaff"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6cc6e8"/>
+      <stop offset="0.5" stop-color="#3aa7dd"/>
+      <stop offset="1" stop-color="#2b86c4"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff2b0" stop-opacity="0.95"/>
+      <stop offset="0.5" stop-color="#ffe27a" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffe27a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fb9a6"/>
+      <stop offset="1" stop-color="#6fa38f"/>
+    </linearGradient>
+    <linearGradient id="hillMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6ea36a"/>
+      <stop offset="1" stop-color="#4d8353"/>
+    </linearGradient>
+    <linearGradient id="hillNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f8a49"/>
+      <stop offset="1" stop-color="#356b39"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1600" height="900" fill="url(#sky)"/>
+
+  <!-- Sun + glow -->
+  <circle cx="1200" cy="240" r="300" fill="url(#sunGlow)"/>
+  <circle cx="1200" cy="240" r="86" fill="#ffd54a"/>
+
+  <!-- Soft clouds -->
+  <g fill="#ffffff" opacity="0.7">
+    <ellipse cx="360" cy="150" rx="130" ry="34"/>
+    <ellipse cx="470" cy="170" rx="90" ry="26"/>
+    <ellipse cx="920" cy="110" rx="110" ry="28"/>
+  </g>
+
+  <!-- Far promontory (Monte Argentario haze) -->
+  <path d="M0,520 Q260,400 520,470 Q820,555 1120,455 Q1360,380 1600,470 L1600,560 L0,560 Z" fill="url(#hillFar)" opacity="0.9"/>
+
+  <!-- Sea -->
+  <rect y="520" width="1600" height="240" fill="url(#sea)"/>
+  <!-- Sun reflection on sea -->
+  <g fill="#eafaff" opacity="0.35">
+    <ellipse cx="1200" cy="560" rx="150" ry="10"/>
+    <ellipse cx="1200" cy="590" rx="110" ry="8"/>
+    <ellipse cx="1200" cy="620" rx="80" ry="7"/>
+  </g>
+  <!-- Wave strokes -->
+  <g stroke="#eafaff" stroke-width="3" stroke-linecap="round" opacity="0.5" fill="none">
+    <path d="M120,600 q30,-12 60,0 t60,0"/>
+    <path d="M420,660 q30,-12 60,0 t60,0"/>
+    <path d="M780,630 q30,-12 60,0 t60,0"/>
+    <path d="M300,710 q30,-12 60,0 t60,0"/>
+  </g>
+
+  <!-- Sailboats -->
+  <g>
+    <g transform="translate(560,548)">
+      <path d="M0,0 L0,-60 L46,-6 Z" fill="#ffffff"/>
+      <path d="M-4,-4 L-40,-4 L-30,14 L14,14 Z" fill="#e7edf2"/>
+      <rect x="-2" y="-62" width="3" height="62" fill="#c7d2da"/>
+    </g>
+    <g transform="translate(880,566) scale(0.8)">
+      <path d="M0,0 L0,-60 L46,-6 Z" fill="#ffffff"/>
+      <path d="M-4,-4 L-40,-4 L-30,14 L14,14 Z" fill="#e7edf2"/>
+      <rect x="-2" y="-62" width="3" height="62" fill="#c7d2da"/>
+    </g>
+  </g>
+
+  <!-- Mid promontory (right) -->
+  <path d="M980,760 L980,560 Q1120,470 1300,520 Q1470,565 1600,520 L1600,760 Z" fill="url(#hillMid)"/>
+  <!-- Near coastal hill (left) -->
+  <path d="M0,760 L0,540 Q170,470 340,530 Q470,575 560,560 L560,760 Z" fill="url(#hillNear)"/>
+
+  <!-- Foreground land with mimosa vegetation -->
+  <path d="M0,900 L0,700 Q300,640 640,700 Q1000,760 1600,690 L1600,900 Z" fill="#3e7a3f"/>
+  <g fill="#f4c73a">
+    <circle cx="120" cy="740" r="10"/><circle cx="150" cy="726" r="8"/><circle cx="96" cy="726" r="8"/><circle cx="132" cy="712" r="7"/>
+    <circle cx="1360" cy="726" r="10"/><circle cx="1392" cy="712" r="8"/><circle cx="1336" cy="712" r="8"/><circle cx="1372" cy="700" r="7"/>
+    <circle cx="740" cy="758" r="9"/><circle cx="768" cy="746" r="7"/><circle cx="716" cy="746" r="7"/>
+  </g>
+  <g fill="#2f5f31" opacity="0.5">
+    <path d="M120,742 L118,700 M150,728 L149,700 M96,728 L97,704" stroke="#2f5f31" stroke-width="3"/>
+  </g>
+</svg>

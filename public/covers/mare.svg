@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Esperienze in mare">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5bb8e6"/><stop offset="1" stop-color="#2372b8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="480" fill="url(#g)"/>
+  <circle cx="660" cy="90" r="150" fill="#ffffff" opacity="0.12"/>
+  <circle cx="660" cy="90" r="52" fill="#ffe27a" opacity="0.9"/>
+  <g transform="translate(400,215)" fill="#ffffff">
+    <path d="M0,-70 L0,10 L60,-2 Z"/><path d="M-6,10 L-72,10 L-56,44 L28,44 Z" opacity="0.88"/>
+    <rect x="-4" y="-72" width="4" height="82" opacity="0.8"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.55">
+    <path d="M120,340 q40,-18 80,0 t80,0 t80,0"/>
+    <path d="M420,392 q40,-18 80,0 t80,0"/>
+  </g>
+  <text x="400" y="450" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-size="30" font-weight="800" fill="#ffffff" opacity="0.9">MARE &amp; COSTA</text>
+</svg>

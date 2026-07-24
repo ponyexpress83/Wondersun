@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Clock, Heart } from "lucide-react";
+import CardImage from "@/components/CardImage";
 import type { ExperienceWithSupplier } from "@/lib/types";
 
 interface ExperienceCardProps {
@@ -29,10 +30,10 @@ export default function ExperienceCard({ experience: e }: ExperienceCardProps) {
       className="ws-exp-card group block bg-white rounded-3xl overflow-hidden shadow-ws-card border border-gray-100"
     >
       <div className="relative h-48 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={e.cover_image_url ?? "/placeholder-cover.svg"}
+        <CardImage
+          src={e.cover_image_url}
           alt={e.title}
+          category={e.category}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <span
