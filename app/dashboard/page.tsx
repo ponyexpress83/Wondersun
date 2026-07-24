@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Heart, Calendar, User, Compass } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import ClientBookingActions from "@/components/dashboard/ClientBookingActions";
 import PrivacyActions from "@/components/dashboard/PrivacyActions";
 import BookingsFilters from "@/components/dashboard/BookingsFilters";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
@@ -69,38 +68,7 @@ export default async function ClientDashboardPage() {
             </Link>
           </div>
         ) : (
-          <BookingsFilters
-            bookings={bookings as any[]}
-            renderRow={(b) => (
-              <li key={b.id} className="px-6 py-4 flex items-center gap-4">
-                {b.experience?.cover_image_url && (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={b.experience.cover_image_url}
-                    alt=""
-                    className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
-                  />
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-ws-text truncate">{b.experience?.title}</p>
-                  <p className="text-xs text-ws-text-light">
-                    {b.booking_code} · {b.participants} partecipanti ·{" "}
-                    {new Date(b.requested_date).toLocaleDateString("it-IT")}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <BookingStatusBadge status={b.status} />
-                  <p className="text-sm font-bold text-ws-text mt-1">{formatEur(b.total_cents)}</p>
-                  <ClientBookingActions
-                    bookingId={(b as any).id}
-                    status={(b as any).status}
-                    alternativeDate={(b as any).alternative_date}
-                    payNowCents={(b as any).commission_cents ?? 0}
-                  />
-                </div>
-              </li>
-            )}
-          />
+          <BookingsFilters bookings={bookings as any[]} />
         )}
       </section>
 
@@ -168,19 +136,4 @@ function StatCard({
       </p>
     </div>
   );
-}
-
-function BookingStatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; cls: string }> = {
-    richiesta: { label: "In attesa fornitore", cls: "ws-badge-yellow" },
-    confermata: { label: "Confermata", cls: "ws-badge-green" },
-    rifiutata: { label: "Rifiutata", cls: "ws-badge-red" },
-    data_alternativa: { label: "Data alternativa proposta", cls: "ws-badge-yellow" },
-    pagata: { label: "Pagata", cls: "ws-badge-green" },
-    completata: { label: "Completata", cls: "ws-badge-blue" },
-    annullata: { label: "Annullata", cls: "ws-badge-red" },
-    no_show: { label: "No-show", cls: "ws-badge-red" },
-  };
-  const meta = map[status] ?? { label: status, cls: "ws-badge-blue" };
-  return <span className={`ws-badge ${meta.cls}`}>{meta.label}</span>;
 }

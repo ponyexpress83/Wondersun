@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { formatEur } from "@/lib/types";
+import ClientBookingActions from "@/components/dashboard/ClientBookingActions";
 
 interface Booking {
   id: string;
@@ -11,6 +12,8 @@ interface Booking {
   participants: number;
   requested_date: string;
   total_cents: number;
+  commission_cents?: number | null;
+  alternative_date?: string | null;
   experience?: { title?: string; cover_image_url?: string } | null;
 }
 
@@ -22,13 +25,23 @@ const FILTERS = [
   { key: "annullate", label: "Annullate", match: ["annullata", "rifiutata", "no_show"] },
 ] as const;
 
-export default function BookingsFilters({
-  bookings,
-  renderRow,
-}: {
-  bookings: Booking[];
-  renderRow: (b: Booking) => React.ReactNode;
-}) {
+const STATUS_MAP: Record<string, { label: string; cls: string }> = {
+  richiesta: { label: "In attesa fornitore", cls: "ws-badge-yellow" },
+  confermata: { label: "Confermata", cls: "ws-badge-green" },
+  rifiutata: { label: "Rifiutata", cls: "ws-badge-red" },
+  data_alternativa: { label: "Data alternativa proposta", cls: "ws-badge-yellow" },
+  pagata: { label: "Pagata", cls: "ws-badge-green" },
+  completata: { label: "Completata", cls: "ws-badge-blue" },
+  annullata: { label: "Annullata", cls: "ws-badge-red" },
+  no_show: { label: "No-show", cls: "ws-badge-red" },
+};
+
+function BookingStatusBadge({ status }: { status: string }) {
+  const meta = STATUS_MAP[status] ?? { label: status, cls: "ws-badge-blue" };
+  return <span className={`ws-badge ${meta.cls}`}>{meta.label}</span>;
+}
+
+export default function BookingsFilters({ bookings }: { bookings: Booking[] }) {
   const [filter, setFilter] = useState<string>("all");
 
   const filtered = bookings.filter((b) => {
@@ -65,7 +78,37 @@ export default function BookingsFilters({
           </div>
         </div>
       ) : (
-        <ul className="divide-y divide-gray-100">{filtered.map((b) => renderRow(b))}</ul>
+        <ul className="divide-y divide-gray-100">
+          {filtered.map((b) => (
+            <li key={b.id} className="px-6 py-4 flex items-center gap-4">
+              {b.experience?.cover_image_url && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={b.experience.cover_image_url}
+                  alt=""
+                  className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-ws-text truncate">{b.experience?.title}</p>
+                <p className="text-xs text-ws-text-light">
+                  {b.booking_code} · {b.participants} partecipanti ·{" "}
+                  {new Date(b.requested_date).toLocaleDateString("it-IT")}
+                </p>
+              </div>
+              <div className="text-right">
+                <BookingStatusBadge status={b.status} />
+                <p className="text-sm font-bold text-ws-text mt-1">{formatEur(b.total_cents)}</p>
+                <ClientBookingActions
+                  bookingId={b.id}
+                  status={b.status}
+                  alternativeDate={b.alternative_date ?? undefined}
+                  payNowCents={b.commission_cents ?? 0}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </>
   );

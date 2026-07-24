@@ -416,13 +416,13 @@ revoke execute on function public.handle_new_user() from public, anon, authentic
 -- HELPER: ruolo dell'utente corrente
 -- ─────────────────────────────────────────────────────────────────────────
 create or replace function public.current_role()
-returns user_role language sql stable
+returns user_role language sql stable security definer
 set search_path = public, pg_temp as $$
   select role from public.profiles where id = auth.uid();
 $$;
 
 create or replace function public.is_admin()
-returns boolean language sql stable
+returns boolean language sql stable security definer
 set search_path = public, pg_temp as $$
   select coalesce(public.current_role() = 'admin', false);
 $$;
