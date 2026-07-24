@@ -3,11 +3,12 @@ import { Briefcase, ThumbsUp, Star, ShieldCheck, ArrowRight } from "lucide-react
 import { getI18n } from "@/lib/i18n.server";
 import SoleHeroCard from "@/components/SoleHeroCard";
 
-// Sfondo hero, tutto self-hosted (nessuna richiesta esterna, GDPR ok):
-// - se presente una foto reale (public/hero.jpg) viene usata quella;
-// - altrimenti l'illustrazione vettoriale della costa (public/hero.svg),
-//   sempre disponibile.
-const HERO_PHOTO = "/hero.jpg";
+// Sfondo hero, tutto self-hosted (nessuna richiesta esterna, GDPR ok).
+// Ordine di preferenza: foto reale (public/hero.jpg o .png se caricata),
+// altrimenti l'illustrazione vettoriale della costa (public/hero.svg),
+// sempre presente. Il primo layer che carica ha la precedenza.
+const HERO_PHOTO_JPG = "/hero.jpg";
+const HERO_PHOTO_PNG = "/hero.png";
 const HERO_SCENE = "/hero.svg";
 
 const STAT_ICONS = [Briefcase, ThumbsUp, Star, ShieldCheck];
@@ -26,7 +27,9 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#9fd0f2] via-[#d6ecfb] to-[#f7ecd0]" />
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url('${HERO_PHOTO}'), url('${HERO_SCENE}')` }}
+          style={{
+            backgroundImage: `url('${HERO_PHOTO_JPG}'), url('${HERO_PHOTO_PNG}'), url('${HERO_SCENE}')`,
+          }}
           aria-hidden
         />
         <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/35 to-transparent" />
