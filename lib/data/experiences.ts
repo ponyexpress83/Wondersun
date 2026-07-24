@@ -100,6 +100,12 @@ export async function listExperiences(
       console.warn("[experiences] fallback to mock:", error?.message);
       return applyFilters(MOCK_EXPERIENCES, filter);
     }
+    // DB raggiungibile ma vuoto (es. seed non ancora caricato): mostriamo i
+    // dati demo così il catalogo non appare mai vuoto durante la presentazione.
+    if (data.length === 0) {
+      console.warn("[experiences] DB vuoto: uso i dati demo");
+      return applyFilters(MOCK_EXPERIENCES, filter);
+    }
     return data as ExperienceWithSupplier[];
   } catch (e) {
     console.warn("[experiences] db error, fallback to mock", e);
