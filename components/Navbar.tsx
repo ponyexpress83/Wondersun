@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import type { Profile } from "@/lib/types";
 import { useLocale } from "@/components/LocaleProvider";
 import { getDictionary } from "@/lib/dictionaries";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface NavbarProps {
   profile?: Profile | null;
@@ -57,7 +56,7 @@ export default function Navbar({ profile }: NavbarProps) {
         <div className="flex items-center justify-between h-20">
           {/* Brand */}
           <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-            <Logo className="w-11 h-11 drop-shadow-sm" />
+            <Logo className="w-14 h-14 drop-shadow-sm" />
             <div className="flex flex-col leading-none">
               <span className="font-display text-2xl font-extrabold tracking-tight text-ws-blue-dark">
                 WONDER<span className="text-ws-yellow-dark">SUN</span>
@@ -91,7 +90,6 @@ export default function Navbar({ profile }: NavbarProps) {
 
           {/* Right cluster */}
           <div className="hidden lg:flex items-center gap-4">
-            <LanguageSwitcher />
             <Link
               href={profile ? dashboardHref : "/login"}
               aria-label="Preferiti"
@@ -178,7 +176,6 @@ export default function Navbar({ profile }: NavbarProps) {
               </Link>
             ))}
             <div className="flex items-center justify-between pt-3">
-              <LanguageSwitcher />
               {profile ? (
                 <button onClick={handleLogout} className="ws-btn-ghost text-ws-red">
                   <LogOut size={15} /> {t.logout}

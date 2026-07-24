@@ -3,8 +3,10 @@ import Footer from "@/components/Footer";
 import ExperienceCard from "@/components/ExperienceCard";
 import CatalogSearchBar from "@/components/catalog/CatalogSearchBar";
 import CatalogSidebar from "@/components/catalog/CatalogSidebar";
+import CatalogSort from "@/components/catalog/CatalogSort";
 import TrustBar from "@/components/TrustBar";
-import { listExperiences } from "@/lib/data/experiences";
+import { listExperiences, type ExperienceSort } from "@/lib/data/experiences";
+import { CATEGORY_GROUPS } from "@/lib/types";
 import { getCurrentProfile } from "@/lib/supabase/auth-helpers";
 
 export const metadata = {
@@ -19,16 +21,29 @@ interface SearchParams {
   q?: string;
   minPrice?: string;
   maxPrice?: string;
+  dur?: string;
+  sort?: string;
 }
 
 export default async function CatalogPage({ searchParams }: { searchParams: SearchParams }) {
   const profile = await getCurrentProfile();
+  // La sidebar usa i 5 gruppi di categoria del mockup: espandiamo il gruppo
+  // nelle categorie interne. I link legacy (footer) passano invece la categoria
+  // tecnica diretta, che resta supportata.
+  const group = CATEGORY_GROUPS.find((g) => g.value === searchParams.category);
+  const dur = { short: { maxHours: 2 }, half: { minHours: 2, maxHours: 4 }, full: { minHours: 4 } }[
+    searchParams.dur ?? ""
+  ];
   const experiences = await listExperiences({
-    category: searchParams.category,
+    categories: group?.cats,
+    category: group ? undefined : searchParams.category,
     area: searchParams.area,
     query: searchParams.q,
     minPrice: searchParams.minPrice ? Number(searchParams.minPrice) : undefined,
     maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
+    minHours: dur?.minHours,
+    maxHours: dur?.maxHours,
+    sort: searchParams.sort as ExperienceSort | undefined,
   });
 
   return (
@@ -63,6 +78,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
               <span className="font-extrabold text-ws-blue-dark">{experiences.length}</span>{" "}
               esperienze trovate
             </p>
+            <CatalogSort />
           </div>
 
           {/* Sidebar + grid */}

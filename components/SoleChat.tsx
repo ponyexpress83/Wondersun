@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Info,
 } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 import { formatEur } from "@/lib/types";
 
 interface Suggestion {
@@ -167,8 +168,8 @@ export default function SoleChat() {
         <div className="fixed bottom-[104px] right-6 z-[60] w-[min(92vw,390px)] h-[min(75vh,620px)] bg-white rounded-[22px] shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-ws-blue-dark to-ws-blue text-white px-4 py-3.5 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-ws-yellow-light to-ws-yellow-dark shadow-inner">
-              <Sun size={20} className="text-ws-blue-deeper" />
+            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-white shadow-inner">
+              <Logo className="w-9 h-9" />
             </div>
             <div className="leading-tight">
               <p className="font-display text-lg font-bold">Wondersun AI</p>

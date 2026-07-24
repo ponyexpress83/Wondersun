@@ -3,7 +3,11 @@ import { Briefcase, ThumbsUp, Star, ShieldCheck, ArrowRight } from "lucide-react
 import { getI18n } from "@/lib/i18n.server";
 import SoleHeroCard from "@/components/SoleHeroCard";
 
-const HERO_IMAGE =
+// Foto hero: usa prima quella self-hosted (public/hero.jpg) — quando presente
+// è affidabile e senza richieste esterne. Se manca, il layer sotto (foto costa)
+// la sostituisce; se anche quello non carica, resta il gradiente scenico.
+const HERO_LOCAL = "/hero.jpg";
+const HERO_FALLBACK =
   "https://images.unsplash.com/photo-1533514114760-4389f572ad05?w=1920&q=85&auto=format&fit=crop";
 
 const STAT_ICONS = [Briefcase, ThumbsUp, Star, ShieldCheck];
@@ -15,15 +19,17 @@ export default function HeroSection() {
 
   return (
     <section className="relative">
-      {/* Hero photo */}
+      {/* Hero background: gradiente scenico cielo→mare→sabbia SEMPRE visibile
+          (mai bianco), con la foto della costa sopra. Uso background-image così
+          se la foto non carica si degrada al gradiente, senza icona "rotta". */}
       <div className="relative overflow-hidden pt-20">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={HERO_IMAGE}
-          alt="Argentario — Maremma Toscana"
-          className="absolute inset-0 h-full w-full object-cover object-center"
+        <div className="absolute inset-0 bg-gradient-to-b from-[#9fd0f2] via-[#d6ecfb] to-[#f7ecd0]" />
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${HERO_LOCAL}'), url('${HERO_FALLBACK}')` }}
+          aria-hidden
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/35 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-28 lg:pb-36">

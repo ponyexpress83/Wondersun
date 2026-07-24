@@ -1,6 +1,7 @@
 "use client";
 
-import { Sun, Send } from "lucide-react";
+import { Send } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 import { useLocale } from "@/components/LocaleProvider";
 
 /**
@@ -20,9 +21,7 @@ export default function SoleHeroCard() {
       aria-label={en ? "Chat with Wondersun AI" : "Chatta con Wondersun AI"}
     >
       <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-50">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-ws-yellow-light to-ws-yellow-dark flex items-center justify-center">
-          <Sun size={20} className="text-ws-blue-deeper" />
-        </div>
+        <Logo className="w-10 h-10 flex-shrink-0" />
         <div>
           <p className="font-display font-bold text-ws-blue-dark leading-none">Wondersun AI</p>
           <p className="text-xs text-green-600 font-semibold flex items-center gap-1.5 mt-1">

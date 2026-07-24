@@ -171,6 +171,24 @@ export const CATEGORIES = [
   "Benessere",
 ] as const;
 
+/**
+ * Gruppi di categorie mostrati nel filtro del catalogo (5 voci, come da mockup
+ * cliente). Ogni gruppo mappa una o più categorie interne: es. "Enogastronomia"
+ * include anche "Vino & Degustazioni", "Natura e avventura" include "Sport &
+ * Avventura", così nessuna esperienza resta non filtrabile.
+ */
+export const CATEGORY_GROUPS: {
+  value: string;
+  label: string;
+  cats: string[];
+}[] = [
+  { value: "mare", label: "Esperienze in mare", cats: ["Mare & Costa"] },
+  { value: "cultura", label: "Cultura e storia", cats: ["Cultura & Arte"] },
+  { value: "enogastronomia", label: "Enogastronomia", cats: ["Enogastronomia", "Vino & Degustazioni"] },
+  { value: "natura", label: "Natura e avventura", cats: ["Natura & Avventura", "Sport & Avventura"] },
+  { value: "benessere", label: "Benessere e relax", cats: ["Benessere"] },
+];
+
 export const AREAS = ["Argentario", "Manciano", "Sorano", "Arcille", "Orbetello", "Pitigliano"] as const;
 
 /** Ore minime di preavviso per l'annullamento gratuito (call 23/05/2026). */
