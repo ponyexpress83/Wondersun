@@ -29,6 +29,8 @@ export default function HeroSection() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: `url('${HERO_PHOTO_JPG}'), url('${HERO_PHOTO_PNG}'), url('${HERO_SCENE}')`,
+            // Resa più luminosa e vivida, come le immagini di riferimento della cliente.
+            filter: "brightness(1.08) saturate(1.12)",
           }}
           aria-hidden
         />
