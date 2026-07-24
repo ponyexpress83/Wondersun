@@ -4,6 +4,7 @@ import { Clock, Users, Star, MapPin, ArrowLeft, Calendar, ShieldCheck } from "lu
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingRequestForm from "@/components/BookingRequestForm";
+import CardImage from "@/components/CardImage";
 import { getExperienceBySlug } from "@/lib/data/experiences";
 import { getCurrentProfile } from "@/lib/supabase/auth-helpers";
 import { formatEur, computeCommission } from "@/lib/types";
@@ -44,10 +45,10 @@ export default async function ExperienceDetailPage({
           <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-10">
             <article>
               <div className="relative h-[420px] rounded-3xl overflow-hidden shadow-ws-card mb-8">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={exp.cover_image_url ?? "/placeholder-cover.svg"}
+                <CardImage
+                  src={exp.cover_image_url}
                   alt={exp.title}
+                  category={exp.category}
                   className="w-full h-full object-cover"
                 />
                 {exp.tag && (
