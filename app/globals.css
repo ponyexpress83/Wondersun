@@ -350,3 +350,20 @@
   0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
   30% { opacity: 1; transform: translateY(-4px); }
 }
+
+/* ── Blob decorativi (sfondo) ──────────────────────────────────────────────
+   CSS globale (fuori da @layer, così non viene mai rimosso dal tree-shaking).
+   SENZA position:absolute i div .ws-blob w-/h- occupavano spazio reale nel
+   flusso → grande vuoto bianco in cima alle pagine (evidente su mobile).
+   Il contenitore deve avere `relative` (+ `overflow-hidden`). */
+.ws-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+.ws-blob-sky { background: #7fb9ee; }
+.ws-blob-sun { background: #ffd23f; }
+.ws-blob-coral { background: #f28fa0; }
