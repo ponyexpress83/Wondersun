@@ -62,7 +62,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
               </p>
             </div>
             <p className="font-script text-3xl sm:text-4xl text-ws-blue leading-none">
-              Vivi la Maremma{" "}
+              Vivi la Maremma Toscana{" "}
               <span className="underline decoration-ws-yellow decoration-4 underline-offset-4">
                 come non l&apos;hai mai vista
               </span>

@@ -59,8 +59,8 @@ export default function DestinationsSection() {
             Quattro anime della <span className="ws-gradient-text italic">Maremma</span>
           </h2>
           <p className="text-ws-text-light max-w-2xl mx-auto">
-            Dalla costa selvaggia dell&apos;Argentario ai borghi del tufo nell&apos;entroterra. Ogni zona
-            è un mondo a sé, con i suoi artigiani e i suoi sapori.
+            Dal mare all&apos;entroterra, tra coste selvagge e borghi del tufo. Ogni zona è un mondo
+            a sé, con i suoi artigiani e i suoi sapori.
           </p>
         </div>
 
