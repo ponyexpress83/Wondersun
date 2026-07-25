@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AdminSupplierActions from "@/components/dashboard/AdminSupplierActions";
-import SeedMontautoButton from "@/components/admin/SeedMontautoButton";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Supplier } from "@/lib/types";
@@ -73,7 +72,6 @@ export default async function AdminSuppliersPage({
           <Link href="/admin/fornitori/nuovo" className="ws-btn-blue text-sm">
             <Store size={15} /> Nuovo fornitore
           </Link>
-          <SeedMontautoButton />
         </div>
       </div>
 

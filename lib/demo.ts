@@ -81,10 +81,7 @@ export async function provisionDemoAccount(role: DemoRole): Promise<{ userId: st
   await ensureProfile(admin, userId, account);
 
   if (role === "fornitore") {
-    await ensureSupplierWithExperience(admin, userId);
-    // Le due schede vetrina d'esempio (omaggio concordato con la committente 05/06):
-    // un agriturismo e un ristorante in modalità "contatto diretto".
-    await ensureVetrinaShowcase(admin);
+    await ensureMontautoSupplier(admin, userId);
   }
 
   return { userId };
@@ -151,49 +148,116 @@ async function ensureProfile(
   if (error) throw new Error(`upsert profilo demo fallito: ${error.message}`);
 }
 
-async function ensureSupplierWithExperience(
+// ── Fonte di verità: fornitore demo REALE = Tenuta Montauto ──────────────────
+// Allineato ai dati già in produzione (Supabase). Il provisioning è idempotente:
+// aggiorna l'anagrafica del fornitore ai valori reali e inserisce le 4 esperienze
+// solo se mancano (NON sovrascrive eventuali modifiche fatte a mano in prod).
+const COVER_BASE =
+  "https://ipunxusmsdsuzfqnbpum.supabase.co/storage/v1/object/public/experience-covers";
+
+const MONTAUTO_SUPPLIER = {
+  business_name: "Tenuta Montauto",
+  vat_number: "01259100533",
+  registered_office: "Località Montauto, 58011 Capalbio (GR)",
+  city: "Capalbio",
+  province: "GR",
+  postal_code: "58011",
+  description:
+    "Tenuta Montauto — azienda vitivinicola biologica a Capalbio, sulla Costa d'Argento. Degustazioni in cantina e barricaia tra i vigneti dell'Argentario.",
+  contact_email: "demo.fornitore@wondersun.it",
+  contact_phone: "+393793785317",
+  mode: "prenotabile",
+  status: "approvato",
+  subscription_status: "trial",
+};
+
+const MONTAUTO_EXPERIENCES = [
+  {
+    slug: "montauto-degustazione-light",
+    title: "Degustazione Light",
+    short_description: "Visita alla cantina e alla barricaia con degustazione di 3 vini.",
+    description:
+      "Un primo assaggio della Tenuta Montauto: visita guidata alla cantina e alla barricaia e degustazione di tre nostri vini.",
+    price_cents: 2500,
+    duration_label: "1 ora",
+    duration_hours: 1,
+    cover_image_url: `${COVER_BASE}/cover-light.jpg`,
+  },
+  {
+    slug: "montauto-degustazione-classica",
+    title: "Degustazione Classica",
+    short_description:
+      "Tour guidato di cantina e barricaia, 4 vini e olio EVO biologico IGP Toscano.",
+    description:
+      "Tour guidato della cantina e della barricaia con illustrazione dei principi di vinificazione e della filosofia di Montauto. Degustazione di quattro vini e del nostro olio extravergine di oliva biologico IGP Toscano.",
+    price_cents: 4000,
+    duration_label: "1 ora e 30",
+    duration_hours: 1.5,
+    cover_image_url: `${COVER_BASE}/cover-classica.jpg`,
+  },
+  {
+    slug: "montauto-degustazione-montauto",
+    title: "Degustazione Montauto",
+    short_description:
+      "Tour guidato, 4 vini, olio EVO bio e tagliere di salumi e formaggi locali.",
+    description:
+      "Tour guidato della cantina e della barricaia con illustrazione dei principi di vinificazione e della filosofia di Montauto. Degustazione di quattro vini e di olio extravergine biologico IGP Toscano, con tagliere di salumi e formaggi locali accompagnato da bruschette.",
+    price_cents: 5000,
+    duration_label: "1 ora e 30",
+    duration_hours: 1.5,
+    cover_image_url: `${COVER_BASE}/cover-montauto.jpg`,
+  },
+  {
+    slug: "montauto-country-tasting",
+    title: "Country Tasting",
+    short_description: "Safari tra i vigneti, tour, 4 vini + 1 cru, olio EVO e tagliere.",
+    description:
+      "L'esperienza più completa: safari in fuoristrada tra i vigneti, tour guidato della cantina e della barricaia con illustrazione dei principi di vinificazione e della filosofia di Montauto. Degustazione di quattro vini più un cru o una vecchia annata, olio extravergine biologico IGP Toscano e tagliere di salumi e formaggi locali con bruschette.",
+    price_cents: 7500,
+    duration_label: "2 ore e 30",
+    duration_hours: 2.5,
+    cover_image_url: `${COVER_BASE}/cover-country.jpg`,
+  },
+];
+
+async function ensureMontautoSupplier(
   admin: ReturnType<typeof createSupabaseAdminClient>,
   profileId: string,
 ): Promise<void> {
   const { data: existing, error: readErr } = await admin
     .from("suppliers")
-    .select("id, status, subscription_status")
+    .select("id")
     .eq("profile_id", profileId)
     .maybeSingle();
   if (readErr) throw new Error(`lettura supplier demo fallita: ${readErr.message}`);
 
+  const supplierData = {
+    profile_id: profileId,
+    ...MONTAUTO_SUPPLIER,
+    status_notes: "Account demo — Tenuta Montauto (auto-approvato)",
+    approved_at: new Date().toISOString(),
+  };
+
   let supplierId: string;
   if (existing) {
     supplierId = existing.id;
-    await admin
-      .from("suppliers")
-      .update({
-        status: "approvato",
-        subscription_status: "trial",
-        status_notes: "Account demo — auto-approvato",
-        approved_at: new Date().toISOString(),
-      })
-      .eq("id", supplierId);
+    await admin.from("suppliers").update(supplierData).eq("id", supplierId);
+
+    // Short-circuit: se le 4 esperienze reali ci sono già, evita lavoro inutile
+    // a ogni login demo (era una delle cause della lentezza del fornitore).
+    const { count } = await admin
+      .from("experiences")
+      .select("id", { count: "exact", head: true })
+      .eq("supplier_id", supplierId)
+      .in(
+        "slug",
+        MONTAUTO_EXPERIENCES.map((e) => e.slug),
+      );
+    if ((count ?? 0) >= MONTAUTO_EXPERIENCES.length) return;
   } else {
     const inserted = await admin
       .from("suppliers")
-      .insert({
-        profile_id: profileId,
-        business_name: "Tramonti Maremma · Demo",
-        vat_number: "IT00000000000",
-        registered_office: "Via del Porto 1, Porto Ercole",
-        city: "Porto Ercole",
-        province: "GR",
-        postal_code: "58018",
-        description:
-          "Operatore demo per la presentazione Wondersun. Esperienze sulla Costa d'Argento.",
-        contact_email: "demo.fornitore@wondersun.it",
-        contact_phone: "+39 000 0000000",
-        status: "approvato",
-        status_notes: "Account demo — auto-approvato",
-        approved_at: new Date().toISOString(),
-        subscription_status: "trial",
-      })
+      .insert(supplierData)
       .select("id")
       .single();
     if (inserted.error || !inserted.data) {
@@ -202,152 +266,28 @@ async function ensureSupplierWithExperience(
     supplierId = inserted.data.id;
   }
 
-  const slug = "tramonto-in-barca-argentario-demo";
-  const { data: expExisting } = await admin
-    .from("experiences")
-    .select("id")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (!expExisting) {
-    const { error: expErr } = await admin.from("experiences").insert({
-      supplier_id: supplierId,
-      slug,
-      title: "Tramonto in barca all'Argentario",
-      short_description: "2 ore di navigazione tra Porto Ercole e Cala Galera con calice di vermentino.",
-      description:
-        "Salpiamo al pomeriggio dal porto di Cala Galera e costeggiamo la Rocca aldobrandesca fino a vivere il tramonto da mare aperto. A bordo skipper locale, calice di vermentino e taglierino tipico maremmano. Esperienza pensata per coppie e piccoli gruppi.",
-      category: "Mare & Costa",
-      tag: "Più Prenotata",
-      tag_color: "#E63946",
-      duration_label: "2 ore",
-      duration_hours: 2,
-      min_participants: 2,
-      max_participants: 6,
-      price_cents: 9000,
-      price_type: "pro_capite",
-      location_name: "Porto Ercole",
-      location_area: "Argentario",
-      cover_image_url:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=80&auto=format&fit=crop",
-      requires_request: true,
-      rating: 4.9,
-      reviews_count: 38,
-      status: "pubblicata",
-    });
-    if (expErr) throw new Error(`insert esperienza demo fallita: ${expErr.message}`);
-  }
-}
-
-/**
- * Due schede vetrina d'esempio (omaggio 05/06): fornitore in modalità
- * "vetrina" con agriturismo e ristorante a contatto diretto. Idempotente.
- */
-async function ensureVetrinaShowcase(
-  admin: ReturnType<typeof createSupabaseAdminClient>,
-): Promise<void> {
-  const account: DemoAccount = {
-    role: "fornitore",
-    email: "demo.vetrina@wondersun.it",
-    password: DEMO_PASSWORD,
-    fullName: "Vetrina Demo",
-    title: "Vetrina",
-    description: "",
-    redirectTo: "/fornitore/dashboard",
-    highlights: [],
-  };
-  const userId = await ensureAuthUser(admin, account);
-  await ensureProfile(admin, userId, account);
-
-  const { data: existing } = await admin
-    .from("suppliers")
-    .select("id")
-    .eq("profile_id", userId)
-    .maybeSingle();
-
-  let supplierId: string;
-  if (existing) {
-    supplierId = existing.id;
-    await admin
-      .from("suppliers")
-      .update({ mode: "vetrina", status: "approvato" })
-      .eq("id", supplierId);
-  } else {
-    const inserted = await admin
-      .from("suppliers")
-      .insert({
-        profile_id: userId,
-        business_name: "Maremma Ospitalità · Demo",
-        city: "Manciano",
-        province: "GR",
-        description:
-          "Struttura dimostrativa in modalità vetrina: i clienti contattano direttamente la struttura.",
-        contact_email: "demo.vetrina@wondersun.it",
-        contact_phone: "+39 0564 000000",
-        website: "https://example.com",
-        mode: "vetrina",
-        status: "approvato",
-        status_notes: "Account demo vetrina — auto-approvato",
-        approved_at: new Date().toISOString(),
-        subscription_status: "trial",
-      })
-      .select("id")
-      .single();
-    if (inserted.error || !inserted.data) {
-      throw new Error(`insert supplier vetrina demo fallito: ${inserted.error?.message}`);
-    }
-    supplierId = inserted.data.id;
-  }
-
-  const schede = [
-    {
-      slug: "agriturismo-le-querce-maremma-demo",
-      title: "Agriturismo Le Querce di Maremma",
-      short_description:
-        "Camere e colazione contadina tra gli ulivi di Manciano. Contatto diretto con la struttura.",
-      description:
-        "Casale dell'Ottocento ristrutturato tra le colline di Manciano: sette camere, piscina panoramica, colazione con prodotti dell'azienda agricola. Prenotazione e disponibilità direttamente con la struttura — telefono, WhatsApp o sito ufficiale.",
-      category: "Natura & Avventura",
-      location_name: "Manciano",
-      location_area: "Manciano",
-      price_cents: 0,
-      cover_image_url:
-        "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=1200&q=80&auto=format&fit=crop",
-    },
-    {
-      slug: "osteria-del-porto-demo",
-      title: "Osteria del Porto · cucina di mare",
-      short_description:
-        "Pescato del giorno e vermentino a Porto Santo Stefano. Prenota direttamente al telefono.",
-      description:
-        "Osteria storica sul porto: crudo di pesce locale, spaghetti alle vongole veraci e la cantina di vermentini della Costa d'Argento. Tavoli limitati: la prenotazione avviene direttamente con il ristorante via telefono o WhatsApp.",
-      category: "Enogastronomia",
-      location_name: "Porto Santo Stefano",
-      location_area: "Argentario",
-      price_cents: 0,
-      cover_image_url:
-        "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=1200&q=80&auto=format&fit=crop",
-    },
-  ];
-
-  for (const scheda of schede) {
+  // Inserisci le 4 esperienze solo se il loro slug non esiste già (idempotente,
+  // non sovrascrive i dati reali di Montauto in produzione).
+  for (const exp of MONTAUTO_EXPERIENCES) {
     const { data: expExisting } = await admin
       .from("experiences")
       .select("id")
-      .eq("slug", scheda.slug)
+      .eq("slug", exp.slug)
       .maybeSingle();
     if (expExisting) continue;
     const { error } = await admin.from("experiences").insert({
       supplier_id: supplierId,
-      ...scheda,
-      duration_label: null,
-      min_participants: 1,
-      max_participants: 99,
-      price_type: "gruppo",
-      requires_request: false,
-      is_bookable: false,
+      ...exp,
+      category: "Enogastronomia",
+      location_name: "Capalbio",
+      location_area: "Manciano",
+      price_type: "pro_capite",
+      min_participants: 2,
+      max_participants: 10,
+      requires_request: true,
+      is_bookable: true,
       status: "pubblicata",
     });
-    if (error) throw new Error(`insert scheda vetrina demo fallita: ${error.message}`);
+    if (error) throw new Error(`insert esperienza Montauto demo fallita: ${error.message}`);
   }
 }
