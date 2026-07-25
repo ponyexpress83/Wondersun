@@ -9,7 +9,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export const metadata = {
   title: "Diventa Fornitore",
   description:
-    "Pubblica le tue esperienze su Wondersun e raggiungi turisti in Maremma. 3 mesi gratis poi €29/mese.",
+    "Pubblica le tue esperienze su Wondersun e raggiungi turisti in Maremma. Iscrizione gratuita, poi €29/mese.",
 };
 
 export default async function SupplierSignupPage() {
@@ -45,7 +45,7 @@ export default async function SupplierSignupPage() {
           </h1>
           <p className="text-lg text-white/80 max-w-2xl">
             Pubblica i tuoi tour, raggiungi nuovi clienti in Maremma e gestisci tutto da
-            un&apos;unica dashboard. 3 mesi gratis, poi €29 al mese.
+            un&apos;unica dashboard. Iscrizione gratuita, poi €29 al mese.
           </p>
         </div>
       </div>
@@ -60,8 +60,8 @@ export default async function SupplierSignupPage() {
               {[
                 {
                   Icon: Sparkles,
-                  title: "3 mesi gratuiti",
-                  text: "Provi tutto senza impegno. L'abbonamento parte solo al 91° giorno.",
+                  title: "Iscrizione gratuita",
+                  text: "Crei l'account e pubblichi le tue esperienze senza costi iniziali. Poi il canone è di €29/mese.",
                 },
                 {
                   Icon: Store,
@@ -91,7 +91,7 @@ export default async function SupplierSignupPage() {
               <p className="text-sm text-ws-text">
                 Nessuna commissione sui tuoi incassi: il cliente paga te direttamente
                 l&apos;esperienza.
-                <br />A Wondersun versi solo il canone di abbonamento (primi 3 mesi gratis).
+                <br />A Wondersun versi solo il canone di abbonamento: iscrizione gratuita, poi €29/mese.
               </p>
             </div>
           </div>

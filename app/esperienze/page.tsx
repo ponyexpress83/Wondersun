@@ -58,13 +58,13 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
                 Catalogo Esperienze
               </h1>
               <p className="text-ws-text-light mt-2 max-w-xl">
-                Scopri e prenota le migliori esperienze selezionate per te all&apos;Argentario.
+                Scopri e prenota le migliori esperienze selezionate per te in Maremma Toscana.
               </p>
             </div>
             <p className="font-script text-3xl sm:text-4xl text-ws-blue leading-none">
-              Vivi l&apos;Argentario{" "}
+              Vivi la Maremma{" "}
               <span className="underline decoration-ws-yellow decoration-4 underline-offset-4">
-                come non l&apos;hai mai visto
+                come non l&apos;hai mai vista
               </span>
             </p>
           </header>

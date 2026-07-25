@@ -33,8 +33,8 @@ export default function SoleHeroCard() {
       <div className="px-5 py-5 space-y-3 bg-ws-blue-pale/30">
         <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-gray-100 px-4 py-3 text-sm text-ws-text">
           {en
-            ? "Hi! I'm Wondersun AI ☀️ Tell me what you love and I'll suggest the perfect experiences for you around the Argentario."
-            : "Ciao! Sono Wondersun AI ☀️ Raccontami cosa ami fare in vacanza e ti suggerirò esperienze perfette per te all'Argentario."}
+            ? "Hi! I'm Wondersun AI ☀️ Tell me what you love and I'll suggest the perfect experiences for you across the Tuscan Maremma."
+            : "Ciao! Sono Wondersun AI ☀️ Raccontami cosa ami fare in vacanza e ti suggerirò esperienze perfette per te in Maremma Toscana."}
         </div>
         <div className="ml-auto max-w-[80%] rounded-2xl rounded-tr-sm bg-ws-blue text-white px-4 py-3 text-sm">
           {en

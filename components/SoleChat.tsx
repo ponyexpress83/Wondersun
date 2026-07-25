@@ -35,7 +35,7 @@ interface Message {
 
 const WELCOME: Message = {
   role: "sole",
-  text: "Ciao! Sono Wondersun AI ☀️ Raccontami cosa ami fare in vacanza e ti suggerirò esperienze perfette per te all'Argentario. Puoi anche parlarmi a voce con il microfono.",
+  text: "Ciao! Sono Wondersun AI ☀️ Raccontami cosa ami fare in vacanza e ti suggerirò esperienze perfette per te in Maremma Toscana. Puoi anche parlarmi a voce con il microfono.",
 };
 
 const QUICK = [

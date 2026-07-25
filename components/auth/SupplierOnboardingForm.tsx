@@ -182,9 +182,9 @@ export default function SupplierOnboardingForm({ profileId }: Props) {
       </div>
 
       <div className="bg-ws-blue-pale border border-ws-blue/15 rounded-lg p-3 text-xs text-ws-blue-dark">
-        Inviando la candidatura prendi atto che: il primo abbonamento parte dopo 3 mesi di prova
-        (€29/mese); non sono previste commissioni sui tuoi incassi — il cliente paga te
-        direttamente l&apos;esperienza.{" "}
+        Inviando la candidatura prendi atto che: l&apos;iscrizione è gratuita e il canone di
+        €29/mese parte successivamente; non sono previste commissioni sui tuoi incassi — il
+        cliente paga te direttamente l&apos;esperienza.{" "}
         <a
           href="/termini-fornitori"
           target="_blank"

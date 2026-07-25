@@ -104,7 +104,7 @@ const HELP_INTENTS: { keywords: string[]; answer: string }[] = [
   {
     keywords: ["fornitore", "diventare partner", "vendere", "iscrivere la mia attivit"],
     answer:
-      "Vuoi proporre le tue esperienze? Registrati come fornitore: i primi 3 mesi sono gratuiti, poi il canone è di €29/mese. Gestisci esperienze e prenotazioni dalla tua dashboard e ricevi le richieste anche via WhatsApp.",
+      "Vuoi proporre le tue esperienze? Registrati come fornitore: l'iscrizione è gratuita, poi il canone è di €29/mese. Gestisci esperienze e prenotazioni dalla tua dashboard e ricevi le richieste anche via WhatsApp.",
   },
 ];
 
