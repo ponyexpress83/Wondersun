@@ -161,11 +161,11 @@ export default async function ExperienceDetailPage({
                     <p>Esempio per {exp.min_participants} partecipanti:</p>
                     <div className="bg-ws-ivory rounded-lg p-3 space-y-1.5">
                       <div className="flex justify-between">
-                        <span>Prezzo esperienza (al fornitore)</span>
+                        <span>Prezzo dell&apos;esperienza (al fornitore)</span>
                         <strong className="text-ws-text">{formatEur(totalSample)}</strong>
                       </div>
                       <div className="flex justify-between text-ws-text-light">
-                        <span>Quota digitale Wondersun ({breakdown.commission_pct}%) · online</span>
+                        <span>Servizio digitale Wondersun · online</span>
                         <span>{formatEur(breakdown.pay_now_cents)}</span>
                       </div>
                       <div className="flex justify-between border-t border-gray-200 pt-1.5">

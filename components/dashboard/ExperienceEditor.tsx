@@ -132,7 +132,7 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode,
           required
           defaultValue={experience?.title}
           className="ws-input"
-          placeholder="Es. Navigazione al Tramonto sull'Argentario"
+          placeholder="Es. Navigazione al Tramonto in Maremma"
         />
       </div>
 

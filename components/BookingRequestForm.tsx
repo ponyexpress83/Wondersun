@@ -177,7 +177,7 @@ export default function BookingRequestForm({
         <div className="bg-ws-ivory rounded-xl p-3 space-y-2 mt-2">
           <div className="flex justify-between items-start gap-3 text-sm">
             <span className="text-ws-text">
-              Prezzo esperienza
+              Prezzo dell&apos;esperienza
               <span className="block text-[0.7rem] text-ws-text-light">
                 Pagato direttamente al fornitore
               </span>
@@ -188,9 +188,9 @@ export default function BookingRequestForm({
           </div>
           <div className="flex justify-between items-start gap-3 text-sm border-t border-gray-100 pt-2">
             <span className="text-ws-text">
-              Quota digitale Wondersun ({breakdown.commission_pct}%)
+              Servizio digitale Wondersun
               <span className="block text-[0.7rem] text-ws-text-light">
-                La versi online — concierge digitale
+                Importo da pagare online per il servizio digitale
               </span>
             </span>
             <span className="font-bold text-ws-text whitespace-nowrap">
@@ -204,9 +204,10 @@ export default function BookingRequestForm({
             </span>
           </div>
         </div>
-        <p className="text-[0.7rem] text-ws-text-light mt-2 text-center">
-          Online versi solo la quota digitale Wondersun; il prezzo dell&apos;esperienza lo paghi
-          direttamente al fornitore.
+        <p className="text-[0.7rem] text-ws-text-light mt-2 leading-relaxed">
+          Il prezzo indicato si riferisce all&apos;esperienza selezionata. Eventuali servizi
+          aggiuntivi, personalizzazioni o variazioni richieste potranno comportare una modifica del
+          prezzo finale.
         </p>
       </div>
 

@@ -143,7 +143,7 @@ export default function SupplierOnboardingForm({ profileId }: Props) {
           required
           rows={4}
           className="ws-input resize-y"
-          placeholder="Es. Operatore turistico specializzato in tour in barca lungo la costa dell'Argentario. Attivi dal 2015 con licenza ENAC e copertura assicurativa professionale."
+          placeholder="Es. Operatore turistico specializzato in tour in barca lungo la costa della Maremma. Attivi dal 2015 con licenza ENAC e copertura assicurativa professionale."
         />
       </div>
 

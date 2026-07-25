@@ -135,14 +135,13 @@ const it: Dictionary = {
   },
   how: {
     badge: "Come Funziona",
-    titleLead: "Cinque passi verso il tuo",
-    titleEm: "Local Escape",
+    titleLead: "Quattro passi verso la tua",
+    titleEm: "esperienza",
     steps: [
-      { title: "Esplora il catalogo", description: "Scopri le esperienze selezionate da Wondersun nella Maremma Toscana." },
-      { title: "Scegli le tue preferite", description: "Salva le esperienze che ami e componi il tuo percorso, una esperienza alla volta." },
-      { title: "Invia richiesta", description: "Indica data e numero di partecipanti. Il fornitore conferma la disponibilità." },
-      { title: "Conferma & vivi", description: "Il fornitore conferma la richiesta. Online paghi solo la quota digitale Wondersun; l'esperienza la saldi a lui sul posto." },
-      { title: "Vivi l'esperienza", description: "Ricevi tutti i dettagli via email e goditi la tua avventura maremmana." },
+      { title: "Scegli cosa vuoi vivere", description: "Esplora il catalogo delle esperienze autentiche selezionate in Maremma Toscana e trova quella giusta per te." },
+      { title: "Invia la richiesta", description: "Indica data e numero di partecipanti e invia la richiesta al fornitore, direttamente dalla scheda dell'esperienza." },
+      { title: "Ricevi la conferma", description: "Il fornitore conferma la disponibilità e viene confermato il servizio digitale Wondersun." },
+      { title: "Vivi la tua esperienza", description: "Ricevi tutti i dettagli via email e goditi la tua esperienza in Maremma." },
     ],
   },
   terr: {
@@ -193,7 +192,7 @@ const it: Dictionary = {
     note: "Wondersun incassa solo il proprio corrispettivo per il servizio digitale. Il prezzo dell'esperienza resta tuo e lo ricevi direttamente dal cliente.",
   },
   footer: {
-    tagline: "Il concierge digitale delle esperienze autentiche nella Maremma Toscana. Dall'Argentario a Sorano — il tuo Local Escape su misura.",
+    tagline: "Concierge digitale delle esperienze autentiche della Maremma Toscana. Dal mare all'entroterra, il tuo Local Escape su misura.",
     notAgency: "Non siamo un'agenzia viaggi",
     exploreTitle: "Esplora",
     infoTitle: "Info",
@@ -265,14 +264,13 @@ const en: Dictionary = {
   },
   how: {
     badge: "How it works",
-    titleLead: "Five steps to your",
-    titleEm: "Local Escape",
+    titleLead: "Four steps to your",
+    titleEm: "experience",
     steps: [
-      { title: "Browse the catalogue", description: "Discover the experiences curated by Wondersun across the Tuscan Maremma." },
-      { title: "Pick your favourites", description: "Save the experiences you love and build your own path, one experience at a time." },
-      { title: "Send a request", description: "Choose the date and number of guests. The operator confirms availability." },
-      { title: "Confirm & enjoy", description: "The operator confirms your request. Online you pay only the Wondersun digital fee; you settle the experience with them on site." },
-      { title: "Live the experience", description: "Get all the details by email and enjoy your Maremma adventure." },
+      { title: "Choose what to live", description: "Browse the curated experiences across the Tuscan Maremma and find the right one for you." },
+      { title: "Send the request", description: "Pick the date and number of guests and send the request to the operator, right from the experience page." },
+      { title: "Get the confirmation", description: "The operator confirms availability and the Wondersun digital service is confirmed." },
+      { title: "Live your experience", description: "Get all the details by email and enjoy your Maremma experience." },
     ],
   },
   terr: {
@@ -323,7 +321,7 @@ const en: Dictionary = {
     note: "Wondersun only charges its own fee for the digital service. The experience price stays yours and you receive it directly from the client.",
   },
   footer: {
-    tagline: "The digital concierge for authentic experiences in the Tuscan Maremma. From Argentario to Sorano — your tailor-made Local Escape.",
+    tagline: "The digital concierge for authentic experiences across the Tuscan Maremma. From the coast to the inland — your tailor-made Local Escape.",
     notAgency: "We are not a travel agency",
     exploreTitle: "Explore",
     infoTitle: "Info",
