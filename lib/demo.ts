@@ -107,6 +107,20 @@ async function ensureAuthUser(admin: ReturnType<typeof createSupabaseAdminClient
     throw new Error(`createUser fallito per ${account.email}: ${created.error?.message ?? "errore sconosciuto"}`);
   }
 
+  // Utente demo già esistente: lookup VELOCE e indicizzato sulla tabella profiles
+  // (creata al primo provisioning con la stessa email). Evita la scansione di
+  // TUTTI gli auth users via listUsers — era la causa della lentezza/intermittenza
+  // del login Fornitore, che faceva due scansioni complete (fornitore + vetrina).
+  // La password è fissa (DEMO_PASSWORD, impostata alla creazione), quindi non serve
+  // resettarla a ogni login.
+  const { data: prof } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("email", account.email)
+    .maybeSingle();
+  if (prof?.id) return prof.id as string;
+
+  // Fallback raro (utente auth senza profilo): scansione paginata.
   let page = 1;
   while (page < 20) {
     const list = await admin.auth.admin.listUsers({ page, perPage: 200 });
@@ -115,10 +129,7 @@ async function ensureAuthUser(admin: ReturnType<typeof createSupabaseAdminClient
       (u: { id: string; email?: string | null }) =>
         u.email?.toLowerCase() === account.email.toLowerCase(),
     );
-    if (found) {
-      await admin.auth.admin.updateUserById(found.id, { password: account.password, email_confirm: true });
-      return found.id;
-    }
+    if (found) return found.id;
     if (list.data.users.length < 200) break;
     page += 1;
   }

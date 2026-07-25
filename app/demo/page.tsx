@@ -34,10 +34,16 @@ const ROLE_STYLE = {
   },
 } as const;
 
-export default function DemoPage() {
+export default function DemoPage({ searchParams }: { searchParams: { admin?: string } }) {
   if (!isDemoEnabled()) notFound();
 
-  const accounts = Object.values(DEMO_ACCOUNTS);
+  // L'account Admin NON è visibile a clienti/fornitori: appare solo con
+  // /demo?admin=1 (link riservato a chi presenta). Di default si vedono solo
+  // Cliente e Fornitore.
+  const showAdmin = searchParams?.admin === "1";
+  const accounts = Object.values(DEMO_ACCOUNTS).filter(
+    (a) => a.role !== "admin" || showAdmin,
+  );
 
   return (
     <main className="min-h-screen bg-ws-ivory px-4 py-12 relative overflow-hidden">
@@ -70,7 +76,11 @@ export default function DemoPage() {
           </div>
         </header>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-7">
+        <section
+          className={`grid grid-cols-1 gap-7 ${
+            showAdmin ? "md:grid-cols-3" : "md:grid-cols-2 max-w-4xl mx-auto"
+          }`}
+        >
           {accounts.map((account) => {
             const style = ROLE_STYLE[account.role];
             const Icon = style.icon;
