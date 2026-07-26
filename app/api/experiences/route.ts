@@ -27,17 +27,15 @@ const ExperienceInput = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const data = ExperienceInput.parse(body);
-
+    // Autorizzazione PRIMA della validazione: un non-admin autenticato deve
+    // ricevere sempre 403, a prescindere dal payload (governance "controllo
+    // totale admin": solo l'amministratore crea/pubblica esperienze).
     const supabase = createSupabaseServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
 
-    // Governance "controllo totale admin": solo l'amministratore crea/pubblica
-    // esperienze. I fornitori non pubblicano (gestiscono solo le prenotazioni).
     const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
     if (me?.role !== "admin") {
       return NextResponse.json(
@@ -45,6 +43,9 @@ export async function POST(request: NextRequest) {
         { status: 403 },
       );
     }
+
+    const body = await request.json();
+    const data = ExperienceInput.parse(body);
 
     const { data: supplier } = await supabase
       .from("suppliers")

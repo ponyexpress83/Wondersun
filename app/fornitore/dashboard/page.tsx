@@ -4,7 +4,6 @@ import {
   Compass,
   Calendar,
   CreditCard,
-  PlusCircle,
   Clock,
   CheckCircle2,
   XCircle,
@@ -76,7 +75,7 @@ export default async function SupplierDashboardPage() {
 
   const { data: experiences = [] } = await supabase
     .from("experiences")
-    .select("id, title, status, bookings_count, price_cents")
+    .select("id, slug, title, status, bookings_count, price_cents")
     .eq("supplier_id", s.id)
     .order("created_at", { ascending: false })
     .limit(10);
@@ -117,21 +116,18 @@ export default async function SupplierDashboardPage() {
           <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
             <h2 className="font-display text-xl font-bold text-ws-dark">Le tue esperienze</h2>
             <Link
-              href="/fornitore/esperienze/nuova"
-              className="ws-btn-blue text-xs py-2 px-3"
+              href="/fornitore/esperienze"
+              className="text-xs font-semibold text-ws-blue hover:underline"
             >
-              <PlusCircle size={14} /> Nuova
+              Vedi tutte
             </Link>
           </div>
           {(experiences as any[]).length === 0 ? (
             <div className="px-6 py-10 text-center">
               <Compass size={36} className="text-ws-text-light mx-auto mb-3" />
-              <p className="text-sm text-ws-text-light mb-4">
-                Non hai ancora creato esperienze.
+              <p className="text-sm text-ws-text-light">
+                Le tue esperienze compariranno qui una volta pubblicate dallo staff Wondersun.
               </p>
-              <Link href="/fornitore/esperienze/nuova" className="ws-btn-primary text-sm py-2.5 px-5">
-                Crea la prima esperienza
-              </Link>
             </div>
           ) : (
             <ul className="divide-y divide-gray-100">
@@ -145,10 +141,10 @@ export default async function SupplierDashboardPage() {
                   </div>
                   <ExperienceStatusPill status={e.status} />
                   <Link
-                    href={`/fornitore/esperienze/${e.id}`}
+                    href={`/esperienze/${e.slug}`}
                     className="text-xs font-semibold text-ws-blue hover:underline"
                   >
-                    Modifica
+                    Vedi scheda
                   </Link>
                 </li>
               ))}

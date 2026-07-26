@@ -175,12 +175,12 @@ export default async function SupplierSubscriptionPage() {
                   "Recapiti diretti: telefono, WhatsApp, email, sito",
                   "Visibilità nel catalogo e nel concierge Sole",
                   "Nessuna percentuale sulle prenotazioni",
-                  "Modifica della scheda in autonomia",
+                  "Scheda curata dallo staff Wondersun",
                   "Supporto prioritario",
                 ]
               : [
                   "Dashboard completa",
-                  "Esperienze illimitate",
+                  "Schede curate dallo staff Wondersun",
                   "Gestione richieste di prenotazione",
                   "Notifiche email + WhatsApp sulle nuove richieste",
                   "Pagamenti online sicuri",

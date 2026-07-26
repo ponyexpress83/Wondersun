@@ -39,11 +39,12 @@ export const DEMO_ACCOUNTS: Record<DemoRole, DemoAccount> = {
     fullName: "Fornitore Demo",
     title: "Fornitore (approvato)",
     description:
-      "Account già approvato con un'esperienza pubblicata: vedi le richieste in arrivo, conferma o proponi data alternativa.",
+      "Account già approvato con esperienze pubblicate: vedi le richieste in arrivo, conferma, proponi una data alternativa o rifiuta.",
     redirectTo: "/fornitore/dashboard",
     highlights: [
       "Dashboard con KPI e banner stato abbonamento",
-      "CRUD esperienze e moderazione richieste",
+      "Gestione richieste: conferma / proponi data alternativa / rifiuta",
+      "Schede curate dallo staff Wondersun (sola lettura per il fornitore)",
       "Notifiche prenotazione in arrivo (best-effort WhatsApp + email)",
     ],
   },
