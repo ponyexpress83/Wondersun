@@ -36,18 +36,23 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
 
-    // L'admin può creare esperienze per qualsiasi fornitore (onboarding gestito).
+    // Governance "controllo totale admin": solo l'amministratore crea/pubblica
+    // esperienze. I fornitori non pubblicano (gestiscono solo le prenotazioni).
     const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    const isAdmin = me?.role === "admin";
+    if (me?.role !== "admin") {
+      return NextResponse.json(
+        { error: "Solo l'amministratore può creare o pubblicare le esperienze." },
+        { status: 403 },
+      );
+    }
 
-    // Verifica che il supplier appartenga all'utente (o che l'utente sia admin)
     const { data: supplier } = await supabase
       .from("suppliers")
       .select("profile_id, mode")
       .eq("id", data.supplier_id)
       .single();
-    if (!supplier || (supplier.profile_id !== user.id && !isAdmin)) {
-      return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
+    if (!supplier) {
+      return NextResponse.json({ error: "Fornitore non trovato" }, { status: 404 });
     }
 
     // Fornitore in modalità vetrina → le sue schede non sono prenotabili:

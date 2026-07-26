@@ -12,6 +12,15 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
 
+  // Governance "controllo totale admin": solo l'amministratore modifica le schede.
+  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  if (me?.role !== "admin") {
+    return NextResponse.json(
+      { error: "Solo l'amministratore può modificare le esperienze." },
+      { status: 403 },
+    );
+  }
+
   const body = await request.json();
   // Rimuovi campi non aggiornabili
   delete body.id;
@@ -38,6 +47,14 @@ export async function DELETE(_: NextRequest, { params }: RouteContext) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
+
+  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  if (me?.role !== "admin") {
+    return NextResponse.json(
+      { error: "Solo l'amministratore può eliminare le esperienze." },
+      { status: 403 },
+    );
+  }
 
   const { error } = await supabase.from("experiences").delete().eq("id", params.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });

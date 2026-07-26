@@ -52,6 +52,7 @@ export default function SoleChat() {
   const [sending, setSending] = useState(false);
   const [listening, setListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
 
   const recognitionRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -69,19 +70,36 @@ export default function SoleChat() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    // Su alcuni browser (tipicamente Safari/macOS) l'API può essere assente o
+    // instabile: se non c'è non mostriamo il microfono e resta la tastiera.
     if (!SR) return;
-    setVoiceSupported(true);
-    const rec = new SR();
-    rec.lang = "it-IT";
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    rec.onresult = (e: any) => {
-      const transcript = e.results[0][0].transcript as string;
-      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
-    };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recognitionRef.current = rec;
+    let rec: any;
+    try {
+      rec = new SR();
+      rec.lang = "it-IT";
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      rec.onresult = (e: any) => {
+        const transcript = e.results?.[0]?.[0]?.transcript as string | undefined;
+        if (transcript) setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+      };
+      rec.onend = () => setListening(false);
+      rec.onerror = (e: any) => {
+        setListening(false);
+        const err = e?.error;
+        if (err === "not-allowed" || err === "service-not-allowed") {
+          setVoiceError("Microfono non consentito. Controlla i permessi del browser o scrivi pure.");
+        } else if (err === "no-speech") {
+          setVoiceError("Non ho sentito nulla. Riprova o scrivi il messaggio.");
+        } else if (err !== "aborted") {
+          setVoiceError("Dettatura non disponibile su questo browser. Scrivi pure il messaggio.");
+        }
+      };
+      recognitionRef.current = rec;
+      setVoiceSupported(true);
+    } catch {
+      setVoiceSupported(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -97,16 +115,26 @@ export default function SoleChat() {
 
   const toggleVoice = () => {
     const rec = recognitionRef.current;
-    if (!rec) return;
+    if (!rec) {
+      setVoiceError("Dettatura non disponibile su questo browser. Scrivi pure il messaggio.");
+      return;
+    }
+    setVoiceError(null);
     if (listening) {
-      rec.stop();
+      try {
+        rec.stop();
+      } catch {
+        /* no-op */
+      }
       setListening(false);
     } else {
       try {
         rec.start();
         setListening(true);
       } catch {
+        // Es. Safari: start() può lanciare se già attivo o non consentito.
         setListening(false);
+        setVoiceError("Non riesco ad avviare la dettatura. Scrivi pure il messaggio.");
       }
     }
   };
@@ -291,7 +319,11 @@ export default function SoleChat() {
           )}
 
           {/* Input */}
-          <div className="border-t border-gray-100 p-2.5 flex items-end gap-2">
+          <div className="border-t border-gray-100 p-2.5">
+            {voiceError && (
+              <p className="text-[0.7rem] text-ws-red mb-2 px-1 leading-snug">{voiceError}</p>
+            )}
+            <div className="flex items-end gap-2">
             {voiceSupported && (
               <button
                 onClick={toggleVoice}
@@ -326,6 +358,7 @@ export default function SoleChat() {
             >
               <Send size={17} />
             </button>
+            </div>
           </div>
         </div>
       )}

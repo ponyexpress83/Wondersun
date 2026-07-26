@@ -167,44 +167,47 @@ export default function BookingRequestForm({
       </div>
 
       <div className="border-t border-gray-100 pt-4">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-ws-text-light">
-            {participants} × {formatEur(pricePerUnit)}
+        {/* Totale complessivo — piccolo, in alto */}
+        <div className="flex justify-between items-baseline text-xs text-gray-600 mb-3">
+          <span>Costo complessivo dell&apos;esperienza</span>
+          <span className="font-semibold text-ws-text">
+            {formatEur(total + breakdown.pay_now_cents)}
           </span>
-          <span className="font-display text-xl font-bold text-ws-blue">{formatEur(total)}</span>
         </div>
 
-        <div className="bg-ws-ivory rounded-xl p-3 space-y-2 mt-2">
-          <div className="flex justify-between items-start gap-3 text-sm">
-            <span className="text-ws-text">
-              Prezzo dell&apos;esperienza
-              <span className="block text-[0.7rem] text-ws-text-light">
-                Pagato direttamente al fornitore
+        {/* Le due voci principali, evidenziate */}
+        <div className="space-y-2.5">
+          <div className="bg-ws-ivory rounded-xl p-3.5">
+            <div className="flex justify-between items-baseline gap-3">
+              <span className="font-bold text-ws-text">Costo dell&apos;esperienza</span>
+              <span className="font-display text-lg font-bold text-ws-text whitespace-nowrap">
+                {formatEur(breakdown.pay_onsite_cents)}
               </span>
-            </span>
-            <span className="font-bold text-ws-text whitespace-nowrap">
-              {formatEur(breakdown.pay_onsite_cents)}
-            </span>
-          </div>
-          <div className="flex justify-between items-start gap-3 text-sm border-t border-gray-100 pt-2">
-            <span className="text-ws-text">
-              Servizio digitale Wondersun
-              <span className="block text-[0.7rem] text-ws-text-light">
-                Importo da pagare online per il servizio digitale
+            </div>
+            <p className="text-xs text-gray-600 mt-1">
+              Da pagare direttamente sul posto il giorno dell&apos;esperienza
+              <span className="block text-gray-500">
+                {participants} × {formatEur(pricePerUnit)}
               </span>
-            </span>
-            <span className="font-bold text-ws-text whitespace-nowrap">
-              {formatEur(breakdown.pay_now_cents)}
-            </span>
+            </p>
           </div>
-          <div className="flex justify-between items-center gap-3 text-sm border-t border-gray-200 pt-2">
-            <span className="font-semibold text-ws-text">Totale a carico tuo</span>
-            <span className="font-display text-lg font-bold text-ws-blue whitespace-nowrap">
-              {formatEur(total + breakdown.pay_now_cents)}
-            </span>
+
+          <div className="bg-ws-blue-pale/60 rounded-xl p-3.5">
+            <div className="flex justify-between items-baseline gap-3">
+              <span className="font-bold text-ws-blue-dark">
+                Costo del servizio digitale Wondersun
+              </span>
+              <span className="font-display text-lg font-bold text-ws-blue whitespace-nowrap">
+                {formatEur(breakdown.pay_now_cents)}
+              </span>
+            </div>
+            <p className="text-xs text-ws-blue-dark/80 mt-1">
+              Da pagare online dopo la conferma della prenotazione
+            </p>
           </div>
         </div>
-        <p className="text-[0.7rem] text-ws-text-light mt-2 leading-relaxed">
+
+        <p className="text-xs text-gray-600 mt-3 leading-relaxed">
           Il prezzo indicato si riferisce all&apos;esperienza selezionata. Eventuali servizi
           aggiuntivi, personalizzazioni o variazioni richieste potranno comportare una modifica del
           prezzo finale.

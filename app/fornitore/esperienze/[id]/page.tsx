@@ -1,49 +1,14 @@
-import { notFound, redirect } from "next/navigation";
-import { LayoutDashboard, Compass, Calendar, CreditCard } from "lucide-react";
-import DashboardLayout from "@/components/dashboard/DashboardLayout";
-import ExperienceEditor from "@/components/dashboard/ExperienceEditor";
-import AvailabilityManager from "@/components/dashboard/AvailabilityManager";
+import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/supabase/auth-helpers";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { Experience } from "@/lib/types";
 
-export const metadata = { title: "Modifica esperienza" };
+export const metadata = { title: "Le mie esperienze" };
 
-export default async function EditExperiencePage({ params }: { params: { id: string } }) {
-  const profile = await requireRole("fornitore");
-  const supabase = createSupabaseServerClient();
-
-  const { data: supplier } = await supabase
-    .from("suppliers")
-    .select("id, mode")
-    .eq("profile_id", profile.id)
-    .maybeSingle();
-  if (!supplier) redirect("/fornitore/registrati");
-
-  const { data: experience } = await supabase
-    .from("experiences")
-    .select("*")
-    .eq("id", params.id)
-    .eq("supplier_id", supplier.id)
-    .maybeSingle();
-  if (!experience) notFound();
-
-  const nav = [
-    { href: "/fornitore/dashboard", label: "Panoramica", icon: LayoutDashboard },
-    { href: "/fornitore/esperienze", label: "Le mie esperienze", icon: Compass },
-    { href: "/fornitore/prenotazioni", label: "Prenotazioni", icon: Calendar },
-    { href: "/fornitore/abbonamento", label: "Abbonamento", icon: CreditCard },
-  ];
-
-  return (
-    <DashboardLayout
-      profile={profile}
-      nav={nav}
-      title="Modifica esperienza"
-      subtitle={(experience as Experience).title}
-    >
-      <ExperienceEditor supplierId={supplier.id} experience={experience as Experience} supplierMode={supplier.mode} />
-      {supplier.mode !== "vetrina" && <AvailabilityManager experienceId={params.id} />}
-    </DashboardLayout>
-  );
+// Governance "controllo totale admin": i fornitori non modificano le schede
+// (le gestisce lo staff Wondersun). L'accesso diretto viene reindirizzato
+// all'elenco in sola lettura. La modifica resta all'admin.
+// NOTA: qui c'era anche la gestione disponibilità (AvailabilityManager): se in
+// futuro i fornitori dovranno gestirla, va ri-esposta come vista dedicata.
+export default async function EditExperiencePage() {
+  await requireRole("fornitore");
+  redirect("/fornitore/esperienze");
 }

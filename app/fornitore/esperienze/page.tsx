@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Compass, Calendar, CreditCard, PlusCircle, Pencil } from "lucide-react";
+import { LayoutDashboard, Compass, Calendar, CreditCard, Eye, Info } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -44,27 +44,26 @@ export default async function SupplierExperiencesPage() {
       profile={profile}
       nav={nav}
       title="Le mie esperienze"
-      subtitle="Crea, pubblica e gestisci il tuo catalogo."
+      subtitle="Le tue esperienze pubblicate su Wondersun."
     >
-      <div className="mb-6">
-        <Link href="/fornitore/esperienze/nuova" className="ws-btn-primary">
-          <PlusCircle size={15} /> Nuova esperienza
-        </Link>
+      <div className="mb-6 flex items-start gap-3 rounded-2xl bg-ws-blue-pale/60 border border-ws-blue/15 p-4 text-sm text-ws-blue-dark">
+        <Info size={18} className="flex-shrink-0 mt-0.5" />
+        <p>
+          Le schede delle esperienze sono create e gestite dallo staff Wondersun. Per pubblicare
+          una nuova esperienza o aggiornare una scheda, contatta il tuo referente Wondersun. Qui
+          puoi consultare le tue esperienze e gestire le prenotazioni.
+        </p>
       </div>
 
       {(experiences as any[]).length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-ws-card">
           <Compass size={48} className="text-ws-text-light mx-auto mb-4" />
           <p className="font-display text-2xl font-bold text-ws-dark mb-2">
-            Inizia a pubblicare
+            Nessuna esperienza pubblicata
           </p>
-          <p className="text-ws-text-light mb-6 max-w-md mx-auto">
-            Crea la tua prima esperienza per essere visibile nel catalogo Wondersun e ricevere
-            prenotazioni.
+          <p className="text-ws-text-light mb-2 max-w-md mx-auto">
+            Le tue esperienze compariranno qui una volta pubblicate dallo staff Wondersun.
           </p>
-          <Link href="/fornitore/esperienze/nuova" className="ws-btn-blue">
-            <PlusCircle size={15} /> Crea esperienza
-          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -97,10 +96,10 @@ export default async function SupplierExperiencesPage() {
                 <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                   <span className="font-bold text-ws-blue">{formatEur(e.price_cents)}</span>
                   <Link
-                    href={`/fornitore/esperienze/${e.id}`}
+                    href={`/esperienze/${e.slug}`}
                     className="text-sm font-semibold text-ws-blue hover:underline flex items-center gap-1"
                   >
-                    <Pencil size={13} /> Modifica
+                    <Eye size={13} /> Vedi scheda
                   </Link>
                 </div>
                 <p className="text-[0.65rem] text-ws-text-light mt-2">

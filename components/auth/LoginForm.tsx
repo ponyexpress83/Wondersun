@@ -24,10 +24,32 @@ export default function LoginForm({ redirectTo, errorMessage }: Props) {
     setSubmitting(true);
     try {
       const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast.success("Accesso effettuato");
-      router.push(redirectTo ?? "/dashboard");
+
+      // Redirect in base al ruolo (se non è già richiesto un redirect esplicito):
+      // admin → /admin, fornitore → /fornitore/dashboard, cliente → /dashboard.
+      let dest = redirectTo;
+      if (!dest) {
+        let role = "cliente";
+        const uid = data.user?.id;
+        if (uid) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", uid)
+            .single();
+          role = (profile?.role as string) ?? "cliente";
+        }
+        dest =
+          role === "admin"
+            ? "/admin"
+            : role === "fornitore"
+              ? "/fornitore/dashboard"
+              : "/dashboard";
+      }
+      router.push(dest);
       router.refresh();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Errore durante l'accesso";
