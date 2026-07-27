@@ -4,6 +4,7 @@ import {
   Compass,
   Calendar,
   CreditCard,
+  Store,
   Clock,
   CheckCircle2,
   XCircle,
@@ -103,6 +104,33 @@ export default async function SupplierDashboardPage() {
     >
       {/* Status banner */}
       <SupplierStatusBanner supplier={s} />
+
+      {/* Modalità operativa del fornitore: prenotabile (richieste in piattaforma)
+          oppure vetrina (il cliente contatta direttamente il fornitore). */}
+      <div
+        className={`mb-6 flex items-start gap-3 rounded-2xl border p-4 text-sm ${
+          (s as any).mode === "vetrina"
+            ? "border-ws-yellow/40 bg-ws-yellow/10 text-ws-dark"
+            : "border-ws-blue/15 bg-ws-blue-pale/60 text-ws-blue-dark"
+        }`}
+      >
+        <Store size={18} className="mt-0.5 flex-shrink-0" />
+        <p>
+          {(s as any).mode === "vetrina" ? (
+            <>
+              <strong>Modalità vetrina.</strong> Le tue schede mostrano i tuoi recapiti: i
+              clienti ti contattano direttamente e gestisci tu prenotazioni e pagamenti.
+              Wondersun non riceve richieste per te.
+            </>
+          ) : (
+            <>
+              <strong>Modalità prenotabile.</strong> I clienti inviano la richiesta dalla
+              piattaforma: la trovi in <em>Prenotazioni</em>, dove puoi confermare, proporre
+              una data alternativa o rifiutare.
+            </>
+          )}
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
         <StatCard label="Esperienze" value={String((experiences as any[]).length)} />

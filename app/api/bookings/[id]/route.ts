@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { CANCELLATION_HOURS } from "@/lib/types";
+import { getPlatformPolicy } from "@/lib/settings";
 import { notifyClientBookingUpdate } from "@/lib/notify";
 import { logAudit } from "@/lib/audit";
 
@@ -58,7 +59,12 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
     const isSupplier = (booking as any).supplier?.profile_id === user.id;
     const isClient = booking.client_id === user.id;
-    if (!isSupplier && !isClient) {
+    // L'amministratore può intervenire su qualsiasi prenotazione
+    // (Allegato A § 4.1 — "gestione prenotazioni globale: visualizzazione e
+    // modifica di qualsiasi prenotazione").
+    const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    const isAdmin = me?.role === "admin";
+    if (!isSupplier && !isClient && !isAdmin) {
       return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
     }
 
@@ -69,7 +75,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       case "conferma":
       case "rifiuta":
       case "proponi_alternativa": {
-        if (!isSupplier) {
+        if (!isSupplier && !isAdmin) {
           return NextResponse.json({ error: "Azione riservata al fornitore" }, { status: 403 });
         }
         if (!["richiesta", "data_alternativa"].includes(booking.status)) {
@@ -101,7 +107,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       }
 
       case "accetta_alternativa": {
-        if (!isClient) {
+        if (!isClient && !isAdmin) {
           return NextResponse.json({ error: "Azione riservata al cliente" }, { status: 403 });
         }
         if (booking.status !== "data_alternativa" || !booking.alternative_date) {
@@ -126,8 +132,16 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         // Policy di cancellazione configurabile per esperienza (Allegato A § 4.3).
         // Default 48h dalla call 23/05; il fornitore può stringere per esperienze
         // food/premium con materie prime preparate (cooking class, ristoranti).
-        if (["confermata", "pagata"].includes(booking.status)) {
-          const hours = (booking as any).experience?.cancellation_hours ?? CANCELLATION_HOURS;
+        // L'amministratore può annullare anche oltre i termini (gestione casi
+        // eccezionali dal pannello — Allegato A § 4.1).
+        if (!isAdmin && ["confermata", "pagata"].includes(booking.status)) {
+          // Precedenza: policy della singola esperienza → default configurato
+          // dall'admin (Allegato A § 4.3) → costante di fallback.
+          const platform = await getPlatformPolicy();
+          const hours =
+            (booking as any).experience?.cancellation_hours ??
+            platform.cancellationHours ??
+            CANCELLATION_HOURS;
           const start = new Date(booking.requested_date).getTime();
           const hoursToStart = (start - Date.now()) / (1000 * 60 * 60);
           if (hoursToStart < hours) {
@@ -147,7 +161,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       // Il fornitore segna l'esito una volta passata la data.
       case "completata":
       case "no_show": {
-        if (!isSupplier) {
+        if (!isSupplier && !isAdmin) {
           return NextResponse.json({ error: "Azione riservata al fornitore" }, { status: 403 });
         }
         if (!["confermata", "pagata"].includes(booking.status)) {

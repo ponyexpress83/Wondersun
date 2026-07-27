@@ -47,6 +47,14 @@ export default async function AdminUsersPage({
     return acc;
   }, {});
 
+  // Prenotazioni effettuate per cliente (Allegato A § 4.1 — "gestione clienti:
+  // visualizzazione utenti registrati, prenotazioni effettuate").
+  const { data: allBookings = [] } = await supabase.from("bookings").select("client_id");
+  const bookingsByClient = (allBookings as any[]).reduce<Record<string, number>>((acc, b) => {
+    acc[b.client_id] = (acc[b.client_id] ?? 0) + 1;
+    return acc;
+  }, {});
+
   const filtered = active === "tutti" ? users : users.filter((u) => u.role === active);
 
   const nav = ADMIN_NAV;
@@ -92,7 +100,7 @@ export default async function AdminUsersPage({
           <table className="w-full text-sm">
             <thead className="bg-ws-ivory border-b border-gray-100">
               <tr>
-                {["Nome", "Email", "Telefono", "Ruolo", "Registrato"].map((h) => (
+                {["Nome", "Email", "Telefono", "Ruolo", "Prenotazioni", "Registrato"].map((h) => (
                   <th
                     key={h}
                     className="text-left px-4 py-3 font-bold text-xs uppercase tracking-widest text-ws-text-light"
@@ -112,6 +120,18 @@ export default async function AdminUsersPage({
                     <td className="px-4 py-3 text-ws-text-light">{u.phone ?? "—"}</td>
                     <td className="px-4 py-3">
                       <span className={`ws-badge ${meta.cls} text-[0.65rem]`}>{meta.label}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {bookingsByClient[u.id] ? (
+                        <Link
+                          href={`/admin/prenotazioni?cliente=${u.id}`}
+                          className="font-semibold text-ws-blue hover:underline"
+                        >
+                          {bookingsByClient[u.id]} →
+                        </Link>
+                      ) : (
+                        <span className="text-gray-500">0</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-ws-text-light">
                       {new Date(u.created_at).toLocaleDateString("it-IT")}

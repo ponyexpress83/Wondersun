@@ -49,8 +49,12 @@ export default function HeroSection() {
                 <span className="text-ws-yellow-dark">{t.titleEm}</span>
               </h1>
 
-              <p className="mt-7 max-w-lg text-lg sm:text-xl font-semibold text-ws-blue-dark/80">
-                {t.lead}
+              {/* Evidenziato su fondo bianco: sulla foto hero il testo blu da
+                  solo risultava poco leggibile (richiesta committente). */}
+              <p className="mt-7 max-w-lg">
+                <span className="box-decoration-clone rounded-xl bg-white/92 px-3 py-1.5 text-lg font-semibold leading-loose text-ws-blue-dark shadow-sm sm:text-xl">
+                  {t.lead}
+                </span>
               </p>
 
               <div className="mt-9 flex flex-col sm:flex-row gap-4">

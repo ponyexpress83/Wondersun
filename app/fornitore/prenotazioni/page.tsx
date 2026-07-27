@@ -31,7 +31,7 @@ export default async function SupplierBookingsPage() {
     ? await supabase
         .from("bookings")
         .select(
-          "*, experience:experiences(title, slug, cover_image_url), client:profiles!bookings_client_id_fkey(full_name, email, phone)",
+          "*, experience:experiences(title, slug, cover_image_url, requires_request), client:profiles!bookings_client_id_fkey(full_name, email, phone)",
         )
         .eq("supplier_id", supplier.id)
         .order("created_at", { ascending: false })
@@ -51,6 +51,32 @@ export default async function SupplierBookingsPage() {
       title="Prenotazioni ricevute"
       subtitle="Gestisci le richieste dei clienti: conferma, rifiuta o proponi una data alternativa."
     >
+      {/* Riepilogo per stato — include le annullate/rifiutate
+          (Allegato A § 3.3: nuova, confermata, completata, annullata). */}
+      {(bookings as any[]).length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          {[
+            { label: "Da confermare", match: ["richiesta", "data_alternativa"] },
+            { label: "Confermate", match: ["confermata", "pagata"] },
+            { label: "Completate", match: ["completata"] },
+            { label: "Annullate / rifiutate", match: ["annullata", "rifiutata", "no_show"] },
+          ].map((g) => {
+            const n = (bookings as any[]).filter((b) => g.match.includes(b.status)).length;
+            return (
+              <div
+                key={g.label}
+                className="bg-white rounded-2xl border border-gray-100 shadow-ws-card px-4 py-3"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                  {g.label}
+                </p>
+                <p className="font-display text-2xl font-bold text-ws-blue">{n}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {(bookings as any[]).length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-ws-card">
           <Calendar size={48} className="text-ws-text-light mx-auto mb-4" />
@@ -96,7 +122,18 @@ export default async function SupplierBookingsPage() {
                     <p className="font-semibold text-ws-text">{b.client?.full_name}</p>
                     <p className="text-xs text-ws-text-light">{b.client?.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-ws-text">{b.experience?.title}</td>
+                  <td className="px-4 py-3 text-ws-text">
+                    {b.experience?.title}
+                    {/* Distinzione tra esperienza "a richiesta" (serve la tua
+                        conferma) e prenotazione diretta. */}
+                    <span
+                      className={`ws-badge text-[0.6rem] ml-2 ${
+                        b.experience?.requires_request ? "ws-badge-yellow" : "ws-badge-green"
+                      }`}
+                    >
+                      {b.experience?.requires_request ? "A richiesta" : "Diretta"}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-ws-text">
                     {new Date(b.requested_date).toLocaleDateString("it-IT")}
                     {b.status === "data_alternativa" && b.alternative_date && (

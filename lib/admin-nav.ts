@@ -8,6 +8,7 @@ import {
   FileText,
   Mail,
   Receipt,
+  Settings,
 } from "lucide-react";
 
 export const ADMIN_NAV = [
@@ -20,4 +21,5 @@ export const ADMIN_NAV = [
   { href: "/admin/contenuti", label: "Contenuti", icon: FileText },
   { href: "/admin/email", label: "Email", icon: Mail },
   { href: "/admin/ricevute", label: "Ricevute", icon: Receipt },
+  { href: "/admin/impostazioni", label: "Impostazioni", icon: Settings },
 ];

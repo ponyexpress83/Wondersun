@@ -5,11 +5,17 @@ import { logAudit } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED_KEYS = new Set(["launch_date"]);
+// Policy di piattaforma configurabili (Allegato A § 4.3 — "configurazione delle
+// policy di cancellazione e rimborso").
+const ALLOWED_KEYS = new Set([
+  "launch_date",
+  "default_cancellation_hours",
+  "refund_policy_note",
+]);
 
 const Input = z.object({
   key: z.string().min(1),
-  value: z.string().max(200).nullable(),
+  value: z.string().max(2000).nullable(),
 });
 
 async function requireAdmin() {

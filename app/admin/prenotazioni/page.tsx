@@ -7,6 +7,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import AdminBookingActions from "@/components/admin/AdminBookingActions";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
@@ -37,7 +38,7 @@ const TABS = [
 export default async function AdminBookingsPage({
   searchParams,
 }: {
-  searchParams: { status?: string };
+  searchParams: { status?: string; cliente?: string };
 }) {
   const profile = await requireRole("admin");
   const supabase = createSupabaseServerClient();
@@ -47,11 +48,16 @@ export default async function AdminBookingsPage({
   const { data: all = [] } = await supabase
     .from("bookings")
     .select(
-      "*, experience:experiences(title), supplier:suppliers(business_name), client:profiles!bookings_client_id_fkey(full_name, email)",
+      "*, experience:experiences(title), supplier:suppliers(business_name), client:profiles!bookings_client_id_fkey(full_name, email, phone)",
     )
     .order("created_at", { ascending: false });
 
-  const bookings = all as any[];
+  // Filtro per cliente (arrivo da "Utenti → prenotazioni effettuate").
+  const bookings = (searchParams.cliente
+    ? (all as any[]).filter((b) => b.client_id === searchParams.cliente)
+    : (all as any[])) as any[];
+  const clienteNome = searchParams.cliente ? bookings[0]?.client?.full_name : null;
+
   const counts = bookings.reduce<Record<string, number>>((acc, b) => {
     acc[b.status] = (acc[b.status] ?? 0) + 1;
     return acc;
@@ -70,8 +76,20 @@ export default async function AdminBookingsPage({
       profile={profile}
       nav={nav}
       title="Prenotazioni"
-      subtitle="Monitora tutte le prenotazioni e le commissioni della piattaforma."
+      subtitle="Consulta e gestisci tutte le prenotazioni della piattaforma."
     >
+      {searchParams.cliente && (
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ws-blue/20 bg-ws-blue-pale/60 px-4 py-3 text-sm text-ws-blue-dark">
+          <span>
+            Prenotazioni del cliente{" "}
+            <strong>{clienteNome ?? "selezionato"}</strong>
+          </span>
+          <Link href="/admin/prenotazioni" className="font-semibold hover:underline">
+            Mostra tutte →
+          </Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-ws-card">
           <p className="text-xs font-semibold uppercase tracking-widest text-ws-text-light mb-1">
@@ -131,7 +149,7 @@ export default async function AdminBookingsPage({
           <table className="w-full text-sm">
             <thead className="bg-ws-ivory border-b border-gray-100">
               <tr>
-                {["Codice", "Cliente", "Esperienza", "Fornitore", "Data", "Totale", "Commissione", "Stato"].map(
+                {["Codice", "Cliente", "Esperienza", "Fornitore", "Data", "Totale", "Commissione", "Stato", "Azioni"].map(
                   (h) => (
                     <th
                       key={h}
@@ -153,7 +171,10 @@ export default async function AdminBookingsPage({
                     </td>
                     <td className="px-4 py-3">
                       <p className="font-semibold text-ws-text">{b.client?.full_name ?? "—"}</p>
-                      <p className="text-xs text-ws-text-light">{b.client?.email}</p>
+                      <p className="text-xs text-gray-600">{b.client?.email}</p>
+                      {b.client?.phone && (
+                        <p className="text-xs text-gray-600">{b.client.phone}</p>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-ws-text">{b.experience?.title ?? "—"}</td>
                     <td className="px-4 py-3 text-ws-text">{b.supplier?.business_name ?? "—"}</td>
@@ -166,6 +187,9 @@ export default async function AdminBookingsPage({
                     </td>
                     <td className="px-4 py-3">
                       <span className={`ws-badge ${meta.cls} text-[0.65rem]`}>{meta.label}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <AdminBookingActions bookingId={b.id} status={b.status} />
                     </td>
                   </tr>
                 );
