@@ -139,10 +139,27 @@ export default async function AdminBookingsPage({
       {filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-ws-card">
           <Calendar size={48} className="text-ws-text-light mx-auto mb-4" />
-          <p className="font-display text-2xl font-bold text-ws-dark mb-2">
-            Nessuna prenotazione in questa vista
-          </p>
-          <p className="text-ws-text-light">Cambia filtro per vedere altre prenotazioni.</p>
+          {bookings.length === 0 ? (
+            <>
+              <p className="font-display text-2xl font-bold text-ws-dark mb-2">
+                Nessuna prenotazione registrata
+              </p>
+              <p className="text-gray-600 max-w-md mx-auto">
+                Non ci sono ancora prenotazioni sulla piattaforma. Appena un cliente invia una
+                richiesta da una scheda esperienza, la troverai qui e potrai gestirla (conferma,
+                data alternativa, rifiuto, annullamento).
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-display text-2xl font-bold text-ws-dark mb-2">
+                Nessuna prenotazione con questo filtro
+              </p>
+              <p className="text-gray-600">
+                Ci sono {bookings.length} prenotazioni in totale: scegli un altro stato qui sopra.
+              </p>
+            </>
+          )}
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-ws-card overflow-x-auto">

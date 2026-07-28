@@ -81,10 +81,13 @@ export default async function SupplierBookingsPage() {
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-ws-card">
           <Calendar size={48} className="text-ws-text-light mx-auto mb-4" />
           <p className="font-display text-2xl font-bold text-ws-dark mb-2">
-            Nessuna prenotazione
+            Nessuna richiesta ricevuta
           </p>
-          <p className="text-ws-text-light">
-            Le richieste dei clienti compariranno qui.
+          <p className="text-gray-600 max-w-lg mx-auto">
+            Quando un cliente invia una richiesta per una delle tue esperienze, la trovi qui con i
+            suoi dati e i pulsanti per <strong>confermare</strong>, <strong>proporre una data
+            alternativa</strong> o <strong>rifiutare</strong>. A esperienza conclusa potrai
+            segnarla come completata o come no-show.
           </p>
         </div>
       ) : (
