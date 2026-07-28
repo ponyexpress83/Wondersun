@@ -162,7 +162,63 @@ export default async function AdminBookingsPage({
           )}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-ws-card overflow-x-auto">
+        <>
+        {/* MOBILE: schede al posto della tabella (9 colonne sono illeggibili su telefono) */}
+        <div className="md:hidden space-y-4">
+          {filtered.map((b) => {
+            const meta = STATUS_META[b.status] ?? { label: b.status, cls: "ws-badge-blue" };
+            return (
+              <div
+                key={b.id}
+                className="bg-white rounded-2xl border border-gray-100 shadow-ws-card p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-bold text-ws-text leading-snug">
+                      {b.experience?.title ?? "—"}
+                    </p>
+                    <p className="font-mono text-[0.7rem] text-gray-600">{b.booking_code}</p>
+                  </div>
+                  <span className={`ws-badge ${meta.cls} text-[0.65rem] flex-shrink-0`}>
+                    {meta.label}
+                  </span>
+                </div>
+
+                <div className="mt-3 space-y-1 text-sm">
+                  <p className="text-ws-text">
+                    <span className="text-gray-600">Cliente: </span>
+                    <strong>{b.client?.full_name ?? "—"}</strong>
+                  </p>
+                  {b.client?.email && (
+                    <p className="text-xs text-gray-600 break-all">{b.client.email}</p>
+                  )}
+                  {b.client?.phone && <p className="text-xs text-gray-600">{b.client.phone}</p>}
+                  <p className="text-ws-text">
+                    <span className="text-gray-600">Fornitore: </span>
+                    {b.supplier?.business_name ?? "—"}
+                  </p>
+                  <p className="text-ws-text">
+                    <span className="text-gray-600">Data: </span>
+                    {new Date(b.requested_date).toLocaleDateString("it-IT")}
+                  </p>
+                  <p className="text-ws-text">
+                    <span className="text-gray-600">Totale: </span>
+                    {formatEur(b.total_cents)}
+                    <span className="text-gray-600"> · servizio digitale: </span>
+                    <strong className="text-ws-blue">{formatEur(b.commission_cents)}</strong>
+                  </p>
+                </div>
+
+                <div className="mt-4 border-t border-gray-100 pt-3">
+                  <AdminBookingActions bookingId={b.id} status={b.status} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* DESKTOP: tabella */}
+        <div className="hidden md:block bg-white rounded-2xl border border-gray-100 shadow-ws-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-ws-ivory border-b border-gray-100">
               <tr>
@@ -214,6 +270,7 @@ export default async function AdminBookingsPage({
             </tbody>
           </table>
         </div>
+        </>
       )}
     </DashboardLayout>
   );

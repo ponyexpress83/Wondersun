@@ -91,7 +91,67 @@ export default async function SupplierBookingsPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-ws-card overflow-hidden">
+        <>
+        {/* MOBILE: una scheda per prenotazione — su telefono la tabella non è
+            leggibile e i fornitori usano prevalentemente il mobile. */}
+        <div className="md:hidden space-y-4">
+          {(bookings as any[]).map((b) => (
+            <div
+              key={b.id}
+              className="bg-white rounded-2xl border border-gray-100 shadow-ws-card p-4"
+            >
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <p className="font-bold text-ws-text leading-snug">{b.experience?.title}</p>
+                <span className="ws-badge ws-badge-blue text-[0.65rem] flex-shrink-0">
+                  {STATUS_LABELS[b.status] ?? b.status}
+                </span>
+              </div>
+
+              <span
+                className={`ws-badge text-[0.6rem] ${
+                  b.experience?.requires_request ? "ws-badge-yellow" : "ws-badge-green"
+                }`}
+              >
+                {b.experience?.requires_request ? "A richiesta" : "Diretta"}
+              </span>
+
+              <div className="mt-3 space-y-1 text-sm">
+                <p className="text-ws-text">
+                  <span className="text-gray-600">Cliente: </span>
+                  <strong>{b.client?.full_name}</strong>
+                </p>
+                {b.client?.email && (
+                  <p className="text-xs text-gray-600 break-all">{b.client.email}</p>
+                )}
+                {b.client?.phone && <p className="text-xs text-gray-600">{b.client.phone}</p>}
+                <p className="text-ws-text">
+                  <span className="text-gray-600">Data: </span>
+                  {new Date(b.requested_date).toLocaleDateString("it-IT")}
+                  {b.status === "data_alternativa" && b.alternative_date && (
+                    <span className="block text-xs text-ws-blue">
+                      proposta: {new Date(b.alternative_date).toLocaleDateString("it-IT")}
+                    </span>
+                  )}
+                </p>
+                <p className="text-ws-text">
+                  <span className="text-gray-600">Partecipanti: </span>
+                  {b.participants}
+                </p>
+                <p className="text-ws-text">
+                  <span className="text-gray-600">Saldo in loco: </span>
+                  <strong>{formatEur(b.supplier_payout_cents)}</strong>
+                </p>
+              </div>
+
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <SupplierBookingActions bookingId={b.id} status={b.status} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* DESKTOP: tabella */}
+        <div className="hidden md:block bg-white rounded-2xl border border-gray-100 shadow-ws-card overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-ws-ivory border-b border-gray-100">
               <tr>
@@ -162,6 +222,7 @@ export default async function SupplierBookingsPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       <p className="text-xs text-ws-text-light mt-6">

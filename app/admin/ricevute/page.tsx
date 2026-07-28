@@ -53,7 +53,7 @@ export default async function AdminReceiptsPage() {
         </div>
       </div>
 
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-ws-card">
+      <section className="bg-white rounded-2xl border border-gray-100 shadow-ws-card overflow-x-auto">
         <div className="px-6 py-5 border-b border-gray-100">
           <h2 className="font-display text-xl font-bold text-ws-dark">Ultime ricevute</h2>
         </div>
