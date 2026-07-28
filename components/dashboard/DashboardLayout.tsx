@@ -61,6 +61,37 @@ export default function DashboardLayout({ profile, nav, title, subtitle, childre
       </aside>
 
       <div className="flex-1 min-w-0">
+        {/* Barra di navigazione per mobile/tablet: sotto lg la sidebar è nascosta,
+            senza questa barra le altre sezioni (prenotazioni, utenti, fornitori…)
+            risultavano irraggiungibili da telefono. */}
+        <div className="lg:hidden bg-white border-b border-gray-100 sticky top-0 z-30">
+          <div className="flex items-center justify-between px-4 pt-3">
+            <Link href="/" className="flex items-center gap-2">
+              <Logo className="w-7 h-7" />
+              <span className="font-display text-sm font-bold text-ws-blue">
+                {profile.role === "admin"
+                  ? "Admin"
+                  : profile.role === "fornitore"
+                    ? "Area Fornitore"
+                    : "Area Personale"}
+              </span>
+            </Link>
+            <LogoutButton />
+          </div>
+          <nav className="flex gap-2 overflow-x-auto px-4 py-3">
+            {nav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-2 text-sm font-semibold text-ws-blue-dark hover:border-ws-blue hover:text-ws-blue"
+              >
+                <item.icon size={15} />
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
         <header className="bg-white border-b border-gray-100 px-6 lg:px-10 py-6">
           <h1 className="font-display text-3xl font-bold text-ws-dark">{title}</h1>
           {subtitle && <p className="text-sm text-ws-text-light mt-1">{subtitle}</p>}

@@ -133,9 +133,22 @@ export default async function SupplierDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Esperienze" value={String((experiences as any[]).length)} />
-        <StatCard label="Richieste in attesa" value={String(pendingBookings.length)} highlight />
-        <StatCard label="Prenotazioni totali" value={String((bookings as any[]).length)} />
+        <StatCard
+          label="Esperienze"
+          value={String((experiences as any[]).length)}
+          href="/fornitore/esperienze"
+        />
+        <StatCard
+          label="Richieste in attesa"
+          value={String(pendingBookings.length)}
+          highlight
+          href="/fornitore/prenotazioni"
+        />
+        <StatCard
+          label="Prenotazioni totali"
+          value={String((bookings as any[]).length)}
+          href="/fornitore/prenotazioni"
+        />
         <StatCard label="Incassato (netto)" value={formatEur(totalRevenue)} />
       </div>
 
@@ -222,15 +235,15 @@ function StatCard({
   label,
   value,
   highlight,
+  href,
 }: {
   label: string;
   value: string;
   highlight?: boolean;
+  href?: string;
 }) {
-  return (
-    <div
-      className={`rounded-2xl p-5 border ${highlight ? "bg-ws-yellow border-ws-yellow text-ws-dark" : "bg-white border-gray-100"} shadow-ws-card`}
-    >
+  const inner = (
+    <>
       <p
         className={`text-xs font-semibold uppercase tracking-widest mb-1 ${highlight ? "text-ws-dark/70" : "text-ws-text-light"}`}
       >
@@ -241,7 +254,20 @@ function StatCard({
       >
         {value}
       </p>
-    </div>
+      {href && (
+        <p className={`text-xs font-semibold mt-1 ${highlight ? "text-ws-dark" : "text-ws-blue"}`}>
+          Apri →
+        </p>
+      )}
+    </>
+  );
+  const cls = `rounded-2xl p-5 border ${highlight ? "bg-ws-yellow border-ws-yellow text-ws-dark" : "bg-white border-gray-100"} shadow-ws-card`;
+  return href ? (
+    <Link href={href} className={`${cls} block transition-transform hover:-translate-y-0.5`}>
+      {inner}
+    </Link>
+  ) : (
+    <div className={cls}>{inner}</div>
   );
 }
 

@@ -70,10 +70,10 @@ export default async function AdminPage() {
       subtitle="Visione d'insieme della piattaforma."
     >
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <KPI label="Utenti" value={usersCount ?? 0} />
-        <KPI label="Fornitori" value={suppliersCount ?? 0} />
-        <KPI label="Esperienze" value={experiencesCount ?? 0} />
-        <KPI label="Prenotazioni" value={bookingsCount ?? 0} />
+        <KPI label="Utenti" value={usersCount ?? 0} href="/admin/utenti" />
+        <KPI label="Fornitori" value={suppliersCount ?? 0} href="/admin/fornitori" />
+        <KPI label="Esperienze" value={experiencesCount ?? 0} href="/admin/esperienze" />
+        <KPI label="Prenotazioni" value={bookingsCount ?? 0} href="/admin/prenotazioni" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -134,13 +134,23 @@ export default async function AdminPage() {
   );
 }
 
-function KPI({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-ws-card">
+/** Card KPI: cliccabile se `href` porta alla sezione corrispondente. */
+function KPI({ label, value, href }: { label: string; value: number; href?: string }) {
+  const content = (
+    <>
       <p className="text-xs font-semibold uppercase tracking-widest text-ws-text-light mb-1">
         {label}
       </p>
       <p className="font-display text-4xl font-bold text-ws-blue">{value}</p>
-    </div>
+      {href && <p className="text-xs font-semibold text-ws-blue mt-2">Apri →</p>}
+    </>
+  );
+  const base = "bg-white rounded-2xl border border-gray-100 p-5 shadow-ws-card";
+  return href ? (
+    <Link href={href} className={`${base} block transition-colors hover:border-ws-blue`}>
+      {content}
+    </Link>
+  ) : (
+    <div className={base}>{content}</div>
   );
 }
