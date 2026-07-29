@@ -62,9 +62,22 @@ export async function createBookingCheckout(opts: {
   amountCents: number;
   customerEmail?: string | null;
   siteUrl: string;
+  /** Scadenza della sessione (ISO). Stripe ammette da 30 minuti a 24 ore. */
+  expiresAt?: string;
 }): Promise<{ url: string; sessionId: string }> {
+  // Stripe richiede expires_at tra 30 minuti e 24 ore da adesso: normalizziamo
+  // per evitare errori se la finestra configurata è più stretta.
+  let expiresAtUnix: number | undefined;
+  if (opts.expiresAt) {
+    const min = Math.floor(Date.now() / 1000) + 30 * 60;
+    const max = Math.floor(Date.now() / 1000) + 24 * 60 * 60;
+    const wanted = Math.floor(new Date(opts.expiresAt).getTime() / 1000);
+    expiresAtUnix = Math.min(Math.max(wanted, min), max);
+  }
+
   const session = await stripeCall<{ id: string; url: string }>("/checkout/sessions", {
     mode: "payment",
+    expires_at: expiresAtUnix,
     customer_email: opts.customerEmail ?? undefined,
     line_items: [
       {

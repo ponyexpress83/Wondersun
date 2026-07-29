@@ -9,6 +9,7 @@ import {
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AdminBookingActions from "@/components/admin/AdminBookingActions";
 import { requireRole } from "@/lib/supabase/auth-helpers";
+import { expireUnpaidBookings } from "@/lib/payment-window";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
 import { ADMIN_NAV } from "@/lib/admin-nav";
@@ -17,7 +18,7 @@ export const metadata = { title: "Prenotazioni · Admin" };
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
   richiesta: { label: "Da confermare", cls: "ws-badge-yellow" },
-  confermata: { label: "Confermata", cls: "ws-badge-blue" },
+  confermata: { label: "In attesa di pagamento", cls: "ws-badge-yellow" },
   data_alternativa: { label: "Alternativa proposta", cls: "ws-badge-yellow" },
   rifiutata: { label: "Rifiutata", cls: "ws-badge-red" },
   pagata: { label: "Pagata", cls: "ws-badge-green" },
@@ -41,6 +42,8 @@ export default async function AdminBookingsPage({
   searchParams: { status?: string; cliente?: string };
 }) {
   const profile = await requireRole("admin");
+  // Applica le scadenze della finestra di pagamento prima di mostrare l'elenco.
+  await expireUnpaidBookings();
   const supabase = createSupabaseServerClient();
 
   const active = searchParams.status ?? "tutti";

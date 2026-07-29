@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createBookingCheckout, stripeConfigured } from "@/lib/stripe";
+import { expireUnpaidBookings } from "@/lib/payment-window";
 import { logAudit } from "@/lib/audit";
 
 interface RouteContext {
@@ -39,9 +40,13 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     );
   }
 
+  // Chiude prima le posizioni con finestra di pagamento scaduta, così non si
+  // può pagare una prenotazione ormai annullata.
+  await expireUnpaidBookings();
+
   const { data: booking, error } = await supabase
     .from("bookings")
-    .select("id, client_id, status, commission_cents, booking_code")
+    .select("id, client_id, status, commission_cents, booking_code, payment_deadline")
     .eq("id", params.id)
     .single();
   if (error || !booking) {
@@ -53,6 +58,14 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   if (booking.status !== "confermata") {
     return NextResponse.json(
       { error: "Il pagamento è disponibile solo dopo la conferma del fornitore." },
+      { status: 400 },
+    );
+  }
+
+  const deadline = (booking as any).payment_deadline as string | null;
+  if (deadline && new Date(deadline).getTime() <= Date.now()) {
+    return NextResponse.json(
+      { error: "Tempo scaduto: la prenotazione è stata annullata. Invia una nuova richiesta." },
       { status: 400 },
     );
   }
@@ -75,6 +88,8 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       amountCents: booking.commission_cents,
       customerEmail: user.email,
       siteUrl,
+      // La sessione Stripe scade insieme alla finestra di pagamento.
+      expiresAt: deadline ?? undefined,
     });
 
     await supabase

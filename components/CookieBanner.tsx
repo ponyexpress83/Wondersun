@@ -50,6 +50,13 @@ export default function CookieBanner() {
     } catch {
       // localStorage non disponibile (cookies bloccati) — il banner si chiude solo per la sessione
     }
+    // Avvisa gli script di misurazione (GA4 / pixel Meta), che si attivano solo
+    // dopo il consenso della relativa categoria.
+    try {
+      window.dispatchEvent(new CustomEvent("ws-consent-change", { detail: value }));
+    } catch {
+      /* no-op */
+    }
     setOpen(false);
   };
 

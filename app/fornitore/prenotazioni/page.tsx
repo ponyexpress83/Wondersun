@@ -3,11 +3,14 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SupplierBookingActions from "@/components/dashboard/SupplierBookingActions";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { expireUnpaidBookings } from "@/lib/payment-window";
 import { formatEur } from "@/lib/types";
 
 const STATUS_LABELS: Record<string, string> = {
   richiesta: "Da confermare",
-  confermata: "Confermata",
+  // Confermata dal fornitore ma quota Wondersun non ancora versata: la
+  // prenotazione non è definitiva finché non risulta pagata.
+  confermata: "In attesa di pagamento",
   data_alternativa: "Alternativa proposta",
   rifiutata: "Rifiutata",
   pagata: "Pagata",
@@ -20,6 +23,9 @@ export const metadata = { title: "Prenotazioni ricevute" };
 
 export default async function SupplierBookingsPage() {
   const profile = await requireRole("fornitore");
+  // Chiude le prenotazioni la cui finestra di pagamento è scaduta, così l'elenco
+  // mostra sempre lo stato reale senza attendere il cron.
+  await expireUnpaidBookings();
   const supabase = createSupabaseServerClient();
   const { data: supplier } = await supabase
     .from("suppliers")

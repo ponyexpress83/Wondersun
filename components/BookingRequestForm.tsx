@@ -207,6 +207,18 @@ export default function BookingRequestForm({
           </div>
         </div>
 
+        {/* Avviso richiesto dalla committente: senza il pagamento della quota la
+            prenotazione non si perfeziona e viene annullata. */}
+        <div className="mt-3 rounded-xl border border-ws-yellow/50 bg-ws-yellow/15 p-3">
+          <p className="text-xs font-bold text-ws-dark mb-0.5">Importante</p>
+          <p className="text-xs text-ws-dark leading-relaxed">
+            Dopo la conferma del fornitore avrai <strong>1 ora</strong> per pagare online il
+            servizio digitale Wondersun. La prenotazione diventa definitiva solo con questo
+            pagamento: <strong>se non viene versato entro il termine, la richiesta viene annullata
+            automaticamente</strong> e la data torna disponibile.
+          </p>
+        </div>
+
         <p className="text-xs text-gray-600 mt-3 leading-relaxed">
           Il prezzo indicato si riferisce all&apos;esperienza selezionata. Eventuali servizi
           aggiuntivi, personalizzazioni o variazioni richieste potranno comportare una modifica del

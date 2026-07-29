@@ -3,6 +3,7 @@ import { Poppins, Nunito_Sans, Caveat } from "next/font/google";
 import { Toaster } from "sonner";
 import SoleChat from "@/components/SoleChat";
 import CookieBanner from "@/components/CookieBanner";
+import AnalyticsScripts from "@/components/AnalyticsScripts";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import { getLocale } from "@/lib/i18n.server";
 import "./globals.css";
@@ -130,6 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <SoleChat />
           <CookieBanner />
+          <AnalyticsScripts />
         </LocaleProvider>
         <Toaster position="top-right" richColors closeButton />
       </body>

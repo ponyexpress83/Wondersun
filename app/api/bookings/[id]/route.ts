@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { CANCELLATION_HOURS } from "@/lib/types";
 import { getPlatformPolicy } from "@/lib/settings";
+import { computePaymentDeadline } from "@/lib/payment-window";
 import { notifyClientBookingUpdate } from "@/lib/notify";
 import { logAudit } from "@/lib/audit";
 
@@ -87,6 +88,10 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         update.responded_at = new Date().toISOString();
         if (input.action === "conferma") {
           update.status = "confermata";
+          // La prenotazione resta "in attesa di pagamento": il cliente ha una
+          // finestra limitata per versare la quota Wondersun, poi viene
+          // annullata automaticamente e la data torna disponibile.
+          update.payment_deadline = await computePaymentDeadline();
           notifyStatus = "confermata";
         } else if (input.action === "rifiuta") {
           update.status = "rifiutata";

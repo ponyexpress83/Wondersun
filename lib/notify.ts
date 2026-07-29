@@ -108,10 +108,32 @@ export async function notifySupplierNewBooking(
     `<p>${action}</p>` +
     `<p><a href="${SITE}/fornitore/prenotazioni">Apri la dashboard</a></p>`;
 
+  // Copia all'amministrazione Wondersun: la committente vuole essere avvisata di
+  // ogni nuova prenotazione senza dover controllare il pannello.
+  const adminHtml =
+    html + `<hr/><p style="font-size:12px;color:#666">Copia per l'amministrazione Wondersun.</p>`;
+
   await Promise.allSettled([
     channels.email ? sendEmail(channels.email, `${verb} · ${data.bookingCode}`, html) : null,
     channels.whatsapp ? sendWhatsApp(channels.whatsapp, text) : null,
+    ...notifyAdminChannels().map(({ email, whatsapp }) =>
+      Promise.allSettled([
+        email ? sendEmail(email, `[Wondersun] ${verb} · ${data.bookingCode}`, adminHtml) : null,
+        whatsapp ? sendWhatsApp(whatsapp, `[Wondersun] ${text}`) : null,
+      ]),
+    ),
   ]);
+}
+
+/**
+ * Recapiti dell'amministrazione per le notifiche interne.
+ * Configurabili via env: ADMIN_NOTIFY_EMAIL / ADMIN_NOTIFY_WHATSAPP.
+ */
+function notifyAdminChannels(): { email?: string | null; whatsapp?: string | null }[] {
+  const email = process.env.ADMIN_NOTIFY_EMAIL;
+  const whatsapp = process.env.ADMIN_NOTIFY_WHATSAPP;
+  if (!email && !whatsapp) return [];
+  return [{ email, whatsapp }];
 }
 
 /** Esito moderazione fornitore → avvisa l'operatore (email + WhatsApp). */

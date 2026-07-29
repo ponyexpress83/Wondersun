@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import PrivacyActions from "@/components/dashboard/PrivacyActions";
 import BookingsFilters from "@/components/dashboard/BookingsFilters";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
+import { expireUnpaidBookings } from "@/lib/payment-window";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { formatEur } from "@/lib/types";
 import type { Booking, Experience } from "@/lib/types";
@@ -12,6 +13,8 @@ export const metadata = { title: "Dashboard" };
 
 export default async function ClientDashboardPage() {
   const profile = await requireProfile();
+  // Applica le scadenze della finestra di pagamento prima di mostrare l'elenco.
+  await expireUnpaidBookings();
   const supabase = createSupabaseServerClient();
 
   const { data: bookings = [] } = await supabase

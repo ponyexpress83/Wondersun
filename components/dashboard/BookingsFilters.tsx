@@ -27,7 +27,7 @@ const FILTERS = [
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   richiesta: { label: "In attesa fornitore", cls: "ws-badge-yellow" },
-  confermata: { label: "Confermata", cls: "ws-badge-green" },
+  confermata: { label: "Da pagare · in attesa", cls: "ws-badge-yellow" },
   rifiutata: { label: "Rifiutata", cls: "ws-badge-red" },
   data_alternativa: { label: "Data alternativa proposta", cls: "ws-badge-yellow" },
   pagata: { label: "Pagata", cls: "ws-badge-green" },
