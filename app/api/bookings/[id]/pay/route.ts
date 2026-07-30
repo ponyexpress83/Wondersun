@@ -24,9 +24,23 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   if (!user) return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
 
   let informativaAccepted = false;
+  // Richiesta di fattura (facoltativa): i dati restano sulla prenotazione e
+  // l'amministrazione emette la fattura dal proprio gestionale.
+  let invoiceRequested = false;
+  let invoiceData: Record<string, string> | null = null;
   try {
     const body = await request.json();
     informativaAccepted = body?.informativaAccepted === true;
+    invoiceRequested = body?.invoiceRequested === true;
+    if (invoiceRequested && body?.invoiceData) {
+      const d = body.invoiceData as Record<string, unknown>;
+      invoiceData = {
+        name: String(d.name ?? "").slice(0, 200),
+        address: String(d.address ?? "").slice(0, 300),
+        taxId: String(d.taxId ?? "").slice(0, 40),
+        sdi: String(d.sdi ?? "").slice(0, 100),
+      };
+    }
   } catch {
     // body assente → informativa non accettata
   }
@@ -94,7 +108,11 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
 
     await supabase
       .from("bookings")
-      .update({ stripe_checkout_session_id: sessionId })
+      .update({
+        stripe_checkout_session_id: sessionId,
+        invoice_requested: invoiceRequested,
+        invoice_data: invoiceData,
+      })
       .eq("id", booking.id);
 
     await logAudit({

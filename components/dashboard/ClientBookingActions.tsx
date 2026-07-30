@@ -23,6 +23,9 @@ export default function ClientBookingActions({
   const [busy, setBusy] = useState(false);
   const [showInformativa, setShowInformativa] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  // Richiesta di fattura (opzionale) con i dati di intestazione.
+  const [wantInvoice, setWantInvoice] = useState(false);
+  const [inv, setInv] = useState({ name: "", address: "", taxId: "", sdi: "" });
 
   const patch = async (body: Record<string, unknown>, okMsg: string) => {
     setBusy(true);
@@ -51,7 +54,11 @@ export default function ClientBookingActions({
       const res = await fetch(`/api/bookings/${bookingId}/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ informativaAccepted: true }),
+        body: JSON.stringify({
+          informativaAccepted: true,
+          invoiceRequested: wantInvoice,
+          invoiceData: wantInvoice ? inv : null,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -157,7 +164,7 @@ export default function ClientBookingActions({
                 </p>
               </div>
 
-              <label className="flex items-start gap-3 cursor-pointer mb-5">
+              <label className="flex items-start gap-3 cursor-pointer mb-4">
                 <input
                   type="checkbox"
                   checked={accepted}
@@ -170,6 +177,58 @@ export default function ClientBookingActions({
                 </span>
               </label>
 
+              {/* Richiesta di fattura: senza spunta il cliente riceve la
+                  normale ricevuta di pagamento via email. */}
+              <div className="mb-5 rounded-xl border border-gray-100 bg-ws-ivory p-3">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={wantInvoice}
+                    onChange={(e) => setWantInvoice(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-ws-blue focus:ring-ws-blue"
+                  />
+                  <span className="text-sm text-ws-text">
+                    Desidero la fattura
+                    <span className="block text-xs text-gray-600">
+                      Senza richiesta riceverai la ricevuta di pagamento via email.
+                    </span>
+                  </span>
+                </label>
+
+                {wantInvoice && (
+                  <div className="mt-3 space-y-2">
+                    <input
+                      className="ws-input py-2 text-sm"
+                      placeholder="Intestazione (nome e cognome o ragione sociale) *"
+                      value={inv.name}
+                      onChange={(e) => setInv({ ...inv, name: e.target.value })}
+                    />
+                    <input
+                      className="ws-input py-2 text-sm"
+                      placeholder="Indirizzo, CAP, città *"
+                      value={inv.address}
+                      onChange={(e) => setInv({ ...inv, address: e.target.value })}
+                    />
+                    <input
+                      className="ws-input py-2 text-sm"
+                      placeholder="Codice fiscale o partita IVA *"
+                      value={inv.taxId}
+                      onChange={(e) => setInv({ ...inv, taxId: e.target.value })}
+                    />
+                    <input
+                      className="ws-input py-2 text-sm"
+                      placeholder="Codice destinatario o PEC (per le aziende)"
+                      value={inv.sdi}
+                      onChange={(e) => setInv({ ...inv, sdi: e.target.value })}
+                    />
+                    <p className="text-[0.7rem] text-gray-600">
+                      La fattura viene emessa da Wondersun per il servizio digitale e inviata via
+                      email.
+                    </p>
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowInformativa(false)}
@@ -178,7 +237,11 @@ export default function ClientBookingActions({
                   Annulla
                 </button>
                 <button
-                  disabled={!accepted || busy}
+                  disabled={
+                    !accepted ||
+                    busy ||
+                    (wantInvoice && (!inv.name.trim() || !inv.address.trim() || !inv.taxId.trim()))
+                  }
                   onClick={() => {
                     setShowInformativa(false);
                     pay();

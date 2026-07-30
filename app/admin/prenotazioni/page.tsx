@@ -210,6 +210,7 @@ export default async function AdminBookingsPage({
                     <span className="text-gray-600"> · servizio digitale: </span>
                     <strong className="text-ws-blue">{formatEur(b.commission_cents)}</strong>
                   </p>
+                  {b.invoice_requested && <InvoiceBox data={b.invoice_data} />}
                 </div>
 
                 <div className="mt-4 border-t border-gray-100 pt-3">
@@ -266,6 +267,7 @@ export default async function AdminBookingsPage({
                     </td>
                     <td className="px-4 py-3">
                       <AdminBookingActions bookingId={b.id} status={b.status} />
+                      {b.invoice_requested && <InvoiceBox data={b.invoice_data} />}
                     </td>
                   </tr>
                 );
@@ -276,5 +278,21 @@ export default async function AdminBookingsPage({
         </>
       )}
     </DashboardLayout>
+  );
+}
+
+/**
+ * Dati di fatturazione richiesti dal cliente al momento del pagamento.
+ * L'amministrazione emette la fattura dal proprio gestionale.
+ */
+function InvoiceBox({ data }: { data: any }) {
+  return (
+    <div className="mt-2 rounded-lg border border-ws-yellow/40 bg-ws-yellow/10 p-2 text-[0.7rem] leading-snug text-ws-dark">
+      <p className="font-bold">Fattura richiesta</p>
+      {data?.name && <p>{data.name}</p>}
+      {data?.address && <p>{data.address}</p>}
+      {data?.taxId && <p>CF/P.IVA: {data.taxId}</p>}
+      {data?.sdi && <p>SDI/PEC: {data.sdi}</p>}
+    </div>
   );
 }
