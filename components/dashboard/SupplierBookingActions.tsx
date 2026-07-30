@@ -3,20 +3,28 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, X, CalendarClock, CheckCircle2, UserX } from "lucide-react";
+import { Check, X, CalendarClock, CheckCircle2, UserX, Ban } from "lucide-react";
 
 interface Props {
   bookingId: string;
   status: string;
 }
 
-type Mode = "idle" | "alternativa" | "rifiuta";
+type Mode = "idle" | "alternativa" | "rifiuta" | "annulla";
 
 const REASONS = [
   { value: "non_disponibile", label: "Data non disponibile" },
   { value: "meteo", label: "Condizioni meteo" },
   { value: "capienza", label: "Capienza esaurita" },
   { value: "altro", label: "Altro" },
+] as const;
+
+/** Motivi per l'annullamento dopo la conferma (forza maggiore). */
+const CANCEL_REASONS = [
+  { value: "meteo", label: "Meteo / mare non idonei" },
+  { value: "non_disponibile", label: "Imprevisto dell'operatore" },
+  { value: "capienza", label: "Minimo partecipanti non raggiunto" },
+  { value: "altro", label: "Altro motivo" },
 ] as const;
 
 export default function SupplierBookingActions({ bookingId, status }: Props) {
@@ -56,9 +64,47 @@ export default function SupplierBookingActions({ bookingId, status }: Props) {
 
   const today = new Date().toISOString().split("T")[0];
 
+  // Annullamento dopo la conferma (maltempo, mare mosso, imprevisti): il
+  // fornitore indica il motivo, che viene comunicato al cliente.
+  if (isPostConferma && mode === "annulla") {
+    return (
+      <div className="flex flex-wrap items-center gap-2">
+        <select
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          className="rounded-md border border-gray-200 px-2 py-1.5 text-xs"
+        >
+          {CANCEL_REASONS.map((r) => (
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
+          ))}
+        </select>
+        <button
+          disabled={busy}
+          onClick={() =>
+            submit(
+              { action: "annulla", reason },
+              "Prenotazione annullata: il cliente è stato avvisato",
+            )
+          }
+          className="inline-flex items-center gap-1 bg-ws-red text-white rounded-md text-[0.65rem] font-bold py-1.5 px-2.5 uppercase tracking-wide"
+        >
+          Conferma annullamento
+        </button>
+        <button
+          onClick={() => setMode("idle")}
+          className="text-[0.65rem] font-semibold text-ws-text-light hover:underline"
+        >
+          Annulla
+        </button>
+      </div>
+    );
+  }
+
   if (isPostConferma) {
     return (
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         <button
           disabled={busy}
           onClick={() => submit({ action: "completata" }, "Esperienza marcata come completata")}
@@ -72,6 +118,16 @@ export default function SupplierBookingActions({ bookingId, status }: Props) {
           className="inline-flex items-center gap-1 border border-gray-200 text-ws-red rounded-md text-[0.65rem] font-bold py-1.5 px-2.5 uppercase tracking-wide hover:bg-red-50"
         >
           <UserX size={12} /> No-show
+        </button>
+        <button
+          disabled={busy}
+          onClick={() => {
+            setReason("meteo");
+            setMode("annulla");
+          }}
+          className="inline-flex items-center gap-1 border border-red-200 text-ws-red rounded-md text-[0.65rem] font-bold py-1.5 px-2.5 uppercase tracking-wide hover:bg-red-50"
+        >
+          <Ban size={12} /> Annulla
         </button>
       </div>
     );

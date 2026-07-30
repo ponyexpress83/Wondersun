@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { CANCELLATION_HOURS } from "@/lib/types";
 import { getPlatformPolicy } from "@/lib/settings";
 import { computePaymentDeadline } from "@/lib/payment-window";
-import { notifyClientBookingUpdate } from "@/lib/notify";
+import { notifyClientBookingUpdate, notifyAdminRefundDue } from "@/lib/notify";
 import { logAudit } from "@/lib/audit";
 
 interface RouteContext {
@@ -35,6 +35,17 @@ const REASON_LABELS: Record<string, string> = {
   meteo: "Condizioni meteo non idonee",
   capienza: "Capienza esaurita",
   altro: "Non disponibile",
+};
+
+/**
+ * Motivi di annullamento dopo la conferma (forza maggiore).
+ * Per le esperienze in mare l'annullamento è spesso un obbligo di sicurezza.
+ */
+const REASON_LABELS_SUPPLIER: Record<string, string> = {
+  meteo: "Condizioni meteo o mare non idonee: uscita annullata per sicurezza",
+  non_disponibile: "Imprevisto dell'operatore: esperienza annullata",
+  capienza: "Numero minimo di partecipanti non raggiunto",
+  altro: "Esperienza annullata dall'operatore",
 };
 
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
@@ -139,7 +150,11 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         // food/premium con materie prime preparate (cooking class, ristoranti).
         // L'amministratore può annullare anche oltre i termini (gestione casi
         // eccezionali dal pannello — Allegato A § 4.1).
-        if (!isAdmin && ["confermata", "pagata"].includes(booking.status)) {
+        // Il FORNITORE può annullare senza limite di preavviso: l'annullamento
+        // per causa di forza maggiore (maltempo, mare mosso, guasto) può
+        // rendersi necessario anche il giorno stesso — per un diving è un
+        // obbligo di sicurezza. Il limite resta per il cliente che disdice.
+        if (!isAdmin && !isSupplier && ["confermata", "pagata"].includes(booking.status)) {
           // Precedenza: policy della singola esperienza → default configurato
           // dall'admin (Allegato A § 4.3) → costante di fallback.
           const platform = await getPlatformPolicy();
@@ -159,6 +174,13 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
           }
         }
         update.status = "annullata";
+        // Se annulla il fornitore, il cliente deve sapere il perché (maltempo,
+        // mare mosso…) e viene avvisato.
+        if (isSupplier) {
+          update.supplier_response = REASON_LABELS_SUPPLIER[input.reason ?? "altro"];
+          update.responded_at = new Date().toISOString();
+          notifyStatus = "annullata_dal_fornitore";
+        }
         break;
       }
 
@@ -202,6 +224,19 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
           date: (update.alternative_date as string) ?? booking.requested_date,
         },
       );
+    }
+
+    // Annullamento dal fornitore su prenotazione GIÀ PAGATA: la quota di
+    // servizio va restituita al cliente. Avvisiamo l'amministrazione, che
+    // gestisce il rimborso da Stripe (Art. 11 del contratto).
+    if (input.action === "annulla" && isSupplier && booking.status === "pagata") {
+      await notifyAdminRefundDue({
+        bookingCode: booking.booking_code,
+        experienceTitle: (booking as any).experience?.title ?? "Esperienza",
+        amountCents: booking.commission_cents ?? 0,
+        reason: (update.supplier_response as string) ?? "Annullata dall'operatore",
+        clientEmail: (booking as any).client?.email ?? null,
+      });
     }
 
     await logAudit({

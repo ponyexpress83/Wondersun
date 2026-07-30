@@ -136,6 +136,46 @@ function notifyAdminChannels(): { email?: string | null; whatsapp?: string | nul
   return [{ email, whatsapp }];
 }
 
+/**
+ * Il fornitore ha annullato una prenotazione GIÀ PAGATA: la quota di servizio
+ * va restituita al cliente. Avvisa l'amministrazione, che esegue il rimborso
+ * dalla dashboard Stripe.
+ */
+export async function notifyAdminRefundDue(data: {
+  bookingCode: string;
+  experienceTitle: string;
+  amountCents: number;
+  reason: string;
+  clientEmail: string | null;
+}): Promise<void> {
+  const amount = (data.amountCents / 100).toFixed(2).replace(".", ",");
+  const text =
+    `Rimborso da valutare · ${data.bookingCode}\n\n` +
+    `${data.experienceTitle}\n` +
+    `Annullata dal fornitore: ${data.reason}\n` +
+    `Quota già incassata: € ${amount}\n` +
+    (data.clientEmail ? `Cliente: ${data.clientEmail}\n` : "") +
+    `\nEsegui il rimborso dalla dashboard Stripe.`;
+
+  const html =
+    `<h2>Rimborso da valutare</h2>` +
+    `<p><strong>${data.experienceTitle}</strong> · ${data.bookingCode}</p>` +
+    `<p>La prenotazione è stata <strong>annullata dal fornitore</strong>.<br/>` +
+    `Motivo: ${data.reason}</p>` +
+    `<p>Quota di servizio già incassata: <strong>€ ${amount}</strong>` +
+    (data.clientEmail ? `<br/>Cliente: ${data.clientEmail}` : "") +
+    `</p><p>Il rimborso va eseguito dalla dashboard Stripe.</p>`;
+
+  await Promise.allSettled(
+    notifyAdminChannels().map(({ email, whatsapp }) =>
+      Promise.allSettled([
+        email ? sendEmail(email, `[Wondersun] Rimborso da valutare · ${data.bookingCode}`, html) : null,
+        whatsapp ? sendWhatsApp(whatsapp, text) : null,
+      ]),
+    ),
+  );
+}
+
 /** Esito moderazione fornitore → avvisa l'operatore (email + WhatsApp). */
 export async function notifySupplierStatusChange(
   channels: NotifyChannels,
@@ -220,6 +260,12 @@ export async function notifyClientBookingUpdate(
     pagata: {
       title: "Pagamento ricevuto",
       body: `La tua prenotazione per il ${dateStr} è confermata e pagata. Buona esperienza!`,
+    },
+    // Annullamento deciso dall'operatore dopo la conferma (forza maggiore):
+    // il cliente riceve il motivo e l'invito a riprenotare.
+    annullata_dal_fornitore: {
+      title: "Esperienza annullata dall'operatore",
+      body: `L'operatore ha dovuto annullare l'esperienza del ${dateStr}. La data è di nuovo disponibile: puoi inviare una nuova richiesta scegliendo un'altra giornata. Se avevi già pagato la quota di servizio Wondersun, ti contatteremo per il rimborso.`,
     },
   };
 
