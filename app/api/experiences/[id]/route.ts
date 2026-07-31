@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { missingColumn } from "@/lib/db-errors";
 
 interface RouteContext {
   params: { id: string };
@@ -30,12 +31,25 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   // is_bookable deriva dalla modalità del fornitore, non è modificabile da client
   delete body.is_bookable;
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("experiences")
     .update(body)
     .eq("id", params.id)
     .select()
     .single();
+
+  // Colonna facoltativa non ancora presente sul database (migration mancante):
+  // riproviamo senza quel campo invece di bloccare il salvataggio.
+  const missing = missingColumn(error?.message);
+  if (missing) {
+    const { [missing]: _drop, ...rest } = body as Record<string, unknown>;
+    ({ data, error } = await supabase
+      .from("experiences")
+      .update(rest)
+      .eq("id", params.id)
+      .select()
+      .single());
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ experience: data });

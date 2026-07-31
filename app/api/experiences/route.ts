@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { missingColumn } from "@/lib/db-errors";
 
 const ExperienceInput = z.object({
   supplier_id: z.string().uuid(),
@@ -76,11 +77,30 @@ export async function POST(request: NextRequest) {
       if (i > 50) break;
     }
 
-    const { data: created, error } = await supabase
+    const row = {
+      ...data,
+      slug,
+      is_bookable: isBookable,
+      requires_request: isBookable && data.requires_request,
+    };
+
+    let { data: created, error } = await supabase
       .from("experiences")
-      .insert({ ...data, slug, is_bookable: isBookable, requires_request: isBookable && data.requires_request })
+      .insert(row)
       .select()
       .single();
+
+    // Se una colonna facoltativa non esiste ancora sul database (migration non
+    // applicata), riproviamo senza quel campo invece di bloccare il salvataggio.
+    const missing = missingColumn(error?.message);
+    if (missing) {
+      const { [missing]: _drop, ...rest } = row as Record<string, unknown>;
+      ({ data: created, error } = await supabase
+        .from("experiences")
+        .insert(rest)
+        .select()
+        .single());
+    }
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ experience: created });
