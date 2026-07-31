@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import { getI18n } from "@/lib/i18n.server";
+import { getSiteTexts } from "@/lib/site-texts";
 
 const AREAS = [
   { name: "Argentario", image: "https://images.unsplash.com/photo-1533514114760-4389f572ad05?w=800&q=80", count: 18 },
@@ -9,16 +10,19 @@ const AREAS = [
   { name: "Arcille", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", count: 9 },
 ];
 
-export default function TerritorySection() {
+export default async function TerritorySection() {
   const t = getI18n().dict.terr;
+  // Testi modificabili dal pannello admin (con ritorno ai valori originali).
+  const texts = await getSiteTexts();
 
   return (
     <section id="territorio" className="py-24 bg-ws-ivory">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="ws-badge ws-badge-blue mb-4">{t.badge}</span>
+          <span className="ws-badge ws-badge-blue mb-4">{texts["terr.badge"] || t.badge}</span>
           <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-ws-dark mt-4 mb-4">
-            {t.titleLead} <span className="text-ws-blue italic">{t.titleEm}</span>
+            {texts["terr.titleLead"] || t.titleLead}{" "}
+            <span className="text-ws-blue italic">{texts["terr.titleEm"] || t.titleEm}</span>
           </h2>
           <div className="ws-section-divider" />
         </div>

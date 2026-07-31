@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Riservato admin" }, { status: 403 });
   try {
     const input = Input.parse(await request.json());
-    if (!ALLOWED_KEYS.has(input.key)) {
+    // I testi del sito usano il prefisso "text." (gestione contenuti admin).
+    if (!ALLOWED_KEYS.has(input.key) && !input.key.startsWith("text.")) {
       return NextResponse.json({ error: `Chiave non gestita: ${input.key}` }, { status: 400 });
     }
     const client = createSupabaseAdminClient();

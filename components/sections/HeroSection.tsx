@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Briefcase, ThumbsUp, Star, ShieldCheck, ArrowRight } from "lucide-react";
 import { getI18n } from "@/lib/i18n.server";
+import { getSiteTexts } from "@/lib/site-texts";
 import SoleHeroCard from "@/components/SoleHeroCard";
 
 // Sfondo hero, tutto self-hosted (nessuna richiesta esterna, GDPR ok).
@@ -14,9 +15,10 @@ const HERO_SCENE = "/hero.svg";
 const STAT_ICONS = [Briefcase, ThumbsUp, Star, ShieldCheck];
 const STAT_COLORS = ["bg-ws-blue", "bg-ws-yellow-dark", "bg-ws-red", "bg-ws-blue-light"];
 
-export default function HeroSection() {
+export default async function HeroSection() {
   const { dict } = getI18n();
   const t = dict.hero;
+  const texts = await getSiteTexts();
 
   return (
     <section className="relative">
@@ -42,18 +44,18 @@ export default function HeroSection() {
             <div>
               <h1 className="font-display text-[2.6rem] sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] text-ws-blue-dark">
                 <span className="inline-block relative">
-                  {t.titleLead}
+                  {texts["hero.titleLead"] || t.titleLead}
                   <span className="absolute -bottom-1 left-0 h-1.5 w-28 rounded-full bg-ws-yellow" />
                 </span>
                 <br />
-                <span className="text-ws-yellow-dark">{t.titleEm}</span>
+                <span className="text-ws-yellow-dark">{texts["hero.titleEm"] || t.titleEm}</span>
               </h1>
 
               {/* Evidenziato su fondo bianco: sulla foto hero il testo blu da
                   solo risultava poco leggibile (richiesta committente). */}
               <p className="mt-7 max-w-lg">
                 <span className="box-decoration-clone rounded-xl bg-white/92 px-3 py-1.5 text-lg font-semibold leading-loose text-ws-blue-dark shadow-sm sm:text-xl">
-                  {t.lead}
+                  {texts["hero.lead"] || t.lead}
                 </span>
               </p>
 

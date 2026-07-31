@@ -9,6 +9,7 @@ import {
   Mail,
   Receipt,
   Settings,
+  Type,
 } from "lucide-react";
 
 export const ADMIN_NAV = [
@@ -19,6 +20,7 @@ export const ADMIN_NAV = [
   { href: "/admin/utenti", label: "Utenti", icon: Users },
   { href: "/admin/codici-sconto", label: "Codici sconto", icon: Ticket },
   { href: "/admin/contenuti", label: "Contenuti", icon: FileText },
+  { href: "/admin/testi", label: "Testi del sito", icon: Type },
   { href: "/admin/email", label: "Email", icon: Mail },
   { href: "/admin/ricevute", label: "Ricevute", icon: Receipt },
   { href: "/admin/impostazioni", label: "Impostazioni", icon: Settings },

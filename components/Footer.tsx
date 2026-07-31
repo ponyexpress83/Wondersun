@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin, Mail, Phone, Instagram, Facebook } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { getI18n } from "@/lib/i18n.server";
+import { getSiteTexts } from "@/lib/site-texts";
 
 const CATEGORY_HREFS = [
   "/esperienze?category=Mare+%26+Costa",
@@ -10,8 +11,9 @@ const CATEGORY_HREFS = [
   "/esperienze?category=Cultura+%26+Arte",
 ];
 
-export default function Footer() {
+export default async function Footer() {
   const { dict } = getI18n();
+  const texts = await getSiteTexts();
   const t = dict.footer;
   const currentYear = new Date().getFullYear();
 
@@ -48,7 +50,7 @@ export default function Footer() {
                 </p>
               </div>
             </div>
-            <p className="text-sm text-white/60 leading-relaxed max-w-sm mb-4">{t.tagline}</p>
+            <p className="text-sm text-white/60 leading-relaxed max-w-sm mb-4">{texts["footer.tagline"] || t.tagline}</p>
             <p className="inline-flex items-center gap-2 text-xs font-semibold text-white bg-ws-red/90 rounded-lg px-3 py-1.5 mb-6">
               {t.notAgency}
             </p>

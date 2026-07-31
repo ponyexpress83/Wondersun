@@ -7,6 +7,7 @@ import CatalogSort from "@/components/catalog/CatalogSort";
 import TrustBar from "@/components/TrustBar";
 import { listExperiences, type ExperienceSort } from "@/lib/data/experiences";
 import { CATEGORY_GROUPS } from "@/lib/types";
+import { getSiteTexts } from "@/lib/site-texts";
 import { getCurrentProfile } from "@/lib/supabase/auth-helpers";
 
 export const metadata = {
@@ -27,6 +28,7 @@ interface SearchParams {
 
 export default async function CatalogPage({ searchParams }: { searchParams: SearchParams }) {
   const profile = await getCurrentProfile();
+  const texts = await getSiteTexts();
   // La sidebar usa i 5 gruppi di categoria del mockup: espandiamo il gruppo
   // nelle categorie interne. I link legacy (footer) passano invece la categoria
   // tecnica diretta, che resta supportata.
@@ -55,10 +57,10 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
           <header className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
             <div>
               <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-ws-blue-dark">
-                Catalogo Esperienze
+                {texts["catalog.title"]}
               </h1>
               <p className="text-ws-text-light mt-2 max-w-xl">
-                Scopri e prenota le migliori esperienze selezionate per te in Maremma Toscana.
+                {texts["catalog.subtitle"]}
               </p>
             </div>
             <p className="font-script text-3xl sm:text-4xl text-ws-blue leading-none">
