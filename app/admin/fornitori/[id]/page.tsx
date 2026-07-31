@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Plus, ExternalLink } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import SupplierEditForm from "@/components/admin/SupplierEditForm";
 import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { ADMIN_NAV } from "@/lib/admin-nav";
@@ -65,6 +66,10 @@ export default async function AdminSupplierDetailPage({
             {supplier.description}
           </p>
         )}
+
+        <div className="mt-5 border-t border-gray-100 pt-4">
+          <SupplierEditForm supplier={supplier as any} />
+        </div>
       </section>
 
       {/* Esperienze */}

@@ -242,7 +242,19 @@ async function ensureMontautoSupplier(
   let supplierId: string;
   if (existing) {
     supplierId = existing.id;
-    await admin.from("suppliers").update(supplierData).eq("id", supplierId);
+    // IMPORTANTE: se il fornitore esiste già NON si toccano i dati anagrafici.
+    // L'amministratrice può modificarli dal pannello (nome, descrizione, sede,
+    // contatti) e un successivo accesso demo non deve sovrascriverli.
+    // Si allineano solo stato e abbonamento, che servono a tenere l'account
+    // demo utilizzabile.
+    await admin
+      .from("suppliers")
+      .update({
+        status: "approvato",
+        subscription_status: "trial",
+        approved_at: new Date().toISOString(),
+      })
+      .eq("id", supplierId);
 
     // Short-circuit: se le 4 esperienze reali ci sono già, evita lavoro inutile
     // a ogni login demo (era una delle cause della lentezza del fornitore).
