@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { resizeImage } from "@/lib/image-resize";
 import { Save, Trash2, Upload, AlertCircle } from "lucide-react";
 import { CATEGORIES, AREAS, type Experience } from "@/lib/types";
 import { slugify } from "@/lib/utils";
@@ -25,6 +26,12 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode,
   const [error, setError] = useState<string | null>(null);
   const [coverUrl, setCoverUrl] = useState(experience?.cover_image_url ?? "");
   const [uploadingImage, setUploadingImage] = useState(false);
+  // Galleria (esterni, interni, dettagli) e video di presentazione.
+  const [gallery, setGallery] = useState<string[]>(
+    (experience?.gallery_urls as string[] | undefined) ?? [],
+  );
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [videoUrl, setVideoUrl] = useState((experience as any)?.video_url ?? "");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, publish: boolean) => {
     e.preventDefault();
@@ -52,6 +59,8 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode,
       latitude: fd.get("latitude") ? Number(fd.get("latitude")) : null,
       longitude: fd.get("longitude") ? Number(fd.get("longitude")) : null,
       cover_image_url: coverUrl || null,
+      gallery_urls: gallery,
+      video_url: videoUrl || null,
       status: publish ? "pubblicata" : "bozza",
     };
 
@@ -78,21 +87,46 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode,
     }
   };
 
+  /** Carica un file e restituisce l'URL pubblico (con ridimensionamento). */
+  const uploadFile = async (file: File): Promise<string> => {
+    // Le foto da telefono superano spesso il limite di caricamento: le
+    // riduciamo qui, senza che l'utente debba farlo a mano.
+    const prepared = await resizeImage(file);
+    const fd = new FormData();
+    fd.append("file", prepared);
+    fd.append("bucket", "experience-covers");
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error ?? "Errore durante il caricamento");
+    return data.url as string;
+  };
+
   const handleImageUpload = async (file: File) => {
     setUploadingImage(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("bucket", "experience-covers");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Errore upload");
-      setCoverUrl(data.url);
-      toast.success("Immagine caricata");
+      setCoverUrl(await uploadFile(file));
+      toast.success("Immagine di copertina caricata");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Errore upload");
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  /** Galleria: più immagini per mostrare esterni, interni e dettagli. */
+  const handleGalleryUpload = async (files: FileList) => {
+    setUploadingGallery(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        urls.push(await uploadFile(file));
+      }
+      setGallery((prev) => [...prev, ...urls]);
+      toast.success(urls.length > 1 ? `${urls.length} immagini caricate` : "Immagine caricata");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Errore upload");
+    } finally {
+      setUploadingGallery(false);
     }
   };
 
@@ -210,6 +244,71 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode,
           placeholder="https://…"
           className="ws-input mt-1"
         />
+      </div>
+
+      {/* Galleria: più immagini per mostrare esterni, interni e dettagli
+          (es. le imbarcazioni di un diving). */}
+      <div>
+        <label className="ws-label">Galleria immagini</label>
+        <p className="text-xs text-gray-600 mb-2">
+          Aggiungi altre foto: esterni, interni, dettagli. Puoi selezionarne più di una in una
+          volta sola.
+        </p>
+
+        {gallery.length > 0 && (
+          <div className="flex flex-wrap gap-3 mb-3">
+            {gallery.map((url, i) => (
+              <div key={url + i} className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt=""
+                  className="w-32 h-24 object-cover rounded-lg border border-gray-100"
+                />
+                <button
+                  type="button"
+                  onClick={() => setGallery((prev) => prev.filter((_, idx) => idx !== i))}
+                  className="absolute top-1 right-1 bg-white rounded-full p-1 shadow text-ws-red hover:bg-red-50"
+                  aria-label="Rimuovi immagine"
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <label className="inline-flex items-center gap-2 rounded-full border-2 border-dashed border-gray-200 px-4 py-2.5 text-sm font-semibold text-ws-text-light hover:border-ws-blue hover:text-ws-blue cursor-pointer transition-colors">
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              const files = e.target.files;
+              if (files && files.length) handleGalleryUpload(files);
+            }}
+          />
+          <Upload size={16} />
+          {uploadingGallery ? "Caricamento…" : "Aggiungi immagini"}
+        </label>
+      </div>
+
+      <div>
+        <label htmlFor="video_url" className="ws-label">
+          Video di presentazione (facoltativo)
+        </label>
+        <input
+          id="video_url"
+          type="url"
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+          placeholder="https://www.youtube.com/watch?v=…"
+          className="ws-input"
+        />
+        <p className="text-xs text-gray-600 mt-1">
+          Incolla il link di un video su YouTube o Vimeo: comparirà nella scheda dell&apos;esperienza.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

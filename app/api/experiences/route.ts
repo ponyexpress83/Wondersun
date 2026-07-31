@@ -22,6 +22,8 @@ const ExperienceInput = z.object({
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
   cover_image_url: z.string().url().nullable().optional(),
+  gallery_urls: z.array(z.string().url()).optional(),
+  video_url: z.string().url().nullable().optional().or(z.literal("")),
   status: z.enum(["bozza", "pubblicata", "sospesa"]),
 });
 

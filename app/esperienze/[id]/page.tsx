@@ -61,6 +61,34 @@ export default async function ExperienceDetailPage({
                 )}
               </div>
 
+              {/* Galleria: esterni, interni e dettagli */}
+              {Array.isArray(exp.gallery_urls) && exp.gallery_urls.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+                  {(exp.gallery_urls as string[]).map((url, i) => (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      key={url + i}
+                      src={url}
+                      alt={`${exp.title} — immagine ${i + 1}`}
+                      className="h-28 w-full rounded-xl object-cover shadow-ws-card"
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Video di presentazione (YouTube/Vimeo) */}
+              {(exp as any).video_url && (
+                <div className="mb-8 overflow-hidden rounded-2xl shadow-ws-card aspect-video">
+                  <iframe
+                    src={toEmbedUrl((exp as any).video_url)}
+                    title={`Video · ${exp.title}`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="h-full w-full border-0"
+                  />
+                </div>
+              )}
+
               <div className="flex items-center gap-2 mb-2">
                 <span className="ws-badge ws-badge-blue">{exp.category}</span>
                 {exp.location_area && (
@@ -208,4 +236,29 @@ export default async function ExperienceDetailPage({
       <Footer />
     </>
   );
+}
+
+/**
+ * Converte un link YouTube/Vimeo nella versione incorporabile.
+ * Se il formato non è riconosciuto restituisce l'URL originale.
+ */
+function toEmbedUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtu.be")) {
+      return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
+    }
+    if (u.hostname.includes("youtube.")) {
+      const id = u.searchParams.get("v");
+      if (id) return `https://www.youtube.com/embed/${id}`;
+      if (u.pathname.startsWith("/embed/")) return url;
+    }
+    if (u.hostname.includes("vimeo.")) {
+      const id = u.pathname.split("/").filter(Boolean).pop();
+      if (id) return `https://player.vimeo.com/video/${id}`;
+    }
+    return url;
+  } catch {
+    return url;
+  }
 }
