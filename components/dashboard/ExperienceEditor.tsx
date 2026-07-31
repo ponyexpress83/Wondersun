@@ -60,7 +60,9 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode,
       longitude: fd.get("longitude") ? Number(fd.get("longitude")) : null,
       cover_image_url: coverUrl || null,
       gallery_urls: gallery,
-      video_url: videoUrl || null,
+      // Il video è facoltativo: se non indicato non lo inviamo affatto, così la
+      // pubblicazione non dipende da quel campo.
+      ...(videoUrl.trim() ? { video_url: videoUrl.trim() } : {}),
       status: publish ? "pubblicata" : "bozza",
     };
 

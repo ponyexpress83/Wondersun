@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Sun,
   Send,
@@ -45,7 +46,19 @@ const QUICK = [
   "Degustazione vini",
 ];
 
+/**
+ * Aree in cui l'assistente non viene mostrato: nei pannelli di gestione
+ * (admin, fornitore, area cliente) il pulsante flottante copriva i comandi
+ * senza essere utile. Sole resta sulle pagine pubbliche, dove serve a chi
+ * sta scegliendo un'esperienza.
+ */
+const HIDDEN_PREFIXES = ["/admin", "/fornitore", "/dashboard"];
+
 export default function SoleChat() {
+  const pathname = usePathname();
+  const hidden = HIDDEN_PREFIXES.some(
+    (p) => pathname === p || pathname?.startsWith(`${p}/`),
+  );
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput] = useState("");
@@ -169,6 +182,9 @@ export default function SoleChat() {
       setSending(false);
     }
   };
+
+  // Dopo gli hook, così l'ordine resta stabile a ogni render.
+  if (hidden) return null;
 
   return (
     <>
