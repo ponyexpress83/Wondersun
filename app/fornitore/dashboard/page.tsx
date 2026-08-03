@@ -336,15 +336,30 @@ function ExperienceStatusPill({ status }: { status: string }) {
 function BookingStatusPill({ status }: { status: string }) {
   const icons: Record<string, JSX.Element> = {
     richiesta: <Clock size={11} className="text-ws-yellow-dark" />,
-    confermata: <CheckCircle2 size={11} className="text-green-600" />,
+    // Confermata dal fornitore ma quota Wondersun non ancora versata: la
+    // prenotazione non è definitiva, quindi niente spunta verde.
+    confermata: <Clock size={11} className="text-ws-yellow-dark" />,
+    data_alternativa: <Clock size={11} className="text-ws-yellow-dark" />,
     pagata: <CheckCircle2 size={11} className="text-green-600" />,
+    completata: <CheckCircle2 size={11} className="text-green-600" />,
     rifiutata: <XCircle size={11} className="text-ws-red" />,
     annullata: <XCircle size={11} className="text-ws-red" />,
+    no_show: <XCircle size={11} className="text-ws-red" />,
+  };
+  const labels: Record<string, string> = {
+    richiesta: "Da confermare",
+    confermata: "In attesa di pagamento",
+    data_alternativa: "Alternativa proposta",
+    pagata: "Pagata",
+    completata: "Completata",
+    rifiutata: "Rifiutata",
+    annullata: "Annullata",
+    no_show: "No show",
   };
   return (
     <span className="inline-flex items-center gap-1 text-[0.65rem] font-semibold text-ws-text">
       {icons[status]}
-      {status}
+      {labels[status] ?? status}
     </span>
   );
 }

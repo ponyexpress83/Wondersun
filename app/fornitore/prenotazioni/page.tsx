@@ -60,10 +60,11 @@ export default async function SupplierBookingsPage() {
       {/* Riepilogo per stato — include le annullate/rifiutate
           (Allegato A § 3.3: nuova, confermata, completata, annullata). */}
       {(bookings as any[]).length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
           {[
             { label: "Da confermare", match: ["richiesta", "data_alternativa"] },
-            { label: "Confermate", match: ["confermata", "pagata"] },
+            { label: "In attesa di pagamento", match: ["confermata"] },
+            { label: "Pagate", match: ["pagata"] },
             { label: "Completate", match: ["completata"] },
             { label: "Annullate / rifiutate", match: ["annullata", "rifiutata", "no_show"] },
           ].map((g) => {

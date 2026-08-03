@@ -135,6 +135,10 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         update.status = "confermata";
         update.requested_date = booking.alternative_date;
         update.alternative_date = null;
+        // Anche accettando la data alternativa la prenotazione resta "in attesa
+        // di pagamento": senza questa scadenza il timer non partiva e la
+        // richiesta restava aperta a tempo indeterminato.
+        update.payment_deadline = await computePaymentDeadline();
         break;
       }
 
