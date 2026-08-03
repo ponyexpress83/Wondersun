@@ -194,8 +194,14 @@ export default async function SupplierDashboardPage() {
         </section>
 
         <section className="bg-white rounded-2xl border border-gray-100 shadow-ws-card">
-          <div className="px-6 py-5 border-b border-gray-100">
+          <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
             <h2 className="font-display text-xl font-bold text-ws-dark">Ultime prenotazioni</h2>
+            <Link
+              href="/fornitore/prenotazioni"
+              className="text-xs font-semibold text-ws-blue hover:underline"
+            >
+              Gestisci tutte
+            </Link>
           </div>
           {(bookings as any[]).length === 0 ? (
             <div className="px-6 py-10 text-center">
@@ -205,20 +211,27 @@ export default async function SupplierDashboardPage() {
           ) : (
             <ul className="divide-y divide-gray-100">
               {(bookings as any[]).map((b) => (
-                <li key={b.id} className="px-6 py-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-bold text-sm text-ws-text">{b.experience?.title}</p>
-                    <BookingStatusPill status={b.status} />
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-ws-text-light">
-                    <span>
-                      {b.booking_code} · {b.participants} pax ·{" "}
-                      {new Date(b.requested_date).toLocaleDateString("it-IT")}
-                    </span>
-                    <span className="font-semibold text-ws-text">
-                      {formatEur(b.supplier_payout_cents ?? 0)}
-                    </span>
-                  </div>
+                <li key={b.id}>
+                  {/* Riga cliccabile: dalla panoramica si arriva alla gestione
+                      della prenotazione, come ci si aspetta istintivamente. */}
+                  <Link
+                    href="/fornitore/prenotazioni"
+                    className="block px-6 py-3 transition-colors hover:bg-ws-ivory/60"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-bold text-sm text-ws-text">{b.experience?.title}</p>
+                      <BookingStatusPill status={b.status} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-ws-text-light">
+                      <span>
+                        {b.booking_code} · {b.participants} pax ·{" "}
+                        {new Date(b.requested_date).toLocaleDateString("it-IT")}
+                      </span>
+                      <span className="font-semibold text-ws-text">
+                        {formatEur(b.supplier_payout_cents ?? 0)}
+                      </span>
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>

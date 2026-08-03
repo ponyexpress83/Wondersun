@@ -14,7 +14,7 @@ interface Booking {
   total_cents: number;
   commission_cents?: number | null;
   alternative_date?: string | null;
-  experience?: { title?: string; cover_image_url?: string } | null;
+  experience?: { title?: string; slug?: string; cover_image_url?: string } | null;
 }
 
 const FILTERS = [
@@ -90,7 +90,18 @@ export default function BookingsFilters({ bookings }: { bookings: Booking[] }) {
                 />
               )}
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-ws-text truncate">{b.experience?.title}</p>
+                {/* Cliccabile: dalla prenotazione si torna alla scheda
+                    dell'esperienza, come ci si aspetta istintivamente. */}
+                {b.experience?.slug ? (
+                  <Link
+                    href={`/esperienze/${b.experience.slug}`}
+                    className="font-bold text-ws-text truncate block hover:text-ws-blue hover:underline"
+                  >
+                    {b.experience?.title}
+                  </Link>
+                ) : (
+                  <p className="font-bold text-ws-text truncate">{b.experience?.title}</p>
+                )}
                 <p className="text-xs text-ws-text-light">
                   {b.booking_code} · {b.participants} partecipanti ·{" "}
                   {new Date(b.requested_date).toLocaleDateString("it-IT")}
