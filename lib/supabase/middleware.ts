@@ -44,18 +44,23 @@ export async function updateSession(request: NextRequest) {
     if (requiresAuth && !user) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
+      return redirectKeepingSession(loginUrl, response);
     }
 
-    // Protezione admin: solo ruolo admin può entrare in /admin
+    // Protezione admin: solo il ruolo admin entra in /admin.
     if (pathname.startsWith("/admin") && user) {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", user.id)
         .single();
-      if (profile?.role !== "admin") {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+
+      // Si reindirizza SOLO se il ruolo è stato letto davvero e non è admin.
+      // Se la lettura fallisce (latenza, sessione in fase di rinnovo) non si
+      // deve buttare l'utente nell'area cliente: la pagina è comunque protetta
+      // da requireRole().
+      if (!error && profile && profile.role !== "admin") {
+        return redirectKeepingSession(new URL("/dashboard", request.url), response);
       }
     }
   } catch (err) {
@@ -68,4 +73,20 @@ export async function updateSession(request: NextRequest) {
   }
 
   return response;
+}
+
+/**
+ * Esegue un redirect conservando i cookie di sessione aggiornati.
+ *
+ * Supabase rinnova il token durante updateSession scrivendo i cookie sulla
+ * response corrente: creando una nuova response di redirect quei cookie
+ * andrebbero persi e l'utente si ritroverebbe scollegato (o rimbalzato in
+ * un'altra area) a ogni cambio pagina.
+ */
+function redirectKeepingSession(url: URL, from: NextResponse): NextResponse {
+  const redirect = NextResponse.redirect(url);
+  for (const cookie of from.cookies.getAll()) {
+    redirect.cookies.set(cookie);
+  }
+  return redirect;
 }

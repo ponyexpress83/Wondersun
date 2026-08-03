@@ -6,6 +6,7 @@ import { requireRole } from "@/lib/supabase/auth-helpers";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { ADMIN_NAV } from "@/lib/admin-nav";
 import ExperienceEditor from "@/components/dashboard/ExperienceEditor";
+import AvailabilityManager from "@/components/dashboard/AvailabilityManager";
 import type { Experience } from "@/lib/types";
 
 export const metadata = { title: "Modifica esperienza · Admin" };
@@ -53,6 +54,14 @@ export default async function AdminEditExperiencePage({
         supplierMode={supplier.mode}
         redirectTo={`/admin/fornitori/${params.id}`}
       />
+
+      {/* Date e orari disponibili (Allegato A § 3.2). Con la governance
+          "controllo totale admin" la gestione è qui, non lato fornitore. */}
+      {supplier.mode !== "vetrina" && (
+        <div className="mt-8 max-w-4xl">
+          <AvailabilityManager experienceId={params.expId} />
+        </div>
+      )}
     </DashboardLayout>
   );
 }

@@ -47,8 +47,14 @@ async function requireOwnership(experienceId: string) {
     .eq("id", experienceId)
     .single();
   if (!experience) return { error: "Esperienza non trovata", status: 404 as const };
+
   if ((experience as any).supplier?.profile_id !== user.id) {
-    return { error: "Non autorizzato", status: 403 as const };
+    // L'amministrazione gestisce le disponibilità di tutti i fornitori
+    // (governance "controllo totale admin").
+    const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (me?.role !== "admin") {
+      return { error: "Non autorizzato", status: 403 as const };
+    }
   }
   return { supabase };
 }
