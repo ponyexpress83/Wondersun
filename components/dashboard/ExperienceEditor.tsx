@@ -137,12 +137,40 @@ export default function ExperienceEditor({ supplierId, experience, supplierMode,
     if (!confirm("Eliminare definitivamente questa esperienza?")) return;
     try {
       const res = await fetch(`/api/experiences/${experience!.id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
-      toast.success("Esperienza eliminata");
-      router.push(backTo);
-      router.refresh();
-    } catch {
-      toast.error("Errore durante l'eliminazione");
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        toast.success("Esperienza eliminata");
+        router.push(backTo);
+        router.refresh();
+        return;
+      }
+
+      // Non cancellabile perché ha prenotazioni collegate: offriamo il ritiro dal
+      // catalogo, che la nasconde dal sito ma conserva lo storico prenotazioni.
+      if (data?.hasBookings) {
+        const n = data.bookingsCount ?? 0;
+        const quante =
+          n > 0 ? `${n} prenotazione${n === 1 ? "" : "i"} collegata` : "prenotazioni collegate";
+        const ok = confirm(
+          `Questa esperienza ha ${quante}: eliminarla cancellerebbe anche lo storico, ` +
+            `quindi non è possibile.\n\nVuoi ritirarla dal catalogo? Non sarà più visibile ` +
+            `né prenotabile dai clienti, ma le prenotazioni già ricevute restano consultabili.`,
+        );
+        if (!ok) return;
+        const arch = await fetch(`/api/experiences/${experience!.id}?archive=1`, {
+          method: "DELETE",
+        });
+        if (!arch.ok) throw new Error();
+        toast.success("Esperienza ritirata dal catalogo");
+        router.push(backTo);
+        router.refresh();
+        return;
+      }
+
+      throw new Error(data?.error || "Errore durante l'eliminazione");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Errore durante l'eliminazione");
     }
   };
 

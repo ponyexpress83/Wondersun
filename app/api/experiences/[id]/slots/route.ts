@@ -34,6 +34,14 @@ const SlotInput = z.object({
   capacity: z.number().int().min(1).max(500),
 });
 
+// Inserimento multiplo (calendario ricorrente): il fornitore genera in un colpo
+// solo tutte le date di un periodo con uno o più orari (es. "ogni giorno alle
+// 10 e alle 15"). Il client espande già le occorrenze e invia gli istanti ISO.
+const BulkInput = z.object({
+  capacity: z.number().int().min(1).max(500),
+  startsAt: z.array(z.string().min(8)).min(1).max(400),
+});
+
 async function requireOwnership(experienceId: string) {
   const supabase = createSupabaseServerClient();
   const {
@@ -65,7 +73,39 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     if ("error" in owned) {
       return NextResponse.json({ error: owned.error }, { status: owned.status });
     }
-    const input = SlotInput.parse(await request.json());
+    const payload = await request.json();
+
+    // ── Inserimento multiplo (calendario ricorrente) ────────────────────────
+    if (Array.isArray(payload?.startsAt)) {
+      const input = BulkInput.parse(payload);
+      const now = new Date();
+      const rows = input.startsAt
+        .map((s) => new Date(s))
+        .filter((d) => !isNaN(d.getTime()) && d > now) // scarta date passate/non valide
+        .map((d) => ({
+          experience_id: params.id,
+          starts_at: d.toISOString(),
+          ends_at: null,
+          capacity: input.capacity,
+        }));
+
+      if (rows.length === 0) {
+        return NextResponse.json(
+          { error: "Nessuna data futura valida da inserire." },
+          { status: 400 },
+        );
+      }
+
+      const { data, error } = await owned.supabase
+        .from("availability_slots")
+        .insert(rows)
+        .select();
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ inserted: data?.length ?? 0 });
+    }
+
+    // ── Inserimento singolo ─────────────────────────────────────────────────
+    const input = SlotInput.parse(payload);
     const startsAt = new Date(input.startsAt);
     if (isNaN(startsAt.getTime()) || startsAt < new Date()) {
       return NextResponse.json({ error: "La data deve essere futura" }, { status: 400 });

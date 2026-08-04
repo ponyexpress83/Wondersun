@@ -55,7 +55,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   return NextResponse.json({ experience: data });
 }
 
-export async function DELETE(_: NextRequest, { params }: RouteContext) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const supabase = createSupabaseServerClient();
   const {
     data: { user },
@@ -70,7 +70,50 @@ export async function DELETE(_: NextRequest, { params }: RouteContext) {
     );
   }
 
+  // Ritiro dal catalogo (?archive=1): non cancella, mette in stato 'sospesa'.
+  // È la via d'uscita quando ci sono prenotazioni collegate: l'esperienza
+  // sparisce dal sito pubblico ma lo storico resta intatto.
+  const archive = new URL(request.url).searchParams.get("archive") === "1";
+  if (archive) {
+    const { error } = await supabase
+      .from("experiences")
+      .update({ status: "sospesa" })
+      .eq("id", params.id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ ok: true, archived: true });
+  }
+
+  // Le prenotazioni hanno un vincolo "on delete restrict" sull'esperienza: se ne
+  // esiste anche una sola, la cancellazione fallirebbe con un errore criptico di
+  // foreign key. Meglio intercettarlo prima e proporre il ritiro dal catalogo.
+  const { count } = await supabase
+    .from("bookings")
+    .select("id", { count: "exact", head: true })
+    .eq("experience_id", params.id);
+
+  if ((count ?? 0) > 0) {
+    return NextResponse.json(
+      {
+        error: "L'esperienza ha prenotazioni collegate e non può essere eliminata.",
+        hasBookings: true,
+        bookingsCount: count ?? 0,
+      },
+      { status: 409 },
+    );
+  }
+
   const { error } = await supabase.from("experiences").delete().eq("id", params.id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  if (error) {
+    // Rete di sicurezza: se un altro vincolo blocca comunque la cancellazione,
+    // comunichiamolo in modo comprensibile e offriamo comunque il ritiro.
+    return NextResponse.json(
+      {
+        error: "Non è stato possibile eliminare l'esperienza: ci sono dati collegati.",
+        hasBookings: true,
+        bookingsCount: count ?? 0,
+      },
+      { status: 409 },
+    );
+  }
   return NextResponse.json({ ok: true });
 }
