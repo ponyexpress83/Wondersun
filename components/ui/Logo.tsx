@@ -1,14 +1,40 @@
+"use client";
+
+import { useState } from "react";
+
 interface LogoProps {
   className?: string;
 }
 
 /**
- * Logo Wondersun — riproduzione vettoriale fedele del logo fornito dalla
- * cliente: lente d'ingrandimento (anello blu navy + manico rosso) con al
- * centro un sole dorato e raggi blu/oro/rossi, area "mare" blu in basso a
- * sinistra. Vettoriale: nitido a ogni dimensione e per il favicon.
+ * Logo Wondersun.
+ *
+ * Se in `public/` esiste il file ufficiale della committente (`logo.png`) viene
+ * usato quello, senza alcuna modifica. Finché il file non c'è si mostra la
+ * riproduzione vettoriale qui sotto: lente d'ingrandimento (anello blu navy +
+ * manico rosso) con al centro un sole dorato e raggi blu/oro/rossi.
+ *
+ * Per sostituirlo basta caricare `public/logo.png`: nessuna modifica al codice.
  */
 export default function Logo({ className = "w-10 h-10" }: LogoProps) {
+  const [officialFailed, setOfficialFailed] = useState(false);
+
+  if (!officialFailed) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src="/logo.png"
+        alt="Wondersun"
+        className={`${className} object-contain`}
+        onError={() => setOfficialFailed(true)}
+      />
+    );
+  }
+
+  return <LogoFallback className={className} />;
+}
+
+function LogoFallback({ className }: { className: string }) {
   return (
     <svg
       viewBox="0 0 240 240"
