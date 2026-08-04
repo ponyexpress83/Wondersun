@@ -15,6 +15,7 @@ import {
   Info,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import { getStoredConsent } from "@/components/CookieBanner";
 import { formatEur } from "@/lib/types";
 
 interface Suggestion {
@@ -60,6 +61,9 @@ export default function SoleChat() {
     (p) => pathname === p || pathname?.startsWith(`${p}/`),
   );
   const [open, setOpen] = useState(false);
+  // Finché il banner cookie è a schermo il launcher resta nascosto: stava sopra
+  // al pulsante "Accetta tutti" e su mobile lo copriva del tutto.
+  const [consentPending, setConsentPending] = useState(true);
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -78,6 +82,14 @@ export default function SoleChat() {
     const handler = () => setOpen(true);
     window.addEventListener("ws-open-sole", handler);
     return () => window.removeEventListener("ws-open-sole", handler);
+  }, []);
+
+  // Il consenso cookie ha la precedenza: il launcher compare solo dopo la scelta.
+  useEffect(() => {
+    setConsentPending(getStoredConsent() === null);
+    const onChange = () => setConsentPending(false);
+    window.addEventListener("ws-consent-change", onChange);
+    return () => window.removeEventListener("ws-consent-change", onChange);
   }, []);
 
   useEffect(() => {
@@ -184,7 +196,7 @@ export default function SoleChat() {
   };
 
   // Dopo gli hook, così l'ordine resta stabile a ogni render.
-  if (hidden) return null;
+  if (hidden || consentPending) return null;
 
   return (
     <>
