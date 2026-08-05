@@ -102,7 +102,22 @@ export async function listExperiences(
     }
     // DB raggiungibile ma vuoto (es. seed non ancora caricato): mostriamo i
     // dati demo così il catalogo non appare mai vuoto durante la presentazione.
+    // MA solo quando NON ci sono filtri: se la committente filtra per categoria
+    // o prezzo e non ci sono corrispondenze reali, deve vedere "nessun
+    // risultato", non le esperienze demo con foto stock (era il "mischione"
+    // segnalato: filtro reale a vuoto → comparivano le schede demo).
     if (data.length === 0) {
+      const hasFilters = Boolean(
+        (filter.categories && filter.categories.length) ||
+          (filter.category && filter.category !== "all") ||
+          (filter.area && filter.area !== "all") ||
+          filter.minPrice != null ||
+          filter.maxPrice != null ||
+          filter.minHours != null ||
+          filter.maxHours != null ||
+          filter.query,
+      );
+      if (hasFilters) return [];
       console.warn("[experiences] DB vuoto: uso i dati demo");
       return applyFilters(MOCK_EXPERIENCES, filter);
     }

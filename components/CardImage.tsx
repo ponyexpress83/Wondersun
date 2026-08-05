@@ -26,7 +26,13 @@ export default function CardImage({
   className?: string;
 }) {
   const fallback = coverForCategory(category);
-  const [current, setCurrent] = useState(src || fallback);
+  // Tracciamo SOLO quale src ha fallito il caricamento, non l'immagine mostrata.
+  // Così `current` deriva sempre dal prop `src` corrente: quando la lista viene
+  // rifiltrata o riordinata e React riusa questa istanza in una nuova posizione,
+  // la foto segue subito la nuova esperienza invece di restare "congelata" su
+  // quella precedente (era la causa delle immagini che non corrispondevano).
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const current = src && failedSrc !== src ? src : fallback;
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
@@ -34,7 +40,7 @@ export default function CardImage({
       alt={alt}
       className={className}
       onError={() => {
-        if (current !== fallback) setCurrent(fallback);
+        if (src) setFailedSrc(src);
       }}
     />
   );
