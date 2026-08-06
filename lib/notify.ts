@@ -126,6 +126,48 @@ export async function notifySupplierNewBooking(
 }
 
 /**
+ * Il cliente ha pagato la quota di servizio → la prenotazione è definitiva.
+ * Avvisa il fornitore (e in copia l'amministrazione) così sa che può erogare
+ * l'esperienza. La conferma al cliente parte separatamente con
+ * notifyClientBookingUpdate('pagata').
+ */
+export async function notifySupplierBookingPaid(
+  channels: NotifyChannels,
+  data: { bookingCode: string; experienceTitle: string; date: string; participants: number },
+): Promise<void> {
+  const dateStr = new Date(data.date).toLocaleDateString("it-IT", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  const text =
+    `Prenotazione confermata e pagata · Wondersun\n\n` +
+    `${data.experienceTitle}\n` +
+    `Data: ${dateStr} · ${data.participants} pax\n` +
+    `Codice: ${data.bookingCode}\n\n` +
+    `Il cliente ha pagato la quota di servizio: la prenotazione è definitiva.\n` +
+    `${SITE}/fornitore/prenotazioni`;
+  const html =
+    `<h2>Prenotazione confermata e pagata</h2>` +
+    `<p><strong>${data.experienceTitle}</strong></p>` +
+    `<p>Data: <strong>${dateStr}</strong> · ${data.participants} partecipanti<br/>` +
+    `Codice: ${data.bookingCode}</p>` +
+    `<p>Il cliente ha pagato la quota di servizio: la prenotazione è definitiva.</p>` +
+    `<p><a href="${SITE}/fornitore/prenotazioni">Apri la dashboard</a></p>`;
+
+  await Promise.allSettled([
+    channels.email ? sendEmail(channels.email, `Prenotazione pagata · ${data.bookingCode}`, html) : null,
+    channels.whatsapp ? sendWhatsApp(channels.whatsapp, text) : null,
+    ...notifyAdminChannels().map(({ email, whatsapp }) =>
+      Promise.allSettled([
+        email ? sendEmail(email, `[Wondersun] Prenotazione pagata · ${data.bookingCode}`, html) : null,
+        whatsapp ? sendWhatsApp(whatsapp, `[Wondersun] ${text}`) : null,
+      ]),
+    ),
+  ]);
+}
+
+/**
  * Recapiti dell'amministrazione per le notifiche interne.
  * Configurabili via env: ADMIN_NOTIFY_EMAIL / ADMIN_NOTIFY_WHATSAPP.
  */

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { verifyWebhookSignature } from "@/lib/stripe";
 import { logAudit } from "@/lib/audit";
+import { notifyClientBookingUpdate, notifySupplierBookingPaid } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
         const kind = session.metadata?.kind;
 
         if (kind === "booking_fee" && session.metadata?.booking_id) {
-          await admin
+          const { data: paid } = await admin
             .from("bookings")
             .update({
               status: "pagata",
@@ -50,13 +51,49 @@ export async function POST(request: NextRequest) {
               stripe_payment_intent_id: session.payment_intent ?? null,
             })
             .eq("id", session.metadata.booking_id)
-            .eq("status", "confermata");
+            .eq("status", "confermata")
+            .select(
+              "booking_code, requested_date, participants, client:profiles!bookings_client_id_fkey(email, phone), experience:experiences(title), supplier:suppliers(contact_email, contact_phone)",
+            )
+            .maybeSingle();
           await logAudit({
             action: "webhook.booking.paid",
             entityType: "booking",
             entityId: session.metadata.booking_id,
             metadata: { session_id: session.id },
           });
+
+          // Prenotazione ora definitiva: conferma al cliente + avviso al
+          // fornitore (best-effort; se le chiavi email/WhatsApp non sono
+          // configurate le notifiche degradano in log e non bloccano nulla).
+          // `paid` è null se la riga non era 'confermata' (es. evento
+          // duplicato già processato): in quel caso non re-inviamo nulla.
+          if (paid) {
+            const exp = (paid as any).experience?.title ?? "Esperienza";
+            await Promise.allSettled([
+              notifyClientBookingUpdate(
+                { email: (paid as any).client?.email, whatsapp: (paid as any).client?.phone },
+                {
+                  bookingCode: paid.booking_code,
+                  experienceTitle: exp,
+                  status: "pagata",
+                  date: paid.requested_date,
+                },
+              ),
+              notifySupplierBookingPaid(
+                {
+                  email: (paid as any).supplier?.contact_email,
+                  whatsapp: (paid as any).supplier?.contact_phone,
+                },
+                {
+                  bookingCode: paid.booking_code,
+                  experienceTitle: exp,
+                  date: paid.requested_date,
+                  participants: paid.participants,
+                },
+              ),
+            ]);
+          }
         }
 
         if (kind === "supplier_subscription" && session.metadata?.supplier_id) {

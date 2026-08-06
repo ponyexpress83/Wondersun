@@ -14,6 +14,7 @@ import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SupplierDocumentsManager from "@/components/dashboard/SupplierDocumentsManager";
 import { requireProfile } from "@/lib/supabase/auth-helpers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { computeBilling, getLaunchDate, type BillingState } from "@/lib/subscription";
 import { formatEur } from "@/lib/types";
 import type { Supplier } from "@/lib/types";
 
@@ -43,6 +44,12 @@ export default async function SupplierDashboardPage() {
     .select("*")
     .eq("profile_id", profile.id)
     .maybeSingle();
+
+  // Stato canone coerente col modello commerciale (3 mesi dal lancio per i
+  // fondatori): usiamo la stessa logica della pagina Abbonamento, così il
+  // banner della Panoramica non mostra più un conto alla rovescia "personale"
+  // partito dalla creazione dell'account.
+  const launchDate = await getLaunchDate();
 
   const nav = [
     { href: "/fornitore/dashboard", label: "Panoramica", icon: LayoutDashboard },
@@ -103,7 +110,7 @@ export default async function SupplierDashboardPage() {
       subtitle={s.city ? `${s.city}${s.province ? ` (${s.province})` : ""}` : ""}
     >
       {/* Status banner */}
-      <SupplierStatusBanner supplier={s} />
+      <SupplierStatusBanner supplier={s} billing={computeBilling(s, launchDate)} />
 
       {/* Modalità operativa del fornitore: prenotabile (richieste in piattaforma)
           oppure vetrina (il cliente contatta direttamente il fornitore). */}
@@ -284,13 +291,13 @@ function StatCard({
   );
 }
 
-function SupplierStatusBanner({ supplier }: { supplier: Supplier }) {
-  const trialEnds = new Date(supplier.trial_ends_at);
-  const daysLeft = Math.max(
-    0,
-    Math.ceil((trialEnds.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
-  );
-
+function SupplierStatusBanner({
+  supplier,
+  billing,
+}: {
+  supplier: Supplier;
+  billing: BillingState;
+}) {
   if (supplier.status === "in_attesa") {
     return (
       <div className="bg-ws-yellow/15 border border-ws-yellow/30 rounded-2xl p-5 mb-6 flex items-start gap-3">
@@ -318,23 +325,32 @@ function SupplierStatusBanner({ supplier }: { supplier: Supplier }) {
       </div>
     );
   }
-  if (supplier.subscription_status === "trial") {
-    return (
-      <div className="bg-ws-blue-pale border border-ws-blue/15 rounded-2xl p-5 mb-6 flex items-start gap-3">
-        <CheckCircle2 size={20} className="text-ws-blue flex-shrink-0 mt-0.5" />
-        <div>
-          <p className="font-bold text-ws-dark">
-            Periodo di prova: {daysLeft} {daysLeft === 1 ? "giorno" : "giorni"} rimanenti
-          </p>
-          <p className="text-sm text-ws-text">
-            Trial termina il {trialEnds.toLocaleDateString("it-IT")}. Dopo verranno addebitati €29
-            al mese.
-          </p>
-        </div>
+  // Canone: mostriamo lo stato calcolato dal modello commerciale (fondatori →
+  // gratis dal lancio; post-lancio → attivazione €99). Niente più conto alla
+  // rovescia partito dalla creazione account.
+  const attesaLancio = billing.phase === "attesa_lancio";
+  const daPagare = billing.phase === "da_pagare" || billing.phase === "attivazione";
+  const tone = daPagare
+    ? "bg-ws-yellow/15 border-ws-yellow/30"
+    : "bg-ws-blue-pale border-ws-blue/15";
+
+  return (
+    <div className={`${tone} border rounded-2xl p-5 mb-6 flex items-start gap-3`}>
+      <CheckCircle2 size={20} className="text-ws-blue flex-shrink-0 mt-0.5" />
+      <div>
+        <p className="font-bold text-ws-dark">{billing.label}</p>
+        <p className="text-sm text-ws-text">
+          {attesaLancio
+            ? "Il periodo gratuito parte dalla data di lancio della piattaforma: fino ad allora non viene addebitato nulla."
+            : billing.phase === "promo"
+              ? "Durante il periodo promozionale non viene addebitato nulla."
+              : daPagare
+                ? "Attiva il canone dalla pagina Abbonamento per restare visibile nel catalogo."
+                : `Canone €${(billing.monthlyCents / 100).toFixed(0)}/mese.`}
+        </p>
       </div>
-    );
-  }
-  return null;
+    </div>
+  );
 }
 
 function ExperienceStatusPill({ status }: { status: string }) {
